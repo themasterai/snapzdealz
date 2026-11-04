@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create VIP Account | SNAPDEALZ Store</title>
+    <meta name="description" content="Register your free SnapDealz VIP membership and instantly unlock 15% off your first flash deal order." />
+    <meta property="og:title" content="Create VIP Account | SNAPDEALZ Store" />
+    <meta property="og:description" content="Register your free SnapDealz VIP membership and instantly unlock 15% off your first flash deal order." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5.3 CSS & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Custom Deal Theme CSS -->
+    <link rel="stylesheet" href="./style.css">
+  </head>
+  <body>
+    <!-- Preloader -->
+    <div id="preloader">
+      <div class="spinner-deal"></div>
+      <div class="mt-3 fw-bold text-dark font-monospace tracking-wide">SNAPDEALZ</div>
+      <span class="small text-muted">Preparing VIP benefits...</span>
+    </div>
+
+    <!-- Sticky Navbar -->
+    <nav class="navbar navbar-expand-lg snap-navbar">
+      <div class="container">
+        <a class="navbar-brand" href="index.html">
+          <i class="bi bi-lightning-charge-fill text-warning"></i>
+          <span>SNAP</span><span class="logo-badge">DEALZ</span>
+        </a>
+
+        <div class="d-flex align-items-center gap-2 order-lg-3 ms-auto ms-lg-0">
+          <a href="shop.html" class="nav-action-btn" title="Shop Deals" aria-label="Shop Deals">
+            <i class="bi bi-bag"></i>
+          </a>
+          <!-- Wishlist Modal Trigger -->
+          <button type="button" class="nav-action-btn nav-wishlist-trigger" data-bs-toggle="modal" data-bs-target="#globalWishlistModal" title="Saved Wishlist" aria-label="Saved Wishlist">
+            <i class="bi bi-heart"></i>
+            <span class="nav-badge-count wishlist-count-badge" style="display: none;">0</span>
+          </button>
+          <a href="cart.html" class="nav-action-btn" title="Shopping Cart" aria-label="Shopping Cart">
+            <i class="bi bi-cart3"></i>
+            <span class="nav-badge-count cart-count-badge" style="display: none;">0</span>
+          </a>
+          <div id="userNavContainer" class="ms-1"></div>
+
+          <!-- Hamburger Toggle for Mobile -->
+          <button class="navbar-toggler border-0 shadow-none px-2" type="button" data-bs-toggle="collapse" data-bs-target="#snapNavbarNav" aria-controls="snapNavbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-list fs-1 text-dark"></i>
+          </button>
+        </div>
+
+        <div class="collapse navbar-collapse order-lg-2" id="snapNavbarNav">
+          <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+            <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="shop.html">Shop All</a></li>
+            <li class="nav-item"><a class="nav-link" href="shop.html?category=mens-shoes">Men's Shoes</a></li>
+            <li class="nav-item"><a class="nav-link" href="shop.html?category=mens-clothing">Men's Clothes</a></li>
+            <li class="nav-item"><a class="nav-link" href="shop.html?category=womens-clothing">Women's Clothes</a></li>
+            <li class="nav-item"><a class="nav-link" href="shop.html?category=ladies-bags">Ladies Bags</a></li>
+            <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+            <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+          </ul>
+          <!-- Mobile Drawer Quick Auth Links -->
+          <div class="mobile-drawer-auth d-lg-none mt-3 pt-3 border-top"></div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Auth Split Section -->
+    <main class="auth-page-wrapper">
+      <div class="auth-card-split shadow-lg">
+        <div class="row g-0">
+          <!-- Branded Yellow Side -->
+          <div class="col-lg-5 auth-brand-side">
+            <div>
+              <div class="d-inline-flex align-items-center gap-2 mb-4 bg-dark text-white px-3 py-1 rounded-pill small fw-bold">
+                <i class="bi bi-stars text-warning"></i> 100% FREE VIP PERKS
+              </div>
+              <h2 class="deal-heading display-6 mb-3">JOIN 85,000+ SMART SAVERS</h2>
+              <p class="mb-4">Create your account in under 30 seconds. Enjoy guaranteed lowest online prices, free returns, and instant tracking alerts.</p>
+
+              <div class="d-flex flex-column gap-3 mb-4">
+                <div class="d-flex align-items-center gap-2 small fw-bold">
+                  <i class="bi bi-gift-fill fs-5"></i> Instant 15% discount coupon on signup
+                </div>
+                <div class="d-flex align-items-center gap-2 small fw-bold">
+                  <i class="bi bi-bell-fill fs-5"></i> Price drop alerts on wishlist items
+                </div>
+                <div class="d-flex align-items-center gap-2 small fw-bold">
+                  <i class="bi bi-truck fs-5"></i> Free shipping unlocked at $35 instead of $50
+                </div>
+              </div>
+            </div>
+
+            <!-- Guarantee Box -->
+            <div class="p-3 bg-white bg-opacity-25 rounded-3 border border-dark border-opacity-10 small mt-3">
+              <div class="fw-bold d-flex align-items-center gap-2">
+                <i class="bi bi-shield-check fs-5"></i> Privacy Protected Guarantee
+              </div>
+              <p class="mb-0 opacity-75 mt-1">We never sell your personal data. Encrypted and secured with bank-grade standards.</p>
+            </div>
+          </div>
+
+          <!-- White Form Side -->
+          <div class="col-lg-7 auth-form-side">
+            <div class="mb-4">
+              <h3 class="deal-heading fs-3 mb-1">CREATE YOUR VIP ACCOUNT</h3>
+              <p class="text-muted small mb-0">Already a registered member? <a href="login.html" class="fw-bold text-dark text-decoration-underline">Sign in here</a></p>
+            </div>
+
+            <!-- Dynamic Alert Box -->
+            <div id="signupAlertBox" class="alert d-none mb-4" role="alert"></div>
+
+            <!-- Security & Anti-Hack Shield Badge -->
+            <div class="d-flex align-items-center justify-content-between p-2 px-3 bg-light rounded-4 border small text-muted mb-4">
+              <span class="d-flex align-items-center gap-1">
+                <i class="bi bi-shield-check text-success fs-5"></i>
+                <span><strong class="text-dark">Salted SHA-256</strong> Password Cryptography</span>
+              </span>
+              <span class="badge bg-success-subtle text-success rounded-pill px-2 py-1 small">
+                <i class="bi bi-lock-fill"></i> E2EE Active
+              </span>
+            </div>
+
+            <!-- Real Google Sign Up -->
+            <div class="mb-4">
+              <button type="button" class="btn btn-outline-dark w-100 py-2 d-flex align-items-center justify-content-center gap-2 rounded-pill small fw-bold shadow-sm" id="googleOtpSignupBtn">
+                <svg width="18" height="18" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                </svg>
+                <span>Sign Up with Google</span>
+              </button>
+            </div>
+
+            <div class="position-relative text-center my-4">
+              <hr class="text-muted">
+              <span class="position-absolute top-50 start-50 translate-middle px-3 bg-white text-muted small fw-bold">OR REGISTER WITH FORM</span>
+            </div>
+
+            <form id="signupForm" novalidate>
+              <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                  <label for="signupName" class="form-label small fw-bold text-uppercase text-muted">Full Name</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-person text-muted"></i></span>
+                    <input type="text" class="form-control border-start-0" id="signupName" placeholder="Marcus Vance" required>
+                    <div class="invalid-feedback">Your full name is required.</div>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <label for="signupPhone" class="form-label small fw-bold text-uppercase text-muted">Phone Number <span class="text-muted fw-normal">(Optional)</span></label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-telephone text-muted"></i></span>
+                    <input type="tel" class="form-control border-start-0" id="signupPhone" placeholder="+1 (555) 234-5678">
+                    <div class="invalid-feedback">Phone number.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <label for="signupEmail" class="form-label small fw-bold text-uppercase text-muted mb-0">Official Gmail Address</label>
+                  <span class="badge bg-danger-subtle text-danger rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">
+                    <i class="bi bi-google me-1"></i> @gmail.com ONLY
+                  </span>
+                </div>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-end-0"><i class="bi bi-envelope text-danger"></i></span>
+                  <input type="email" class="form-control border-start-0" id="signupEmail" placeholder="your.name@gmail.com" required pattern="^[a-zA-Z0-9._%+-]+@(gmail\.com|googlemail\.com)$">
+                  <div class="invalid-feedback">Official @gmail.com address required.</div>
+                </div>
+              </div>
+
+              <div class="row g-3 mb-2">
+                <div class="col-md-6">
+                  <label for="signupPassword" class="form-label small fw-bold text-uppercase text-muted">Password</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock text-muted"></i></span>
+                    <input type="password" class="form-control border-start-0" id="signupPassword" placeholder="Min. 8 characters" required minlength="8">
+                    <div class="invalid-feedback">Password is required (min 8 characters).</div>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <label for="signupConfirmPassword" class="form-label small fw-bold text-uppercase text-muted">Confirm Password</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-shield-check text-muted"></i></span>
+                    <input type="password" class="form-control border-start-0" id="signupConfirmPassword" placeholder="Re-enter password" required>
+                    <div class="invalid-feedback">Passwords must match.</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Password Strength Meter -->
+              <div class="mb-4">
+                <div class="d-flex justify-content-between align-items-center small">
+                  <span class="text-muted" style="font-size: 0.75rem;">Password Strength:</span>
+                  <span id="passwordStrengthText" class="fw-bold" style="font-size: 0.75rem;">None</span>
+                </div>
+                <div class="password-strength-bar">
+                  <div class="password-strength-progress" id="passwordStrengthBar"></div>
+                </div>
+              </div>
+
+              <div class="form-check mb-4">
+                <input class="form-check-input" type="checkbox" id="signupTerms" required checked>
+                <label class="form-check-label small text-muted" for="signupTerms">
+                  I agree to the <a href="#" class="text-dark fw-semibold">Terms of Service</a> and <a href="#" class="text-dark fw-semibold">Privacy Policy</a>, and consent to receiving deal drop notifications.
+                </label>
+                <div class="invalid-feedback">You must agree before registering.</div>
+              </div>
+
+              <button type="submit" class="btn btn-deal w-100 py-3 fw-bold mb-3">
+                <i class="bi bi-lightning-charge-fill"></i> Unlock My VIP Membership
+              </button>
+
+              <p class="text-center text-muted small mb-0">
+                Already registered? <a href="login.html" class="fw-bold text-dark">Log In Now</a>
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Premium Footer -->
+    <footer class="premium-footer" data-bs-theme="dark">
+      <div class="container">
+        <div class="footer-main-grid mb-4">
+          <!-- Col 1: Brand & Bio -->
+          <div class="footer-col-brand">
+            <a class="navbar-brand text-white mb-3 d-inline-flex" href="index.html">
+              <i class="bi bi-lightning-charge-fill text-warning"></i>
+              <span class="text-white">SNAP</span><span class="logo-badge">DEALZ</span>
+            </a>
+            <p class="footer-desc mb-3">SnapDealz is your curated destination for verified high-octane deals and direct-to-consumer savings on top brands.</p>
+            <div class="footer-social-row">
+              <a href="#" class="footer-social-icon" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+              <a href="#" class="footer-social-icon" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+              <a href="#" class="footer-social-icon" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
+              <a href="#" class="footer-social-icon" aria-label="TikTok"><i class="bi bi-tiktok"></i></a>
+              <a href="#" class="footer-social-icon" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+            </div>
+          </div>
+
+          <!-- Col 2: Quick Links -->
+          <div class="footer-col-links">
+            <h5>Explore Drops</h5>
+            <ul class="footer-links">
+              <li><a href="shop.html"><i class="bi bi-chevron-right text-warning small"></i> Shop All Deals</a></li>
+              <li><a href="shop.html?category=mens-shoes"><i class="bi bi-chevron-right text-warning small"></i> Men's Athletic Shoes</a></li>
+              <li><a href="shop.html?category=mens-clothing"><i class="bi bi-chevron-right text-warning small"></i> Men's Clothing</a></li>
+              <li><a href="shop.html?category=womens-clothing"><i class="bi bi-chevron-right text-warning small"></i> Women's Clothing</a></li>
+              <li><a href="shop.html?category=ladies-bags"><i class="bi bi-chevron-right text-warning small"></i> Ladies Handbags</a></li>
+              <li><a href="cart.html"><i class="bi bi-chevron-right text-warning small"></i> Shopping Cart</a></li>
+              <li><a href="#" data-bs-toggle="modal" data-bs-target="#trackOrderModal"><i class="bi bi-truck text-warning small"></i> Track Order</a></li>
+            </ul>
+          </div>
+
+          <!-- Col 3: Legal & Policies -->
+          <div class="footer-col-categories">
+            <h5>Legal & Policies</h5>
+            <ul class="footer-links">
+              <li><a href="privacy.html"><i class="bi bi-chevron-right text-warning small"></i> Privacy Policy</a></li>
+              <li><a href="terms.html"><i class="bi bi-chevron-right text-warning small"></i> Terms & Conditions</a></li>
+              <li><a href="about.html"><i class="bi bi-chevron-right text-warning small"></i> About SnapDealz</a></li>
+              <li><a href="contact.html"><i class="bi bi-chevron-right text-warning small"></i> Contact & Helpdesk</a></li>
+            </ul>
+          </div>
+
+          <!-- Col 4: Contact & Support -->
+          <div class="footer-col-contact">
+            <h5>Customer Support</h5>
+            <ul class="footer-links">
+              <li class="footer-contact-item">
+                <i class="bi bi-geo-alt-fill"></i>
+                <span>742 Evergreen Terrace, Suite 400, San Francisco, CA</span>
+              </li>
+              <li class="footer-contact-item">
+                <i class="bi bi-telephone-fill"></i>
+                <span>1-800-SNAP-DEAL (Toll Free 24/7)</span>
+              </li>
+              <li class="footer-contact-item">
+                <i class="bi bi-envelope-fill"></i>
+                <span>support@snapdealz.com</span>
+              </li>
+              <li class="footer-contact-item">
+                <i class="bi bi-shield-check"></i>
+                <span>30-Day Money-Back Guarantee</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Footer Bottom Bar -->
+        <div class="footer-bottom">
+          <div class="small">
+            &copy; 2026 SnapDealz Inc. All rights reserved. Built for speed and maximum savings.
+          </div>
+          <div class="footer-payment-badges-wrap">
+            <span class="footer-payment-badge"><i class="bi bi-cash-stack text-warning"></i> CASH ON DELIVERY</span>
+            <span class="footer-payment-badge"><i class="bi bi-phone-fill text-success"></i> EASYPAISA</span>
+            <span class="footer-payment-badge"><i class="bi bi-wallet2 text-danger"></i> JAZZCASH</span>
+            <span class="footer-payment-badge"><i class="bi bi-credit-card-2-front"></i> DEBIT / CREDIT</span>
+            <span class="footer-payment-badge text-warning"><i class="bi bi-shield-check"></i> 256-BIT SSL</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- 6-DIGIT GMAIL OTP VERIFICATION MODAL -->
+    <div class="modal fade" id="gmailOtpModal" tabindex="-1" aria-labelledby="gmailOtpModalLabel" aria-hidden="true" data-bs-backdrop="static">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 22px; overflow: hidden;">
+          <div class="modal-header border-0 pb-0 pt-4 px-4 bg-light">
+            <div>
+              <span class="badge bg-danger-subtle text-danger fw-bold px-3 py-1 rounded-pill mb-1 d-inline-flex align-items-center gap-1">
+                <i class="bi bi-envelope-check-fill"></i> GMAIL 6-DIGIT OTP
+              </span>
+              <h4 class="modal-title fw-bold text-dark mt-1" id="gmailOtpModalLabel">Verify Your Gmail Account</h4>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="gmailOtpCloseBtn"></button>
+          </div>
+          <div class="modal-body p-4">
+            <!-- Step 1: Request / Enter Gmail -->
+            <div id="otpStepRequest" class="d-block">
+              <p class="text-muted small mb-3">
+                Enter your Gmail address below. We will instantly dispatch an official <strong>6-digit security code</strong> directly to your Gmail inbox.
+              </p>
+              <div class="mb-3">
+                <label for="otpEmailInput" class="form-label small fw-bold text-uppercase text-muted">Your Gmail Address</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light border-end-0"><i class="bi bi-envelope text-danger"></i></span>
+                  <input type="email" class="form-control border-start-0" id="otpEmailInput" placeholder="your.name@gmail.com" required>
+                </div>
+              </div>
+              <div id="otpRequestAlert" class="alert d-none mb-3" role="alert"></div>
+              <button type="button" class="btn btn-warning w-100 py-2 rounded-pill fw-bold text-dark shadow-sm" id="btnSendOtp">
+                <i class="bi bi-send-fill me-1"></i> Send 6-Digit Code to Gmail
+              </button>
+            </div>
+
+            <!-- Step 2: Enter 6-Digit OTP -->
+            <div id="otpStepVerify" class="d-none">
+              <div class="text-center mb-3">
+                <div class="d-inline-flex align-items-center justify-content-center bg-warning-subtle text-dark rounded-circle p-3 mb-2">
+                  <i class="bi bi-shield-check fs-2 text-warning"></i>
+                </div>
+                <h5 class="fw-bold text-dark mb-1">Enter Verification Code</h5>
+                <p class="text-muted small mb-1">
+                  A 6-digit code has been sent to:
+                </p>
+                <div class="badge bg-light text-dark border px-3 py-2 fw-bold font-monospace" id="otpRecipientBadge">
+                  user@gmail.com
+                </div>
+              </div>
+
+              <div id="otpVerifyAlert" class="alert d-none mb-3" role="alert"></div>
+
+              <!-- 6 Digit Input Boxes -->
+              <div class="d-flex justify-content-center gap-2 mb-4">
+                <input type="text" maxlength="1" class="otp-digit-input" data-index="0" inputmode="numeric" pattern="[0-9]*" autofocus autocomplete="one-time-code">
+                <input type="text" maxlength="1" class="otp-digit-input" data-index="1" inputmode="numeric" pattern="[0-9]*">
+                <input type="text" maxlength="1" class="otp-digit-input" data-index="2" inputmode="numeric" pattern="[0-9]*">
+                <input type="text" maxlength="1" class="otp-digit-input" data-index="3" inputmode="numeric" pattern="[0-9]*">
+                <input type="text" maxlength="1" class="otp-digit-input" data-index="4" inputmode="numeric" pattern="[0-9]*">
+                <input type="text" maxlength="1" class="otp-digit-input" data-index="5" inputmode="numeric" pattern="[0-9]*">
+              </div>
+
+              <button type="button" class="btn btn-deal w-100 py-2 rounded-pill fw-bold mb-3 shadow-sm" id="btnVerifyOtp">
+                <i class="bi bi-patch-check-fill me-1"></i> Verify & Confirm Account
+              </button>
+
+              <div class="d-flex justify-content-between align-items-center small text-muted">
+                <button type="button" class="btn btn-link btn-sm text-decoration-none text-muted p-0" id="btnChangeOtpEmail">
+                  <i class="bi bi-arrow-left"></i> Change Gmail
+                </button>
+                <div id="otpCountdownWrap">
+                  <span id="otpTimerText">Resend code in <strong id="otpTimerSec">60</strong>s</span>
+                  <button type="button" class="btn btn-link btn-sm text-decoration-none fw-bold text-dark p-0 d-none" id="btnResendOtp">
+                    Resend Code
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap 5.3 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Shared App Scripts -->
+    <script src="./products.js"></script>
+    <script src="./script.js"></script>
+    <script type="module" src="./src/auth-handler.ts"></script>
+  </body>
+</html>

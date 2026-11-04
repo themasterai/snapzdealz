@@ -1,0 +1,73 @@
+{
+  "entities": {
+    "user": {
+      "title": "User Profile",
+      "description": "User account details and contact information",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique user ID matching auth UID" },
+        "name": { "type": "string", "maxLength": 100, "description": "Full name" },
+        "email": { "type": "string", "maxLength": 150, "description": "Email address" },
+        "phone": { "type": "string", "maxLength": 30, "description": "Contact number" },
+        "role": { "type": "string", "enum": ["customer", "admin"], "description": "Account authorization role" },
+        "createdAt": { "type": "string", "description": "Account registration timestamp" }
+      },
+      "required": ["id", "email", "role"]
+    },
+    "order": {
+      "title": "Customer Order",
+      "description": "Placed order details synced to fulfillment",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique order identifier" },
+        "orderNumber": { "type": "string", "maxLength": 50, "description": "Human readable order number like ORD-12345" },
+        "customerName": { "type": "string", "maxLength": 100, "description": "Shipping recipient name" },
+        "email": { "type": "string", "maxLength": 150, "description": "Customer contact email" },
+        "phone": { "type": "string", "maxLength": 30, "description": "Phone number for courier delivery" },
+        "address": { "type": "string", "maxLength": 250, "description": "Shipping delivery address" },
+        "city": { "type": "string", "maxLength": 100, "description": "City of destination" },
+        "paymentMethod": { "type": "string", "maxLength": 50, "description": "Payment gateway or COD" },
+        "itemsSummary": { "type": "string", "maxLength": 2000, "description": "Summary of cart items" },
+        "itemCount": { "type": "number", "description": "Total quantity of items" },
+        "subtotal": { "type": "number", "description": "Gross subtotal in USD" },
+        "discount": { "type": "number", "description": "Discount applied in USD" },
+        "shipping": { "type": "number", "description": "Shipping fee in USD" },
+        "total": { "type": "number", "description": "Final billed total in USD" },
+        "status": { "type": "string", "maxLength": 50, "description": "Fulfillment status e.g. Pending, Shipped, Delivered" },
+        "userId": { "type": "string", "maxLength": 128, "description": "Auth UID of the customer placing order" },
+        "createdAt": { "type": "string", "description": "Order placement timestamp" }
+      },
+      "required": ["orderNumber", "customerName", "phone", "address", "total", "status"]
+    },
+    "product": {
+      "title": "Product Catalog Item",
+      "description": "Store inventory item available for purchase",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique product ID" },
+        "name": { "type": "string", "maxLength": 150, "description": "Product display name" },
+        "category": { "type": "string", "maxLength": 50, "description": "Product category slug or name" },
+        "price": { "type": "number", "description": "Discounted selling price" },
+        "oldPrice": { "type": "number", "description": "Strikethrough original price" },
+        "stock": { "type": "number", "description": "Available inventory units" },
+        "description": { "type": "string", "maxLength": 2000, "description": "Detailed marketing copy" },
+        "images": { "type": "string", "maxLength": 1000, "description": "Primary product image URL" }
+      },
+      "required": ["name", "price", "category"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "user",
+      "description": "User profile with personal identity and contact info"
+    },
+    "/orders/{orderId}": {
+      "schema": "order",
+      "description": "Orders submitted by customers or guests, managed by admin"
+    },
+    "/products/{productId}": {
+      "schema": "product",
+      "description": "Publicly viewable product catalog and stock inventory"
+    }
+  }
+}

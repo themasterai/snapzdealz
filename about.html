@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About Us | SNAPZDEALZ - Bold Deal Store</title>
+    <meta name="description" content="Discover the story behind SnapzDealz. We deliver authentic, high-octane daily drops and premium deals with direct-to-consumer savings, bank-grade encryption, and lightning courier dispatch." />
+    <meta property="og:title" content="About Us | SNAPZDEALZ - Bold Deal Store" />
+    <meta property="og:description" content="Discover the story behind SnapzDealz. Delivering authentic lifestyle drops with direct-to-consumer savings." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Custom Deal Theme CSS -->
+    <link rel="stylesheet" href="./style.css">
+  </head>
+  <body>
+    <!-- Top Announcement Ticker -->
+    <div class="top-ticker text-center">
+      <div class="container d-flex flex-wrap justify-content-center align-items-center gap-2">
+        <span class="badge bg-warning text-dark fw-bold">⚡ FLASH SALE</span>
+        <span>EXTRA 20% OFF WITH CODE <strong>BUNDLE20</strong> | FREE SHIPPING OVER $50</span>
+        <a href="#" class="text-warning text-decoration-none fw-bold ms-md-3 small d-inline-flex align-items-center" data-bs-toggle="modal" data-bs-target="#trackOrderModal">
+          <i class="bi bi-geo-alt-fill me-1"></i>Track Order
+        </a>
+      </div>
+    </div>
+
+    <!-- Sticky Navbar -->
+    <nav class="navbar navbar-expand-lg snap-navbar">
+      <div class="container">
+        <!-- Brand Logo -->
+        <a class="navbar-brand" href="index.html">
+          <i class="bi bi-lightning-charge-fill text-warning"></i>
+          <span>SNAPZ</span><span class="logo-badge">DEALZ</span>
+        </a>
+
+        <!-- Mobile Toggles & Actions -->
+        <div class="d-flex align-items-center gap-2 order-lg-3 ms-auto ms-lg-0">
+          <button type="button" class="nav-action-btn" data-bs-toggle="modal" data-bs-target="#globalSearchModal" aria-label="Search deals">
+            <i class="bi bi-search"></i>
+          </button>
+
+          <button type="button" class="nav-action-btn nav-wishlist-trigger" data-bs-toggle="modal" data-bs-target="#globalWishlistModal" title="Saved Wishlist" aria-label="Saved Wishlist">
+            <i class="bi bi-heart"></i>
+            <span class="nav-badge-count wishlist-count-badge" style="display: none;">0</span>
+          </button>
+
+          <a href="cart.html" class="nav-action-btn" title="Shopping Cart" aria-label="Shopping Cart">
+            <i class="bi bi-cart3"></i>
+            <span class="nav-badge-count cart-count-badge" style="display: none;">0</span>
+          </a>
+
+          <!-- User State (Injected by JS when logged in) -->
+          <div id="userNavContainer" class="ms-1"></div>
+
+          <!-- Hamburger Toggle -->
+          <button class="navbar-toggler border-0 shadow-none px-2" type="button" data-bs-toggle="collapse" data-bs-target="#snapNavbarNav" aria-controls="snapNavbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-list fs-1 text-dark"></i>
+          </button>
+        </div>
+
+        <!-- Nav Links -->
+        <div class="collapse navbar-collapse order-lg-2" id="snapNavbarNav">
+          <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="shop.html">Shop All</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="shop.html?category=mens-shoes">Men's Shoes</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="shop.html?category=mens-clothing">Men's Clothes</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="shop.html?category=womens-clothing">Women's Clothes</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="shop.html?category=ladies-bags">Ladies Bags</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="shop.html?category=health-beauty">Beauty</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active fw-bold text-dark" href="about.html">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="contact.html">Contact</a>
+            </li>
+            <li class="nav-item d-none d-lg-block">
+              <a class="nav-link text-warning fw-bold" href="login.html"><i class="bi bi-person-circle me-1"></i>VIP Sign In</a>
+            </li>
+          </ul>
+          <!-- Mobile Drawer Quick Auth Links (Inside Home Toggle Menu) -->
+          <div class="mobile-drawer-auth d-lg-none mt-3 pt-3 border-top"></div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Page Header Hero -->
+    <header class="py-5 bg-dark text-white position-relative overflow-hidden" style="background: linear-gradient(135deg, #1f1f1f 0%, #2d2d2d 100%);">
+      <div class="container py-4 position-relative z-1">
+        <div class="row align-items-center g-4">
+          <div class="col-lg-7">
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 bg-warning text-dark rounded-pill fw-bold small mb-3">
+              <i class="bi bi-lightning-fill"></i> OUR MISSION & PROMISE
+            </div>
+            <h1 class="deal-heading display-4 fw-extrabold text-white mb-3">REDEFINING HOW YOU SHOP FOR DEALS.</h1>
+            <p class="lead text-white-50 mb-4" style="max-width: 580px;">
+              SnapzDealz was born out of a simple frustration: why should premium shoes, designer bags, and skincare come with ridiculous retail markups? We connect you directly with authentic verified manufacturers.
+            </p>
+            <div class="d-flex flex-wrap gap-3">
+              <a href="shop.html" class="btn btn-deal btn-lg rounded-pill px-4 fw-bold">
+                <i class="bi bi-bag-check-fill me-1"></i> Explore Today's Drops
+              </a>
+              <a href="contact.html" class="btn btn-outline-light btn-lg rounded-pill px-4 fw-bold">
+                <i class="bi bi-chat-dots me-1"></i> Get in Touch
+              </a>
+            </div>
+          </div>
+          <div class="col-lg-5">
+            <div class="p-4 bg-white bg-opacity-10 rounded-4 border border-white border-opacity-15 shadow-lg text-white" style="backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);">
+              <div class="d-flex align-items-center gap-3 mb-4">
+                <div class="rounded-circle bg-warning text-dark flex-shrink-0 d-flex align-items-center justify-content-center shadow-sm" style="width: 54px; height: 54px;">
+                  <i class="bi bi-shield-check fs-3"></i>
+                </div>
+                <div>
+                  <h5 class="fw-bold mb-0 text-white">100% Authentic Guarantee</h5>
+                  <small class="text-white-50">Zero counterfeits. Zero compromise.</small>
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-3 mb-4">
+                <div class="rounded-circle bg-warning text-dark flex-shrink-0 d-flex align-items-center justify-content-center shadow-sm" style="width: 54px; height: 54px;">
+                  <i class="bi bi-truck fs-3"></i>
+                </div>
+                <div>
+                  <h5 class="fw-bold mb-0 text-white">Express 2-3 Day Courier</h5>
+                  <small class="text-white-50">Fast doorstep dispatch across all cities.</small>
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-3">
+                <div class="rounded-circle bg-warning text-dark flex-shrink-0 d-flex align-items-center justify-content-center shadow-sm" style="width: 54px; height: 54px;">
+                  <i class="bi bi-arrow-repeat fs-3"></i>
+                </div>
+                <div>
+                  <h5 class="fw-bold mb-0 text-white">30-Day Hassle-Free Returns</h5>
+                  <small class="text-white-50">Not satisfied? Exchange or refund with 1 click.</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Stat Highlights -->
+    <section class="py-5 bg-white border-bottom">
+      <div class="container">
+        <div class="row g-4 text-center">
+          <div class="col-6 col-md-3">
+            <div class="p-3">
+              <div class="display-5 fw-extrabold text-dark font-monospace mb-1">50K+</div>
+              <p class="text-muted small fw-bold mb-0 text-uppercase">Satisfied Customers</p>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="p-3">
+              <div class="display-5 fw-extrabold text-warning font-monospace mb-1">$1.8M+</div>
+              <p class="text-muted small fw-bold mb-0 text-uppercase">Total Shopper Savings</p>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="p-3">
+              <div class="display-5 fw-extrabold text-success font-monospace mb-1">99.8%</div>
+              <p class="text-muted small fw-bold mb-0 text-uppercase">On-Time Dispatch</p>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="p-3">
+              <div class="display-5 fw-extrabold text-dark font-monospace mb-1">4.9/5</div>
+              <p class="text-muted small fw-bold mb-0 text-uppercase">Verified Rating</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- The 4 Core Pillars -->
+    <section class="py-5 bg-light">
+      <div class="container py-4">
+        <div class="text-center mb-5">
+          <span class="badge bg-warning-subtle text-dark border px-3 py-1 rounded-pill fw-bold small text-uppercase">Why Choose SnapzDealz</span>
+          <h2 class="deal-heading display-6 mt-2">BUILT FOR SPEED, TRUST & MAXIMUM SAVINGS</h2>
+          <p class="text-muted mx-auto" style="max-width: 600px;">Every decision we make centers around giving you the smoothest shopping journey on the web.</p>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border-0 shadow-sm p-4 rounded-4 text-center">
+              <div class="rounded-circle bg-warning text-dark mx-auto d-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                <i class="bi bi-tag-fill fs-3"></i>
+              </div>
+              <h5 class="fw-bold text-dark mb-2">Direct-to-Consumer</h5>
+              <p class="text-muted small mb-0">We eliminate middlemen, distributor markups, and brick-and-mortar overheads so you get authentic factory pricing.</p>
+            </div>
+          </div>
+
+          <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border-0 shadow-sm p-4 rounded-4 text-center">
+              <div class="rounded-circle bg-warning text-dark mx-auto d-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                <i class="bi bi-shield-lock-fill fs-3"></i>
+              </div>
+              <h5 class="fw-bold text-dark mb-2">Bank-Grade Security</h5>
+              <p class="text-muted small mb-0">Salted SHA-256 cryptographic hashes protect user credentials, while end-to-end 256-bit SSL safeguards checkout data.</p>
+            </div>
+          </div>
+
+          <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border-0 shadow-sm p-4 rounded-4 text-center">
+              <div class="rounded-circle bg-warning text-dark mx-auto d-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                <i class="bi bi-lightning-charge-fill fs-3"></i>
+              </div>
+              <h5 class="fw-bold text-dark mb-2">Automated Notifications</h5>
+              <p class="text-muted small mb-0">Receive instant WhatsApp order receipts, live courier tracking scans, and real-time shipping updates to your phone.</p>
+            </div>
+          </div>
+
+          <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border-0 shadow-sm p-4 rounded-4 text-center">
+              <div class="rounded-circle bg-warning text-dark mx-auto d-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                <i class="bi bi-headset fs-3"></i>
+              </div>
+              <h5 class="fw-bold text-dark mb-2">24/7 Human Support</h5>
+              <p class="text-muted small mb-0">No robotic dead-ends. Our team is available 24/7 via WhatsApp chat, toll-free phone, and priority email support.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Founder Note Section -->
+    <section class="py-5 bg-white">
+      <div class="container py-4">
+        <div class="row align-items-center g-5">
+          <div class="col-lg-6">
+            <div class="position-relative">
+              <img src="https://images.unsplash.com/photo-1556742049-0a67c5574f73?auto=format&fit=crop&w=800&q=80" alt="SnapzDealz Warehouse Operations" class="img-fluid rounded-4 shadow-lg border">
+              <div class="position-absolute bottom-0 start-0 m-4 p-3 bg-dark text-white rounded-3 shadow-sm d-flex align-items-center gap-3 border border-secondary">
+                <i class="bi bi-box-seam-fill text-warning fs-3"></i>
+                <div>
+                  <div class="fw-bold small">Over 1,200 Packages Dispatched Daily</div>
+                  <small class="text-white-50">Direct Courier Hub Integration</small>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <span class="badge bg-warning text-dark fw-bold px-3 py-1 rounded-pill small mb-2">OUR PHILOSOPHY</span>
+            <h2 class="deal-heading display-6 mb-3">"A GREAT DEAL SHOULD NEVER MEAN COMPROMISED INTEGRITY."</h2>
+            <p class="text-muted mb-3">
+              When we started SnapzDealz, we saw a marketplace flooded with fake discounts and unverified sellers. We set out to build an authentic deal store where the price you see is genuinely discounted, the stock is 100% verified, and you can pay with complete confidence using Cash on Delivery or encrypted card checkout.
+            </p>
+            <p class="text-muted mb-4">
+              Whether you are grabbing a pair of ultra-comfortable sneakers, an elegant leather tote, or premium skincare serums, every single item is inspected before packing.
+            </p>
+            <div class="d-flex align-items-center gap-3 pt-2">
+              <div class="rounded-circle bg-warning-subtle text-dark p-2 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                <i class="bi bi-award-fill text-warning fs-4"></i>
+              </div>
+              <div>
+                <h6 class="fw-bold mb-0">The SnapzDealz Leadership Team</h6>
+                <small class="text-muted">Dedicated to Customer Obsession & True Value</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Premium Footer -->
+    <footer class="premium-footer" data-bs-theme="dark">
+      <div class="container">
+        <div class="footer-main-grid mb-4">
+          <!-- Col 1: Brand & Bio -->
+          <div class="footer-col-brand">
+            <a class="navbar-brand text-white mb-3 d-inline-flex" href="index.html">
+              <i class="bi bi-lightning-charge-fill text-warning"></i>
+              <span class="text-white">SNAP</span><span class="logo-badge">DEALZ</span>
+            </a>
+            <p class="footer-desc mb-3">SnapzDealz is your curated destination for verified high-octane deals and direct-to-consumer savings on top brands.</p>
+            <div class="footer-social-row">
+              <a href="#" class="footer-social-icon" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+              <a href="#" class="footer-social-icon" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+              <a href="#" class="footer-social-icon" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
+              <a href="#" class="footer-social-icon" aria-label="TikTok"><i class="bi bi-tiktok"></i></a>
+              <a href="#" class="footer-social-icon" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+            </div>
+          </div>
+
+          <!-- Col 2: Quick Links -->
+          <div class="footer-col-links">
+            <h5>Explore Drops</h5>
+            <ul class="footer-links">
+              <li><a href="shop.html"><i class="bi bi-chevron-right text-warning small"></i> Shop All Deals</a></li>
+              <li><a href="shop.html?category=mens-shoes"><i class="bi bi-chevron-right text-warning small"></i> Men's Shoes</a></li>
+              <li><a href="shop.html?category=mens-clothing"><i class="bi bi-chevron-right text-warning small"></i> Men's Clothing</a></li>
+              <li><a href="shop.html?category=womens-clothing"><i class="bi bi-chevron-right text-warning small"></i> Women's Clothing</a></li>
+              <li><a href="shop.html?category=ladies-bags"><i class="bi bi-chevron-right text-warning small"></i> Ladies Handbags</a></li>
+              <li><a href="cart.html"><i class="bi bi-chevron-right text-warning small"></i> Shopping Cart</a></li>
+              <li><a href="#" data-bs-toggle="modal" data-bs-target="#trackOrderModal"><i class="bi bi-truck text-warning small"></i> Track Order</a></li>
+            </ul>
+          </div>
+
+          <!-- Col 3: Legal & Trust -->
+          <div class="footer-col-categories">
+            <h5>Legal & Policies</h5>
+            <ul class="footer-links">
+              <li><a href="privacy.html"><i class="bi bi-chevron-right text-warning small"></i> Privacy Policy</a></li>
+              <li><a href="terms.html"><i class="bi bi-chevron-right text-warning small"></i> Terms & Conditions</a></li>
+              <li><a href="about.html"><i class="bi bi-chevron-right text-warning small"></i> Authenticity Guarantee</a></li>
+              <li><a href="contact.html"><i class="bi bi-chevron-right text-warning small"></i> Help & FAQs</a></li>
+            </ul>
+          </div>
+
+          <!-- Col 4: Contact & Support -->
+          <div class="footer-col-contact">
+            <h5>Customer Support</h5>
+            <ul class="footer-links">
+              <li class="footer-contact-item">
+                <i class="bi bi-geo-alt-fill"></i>
+                <span>742 Evergreen Terrace, Suite 400, San Francisco, CA</span>
+              </li>
+              <li class="footer-contact-item">
+                <i class="bi bi-telephone-fill"></i>
+                <span>1-800-SNAPZ-DEAL (Toll Free 24/7)</span>
+              </li>
+              <li class="footer-contact-item">
+                <i class="bi bi-envelope-fill"></i>
+                <span>support@snapzdealz.com</span>
+              </li>
+              <li class="footer-contact-item">
+                <i class="bi bi-clock-fill"></i>
+                <span>Live Support: 24 Hours / 7 Days</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Footer Bottom Bar -->
+        <div class="footer-bottom">
+          <div class="small">
+            &copy; 2026 SnapzDealz Inc. All rights reserved. Built for speed and maximum savings.
+          </div>
+          <div class="footer-payment-badges-wrap">
+            <span class="footer-payment-badge"><i class="bi bi-cash-stack text-warning"></i> CASH ON DELIVERY</span>
+            <span class="footer-payment-badge"><i class="bi bi-phone-fill text-success"></i> EASYPAISA</span>
+            <span class="footer-payment-badge"><i class="bi bi-wallet2 text-danger"></i> JAZZCASH</span>
+            <span class="footer-payment-badge"><i class="bi bi-credit-card-2-front"></i> DEBIT / CREDIT</span>
+            <span class="footer-payment-badge text-warning"><i class="bi bi-shield-check"></i> 256-BIT SSL</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Bootstrap 5.3 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Shared App Scripts -->
+    <script src="./products.js"></script>
+    <script src="./script.js"></script>
+  </body>
+</html>

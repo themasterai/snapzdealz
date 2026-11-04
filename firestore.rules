@@ -1,0 +1,78 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all unknown collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'zunishch68@gmail.com' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isValidUser(data) {
+      return data.email is string && data.email.size() <= 150 &&
+             (!('name' in data) || (data.name is string && data.name.size() <= 100)) &&
+             (!('phone' in data) || (data.phone is string && data.phone.size() <= 30));
+    }
+
+    function isValidOrder(data) {
+      return data.orderNumber is string && data.orderNumber.size() <= 50 &&
+             data.customerName is string && data.customerName.size() <= 100 &&
+             data.phone is string && data.phone.size() <= 30 &&
+             data.address is string && data.address.size() <= 250 &&
+             data.status is string && data.status.size() <= 50;
+    }
+
+    // 1. Users collection (Personal profile data / PII isolation)
+    match /users/{userId} {
+      allow get: if isValidId(userId) && (isAdmin() || (isSignedIn() && request.auth.uid == userId));
+      allow list: if isAdmin();
+      allow create: if isValidId(userId) && isSignedIn() && request.auth.uid == userId && isValidUser(incoming());
+      allow update: if isValidId(userId) && (isAdmin() || (isSignedIn() && request.auth.uid == userId && isValidUser(incoming())));
+      allow delete: if isValidId(userId) && isAdmin();
+    }
+
+    // 2. Orders collection (Checkout orders & admin fulfillment)
+    match /orders/{orderId} {
+      allow get: if isValidId(orderId) && (isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid));
+      allow list: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+      allow create: if isValidId(orderId) && isValidOrder(incoming());
+      allow update: if isValidId(orderId) && isAdmin();
+      allow delete: if isValidId(orderId) && isAdmin();
+    }
+
+    // 3. Products collection (Public read catalog, admin management)
+    match /products/{productId} {
+      allow read: if isValidId(productId);
+      allow create, update, delete: if isValidId(productId) && isAdmin();
+    }
+
+    // 4. Admins collection
+    match /admins/{adminId} {
+      allow read: if isAdmin();
+      allow write: if false; // Only manageable directly from secure cloud console
+    }
+  }
+}

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Saved Wishlist | SnapDealz Flash Deals & Savings</title>
+    <meta name="description" content="View and manage your saved favorite products and discounted flash deals on SnapDealz.">
+
+    <!-- Google Fonts: Space Grotesk & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Custom Theme Stylesheet -->
+    <link rel="stylesheet" href="./style.css">
+  </head>
+  <body>
+    <!-- Preloader -->
+    <div id="preloader">
+      <div class="spinner-grow text-warning" role="status" style="width: 3.5rem; height: 3.5rem;">
+        <span class="visually-hidden">Loading Wishlist...</span>
+      </div>
+      <div class="mt-3 fw-bold tracking-wider text-dark">SNAP<span class="text-warning">DEALZ</span></div>
+    </div>
+
+    <!-- Announcement Bar -->
+    <header class="announcement-bar py-1">
+      <div class="container text-center">
+        <span class="badge bg-warning text-dark me-2 font-monospace fw-bold">PROMO</span>
+        <span>Get <strong>20% OFF</strong> entire order with coupon <code class="bg-dark text-warning px-2 py-0.5 rounded">BUNDLE20</code></span>
+        <span class="d-none d-md-inline ms-3 text-secondary">|</span>
+        <span class="d-none d-md-inline ms-3"><i class="bi bi-shield-check text-warning"></i> 100% Guaranteed Safe Checkout</span>
+      </div>
+    </header>
+
+    <!-- Main Navigation Bar -->
+    <nav class="navbar navbar-expand-lg snap-navbar sticky-top">
+      <div class="container">
+        <!-- Logo -->
+        <a class="navbar-brand snap-logo" href="index.html">
+          <i class="bi bi-lightning-charge-fill text-warning"></i>
+          <span>SNAP</span><span class="logo-badge">DEALZ</span>
+        </a>
+
+        <!-- Mobile Toggles & Actions -->
+        <div class="d-flex align-items-center gap-2 order-lg-3 ms-auto ms-lg-0">
+          <button type="button" class="nav-action-btn" data-bs-toggle="modal" data-bs-target="#globalSearchModal" aria-label="Search">
+            <i class="bi bi-search"></i>
+          </button>
+
+          <!-- Wishlist Modal Trigger -->
+          <button type="button" class="nav-action-btn nav-wishlist-trigger active" data-bs-toggle="modal" data-bs-target="#globalWishlistModal" title="Saved Wishlist" aria-label="Saved Wishlist" style="background-color: var(--primary-color);">
+            <i class="bi bi-heart-fill text-danger"></i>
+            <span class="nav-badge-count wishlist-count-badge" style="display: none;">0</span>
+          </button>
+
+          <a href="cart.html" class="nav-action-btn" title="Shopping Cart" aria-label="Shopping Cart">
+            <i class="bi bi-cart3"></i>
+            <span class="nav-badge-count cart-count-badge" style="display: none;">0</span>
+          </a>
+
+          <div id="userNavContainer" class="ms-1"></div>
+
+          <button class="navbar-toggler border-0 shadow-none px-2" type="button" data-bs-toggle="collapse" data-bs-target="#snapNavbarNav" aria-controls="snapNavbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-list fs-1 text-dark"></i>
+          </button>
+        </div>
+
+        <!-- Navigation Links -->
+        <div class="collapse navbar-collapse order-lg-2" id="snapNavbarNav">
+          <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="shop.html">Shop All</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="shop.html?category=mens-shoes">Men's Shoes</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="shop.html?category=mens-clothing">Men's Clothes</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="shop.html?category=womens-clothing">Women's Clothes</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="shop.html?category=ladies-bags">Ladies Bags</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="shop.html?category=health-beauty">Beauty</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="about.html">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="contact.html">Contact</a>
+            </li>
+            <li class="nav-item d-none d-lg-block">
+              <a class="nav-link text-warning fw-bold" href="login.html"><i class="bi bi-person-circle me-1"></i>VIP Sign In</a>
+            </li>
+          </ul>
+          <!-- Mobile Drawer Quick Auth Links (Inside Home Toggle Menu) -->
+          <div class="mobile-drawer-auth d-lg-none mt-3 pt-3 border-top"></div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Page Breadcrumb & Header -->
+    <header class="bg-white border-bottom py-4 mb-4">
+      <div class="container">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb mb-2 small">
+            <li class="breadcrumb-item"><a href="index.html" class="text-decoration-none text-muted">Home</a></li>
+            <li class="breadcrumb-item active text-dark fw-bold" aria-current="page">My Wishlist</li>
+          </ol>
+        </nav>
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+          <div>
+            <h1 class="deal-heading display-6 mb-1 d-flex align-items-center gap-2">
+              <i class="bi bi-heart-fill text-danger fs-3"></i>
+              <span>MY SAVED WISHLIST</span>
+              <span class="badge bg-dark text-warning fs-6 rounded-pill px-3 py-1 font-monospace" id="wishlistPageCount">0</span>
+            </h1>
+            <p class="text-muted small mb-0">Products and discounted flash deals you saved during your shopping sessions.</p>
+          </div>
+          <!-- Action Bar (Add all / Clear) -->
+          <div class="d-flex align-items-center gap-2 flex-wrap" id="wishlistPageActionsBar" style="display: none;">
+            <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3" id="wishlistPageClearBtn">
+              <i class="bi bi-trash3 me-1"></i> Clear Wishlist
+            </button>
+            <button type="button" class="btn btn-deal btn-sm rounded-pill px-4" id="wishlistPageAddAllBtn">
+              <i class="bi bi-cart-plus-fill me-1"></i> Add All To Cart
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Wishlist Main Content Area -->
+    <main class="container py-3 mb-5 min-vh-50">
+      <!-- Active Wishlist Grid -->
+      <div class="row g-4" id="wishlistPageGrid" style="display: none;">
+        <!-- Injected via script.js initWishlistPageGrid() -->
+      </div>
+
+      <!-- Empty State -->
+      <div id="wishlistPageEmptyState" class="text-center py-5 bg-white rounded-4 shadow-sm p-4 border" style="display: none;">
+        <div class="mb-3">
+          <span class="d-inline-flex align-items-center justify-content-center bg-danger-subtle text-danger rounded-circle shadow-xs" style="width: 88px; height: 88px; font-size: 2.8rem;">
+            <i class="bi bi-heart"></i>
+          </span>
+        </div>
+        <h3 class="fw-bold text-dark mb-2">Your Wishlist is Empty</h3>
+        <p class="text-muted max-w-md mx-auto mb-4" style="max-width: 440px;">
+          Looks like you haven't saved any items to your wishlist yet. Explore our flash catalog, save your favorites, and checkout whenever you are ready!
+        </p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+          <a href="shop.html" class="btn btn-deal px-4 py-2">
+            <i class="bi bi-bag-check-fill me-1"></i> Browse Hot Deals
+          </a>
+          <a href="index.html" class="btn btn-outline-dark rounded-pill px-4 py-2">
+            <i class="bi bi-house-door me-1"></i> Return Home
+          </a>
+        </div>
+      </div>
+
+      <!-- Trending Recommendations Section when empty -->
+      <section id="wishlistTrendingSection" class="mt-5 pt-4 border-top" style="display: none;">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+          <div>
+            <span class="section-tag">POPULAR NOW</span>
+            <h2 class="deal-heading h3 mb-0">🔥 TOP PICKS TO START YOUR WISHLIST</h2>
+          </div>
+          <a href="shop.html" class="btn btn-deal-outline btn-sm">View All Deals <i class="bi bi-arrow-right"></i></a>
+        </div>
+        <div class="row g-4" id="wishlistTrendingGrid">
+          <!-- Injected via script.js -->
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <!-- Premium Footer -->
+    <footer class="premium-footer" data-bs-theme="dark">
+      <div class="container">
+        <div class="footer-main-grid mb-4">
+          <!-- Col 1: Brand & Bio -->
+          <div class="footer-col-brand">
+            <a class="navbar-brand text-white mb-3 d-inline-flex" href="index.html">
+              <i class="bi bi-lightning-charge-fill text-warning"></i>
+              <span class="text-white">SNAP</span><span class="logo-badge">DEALZ</span>
+            </a>
+            <p class="footer-desc mb-3">
+              SnapDealz is your curated high-octane deal destination. We source high quality shoes, designer bags, and premium skincare directly from certified factories to eliminate markup.
+            </p>
+            <div class="footer-social-row">
+              <a href="#" class="footer-social-icon" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+              <a href="#" class="footer-social-icon" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+              <a href="#" class="footer-social-icon" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
+              <a href="#" class="footer-social-icon" aria-label="TikTok"><i class="bi bi-tiktok"></i></a>
+              <a href="https://wa.me/923001234567" target="_blank" rel="noopener noreferrer" class="footer-social-icon" aria-label="WhatsApp"><i class="bi bi-whatsapp"></i></a>
+            </div>
+          </div>
+
+          <!-- Col 2: Quick Links -->
+          <div class="footer-col-links">
+            <h5>Explore Drops</h5>
+            <ul class="footer-links">
+              <li><a href="shop.html"><i class="bi bi-chevron-right text-warning small"></i> Shop All Deals</a></li>
+              <li><a href="shop.html?category=mens-shoes"><i class="bi bi-chevron-right text-warning small"></i> Men's Shoes</a></li>
+              <li><a href="shop.html?category=mens-clothing"><i class="bi bi-chevron-right text-warning small"></i> Men's Clothing</a></li>
+              <li><a href="shop.html?category=womens-clothing"><i class="bi bi-chevron-right text-warning small"></i> Women's Clothing</a></li>
+              <li><a href="shop.html?category=ladies-bags"><i class="bi bi-chevron-right text-warning small"></i> Ladies Handbags</a></li>
+              <li><a href="cart.html"><i class="bi bi-chevron-right text-warning small"></i> Shopping Cart</a></li>
+            </ul>
+          </div>
+
+          <!-- Col 3: Legal & Trust -->
+          <div class="footer-col-categories">
+            <h5>Legal & Policies</h5>
+            <ul class="footer-links">
+              <li><a href="privacy.html"><i class="bi bi-chevron-right text-warning small"></i> Privacy Policy</a></li>
+              <li><a href="terms.html"><i class="bi bi-chevron-right text-warning small"></i> Terms & Conditions</a></li>
+              <li><a href="about.html"><i class="bi bi-chevron-right text-warning small"></i> About SnapDealz</a></li>
+              <li><a href="contact.html"><i class="bi bi-chevron-right text-warning small"></i> Contact Us & FAQs</a></li>
+            </ul>
+          </div>
+
+          <!-- Col 4: Contact & Support -->
+          <div class="footer-col-contact">
+            <h5>Customer Support</h5>
+            <ul class="footer-links">
+              <li class="footer-contact-item">
+                <i class="bi bi-geo-alt-fill"></i>
+                <span>742 Evergreen Terrace, Suite 400, San Francisco, CA</span>
+              </li>
+              <li class="footer-contact-item">
+                <i class="bi bi-telephone-fill"></i>
+                <span>1-800-SNAP-DEAL (Toll Free 24/7)</span>
+              </li>
+              <li class="footer-contact-item">
+                <i class="bi bi-envelope-fill"></i>
+                <span>support@snapdealz.com</span>
+              </li>
+              <li class="footer-contact-item">
+                <i class="bi bi-clock-fill"></i>
+                <span>Live Support: 24 Hours / 7 Days</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <div class="small">
+            &copy; 2026 SnapDealz Inc. All rights reserved. Built for speed and maximum savings.
+          </div>
+          <div class="footer-payment-badges-wrap">
+            <span class="footer-payment-badge"><i class="bi bi-cash-stack text-warning"></i> CASH ON DELIVERY</span>
+            <span class="footer-payment-badge"><i class="bi bi-phone-fill text-success"></i> EASYPAISA</span>
+            <span class="footer-payment-badge"><i class="bi bi-wallet2 text-danger"></i> JAZZCASH</span>
+            <span class="footer-payment-badge"><i class="bi bi-credit-card-2-front"></i> DEBIT / CREDIT</span>
+            <span class="footer-payment-badge text-warning"><i class="bi bi-shield-check"></i> 256-BIT SSL</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Global Search Modal -->
+    <div class="modal fade search-modal-backdrop" id="globalSearchModal" tabindex="-1" aria-labelledby="globalSearchModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+          <div class="modal-header border-0 pb-0">
+            <h5 class="modal-title fw-bold" id="globalSearchModalLabel">
+              <i class="bi bi-search text-warning me-2"></i> Search Deal Store
+            </h5>
+            <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-4">
+            <div class="input-group mb-3">
+              <span class="input-group-text bg-light border-0"><i class="bi bi-search text-muted"></i></span>
+              <input type="text" id="globalSearchInput" class="form-control form-control-lg bg-light border-0" placeholder="Search shoes, bags, serums, electronics...">
+            </div>
+            <div id="globalSearchResults" class="mt-3" style="max-height: 350px; overflow-y: auto;">
+              <p class="text-muted small text-center my-3">Type product name or category to search in real time...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Global Wishlist Modal -->
+    <div class="modal fade" id="globalWishlistModal" tabindex="-1" aria-labelledby="globalWishlistModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+          <div class="modal-header border-0 pb-2 px-4 pt-4">
+            <h5 class="modal-title fw-bold d-flex align-items-center gap-2" id="globalWishlistModalLabel">
+              <i class="bi bi-heart-fill text-danger"></i>
+              <span>My Saved Wishlist</span>
+              <span class="badge bg-warning text-dark fs-6 px-2.5 py-1 rounded-pill" id="globalWishlistModalCountBadge">0</span>
+            </h5>
+            <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body px-4 py-2" id="globalWishlistModalBody">
+            <div class="text-center py-4">
+              <div class="spinner-border text-warning" role="status"></div>
+            </div>
+          </div>
+          <div class="modal-footer border-0 px-4 pb-4 pt-2 d-flex justify-content-between flex-wrap gap-2" id="globalWishlistModalFooter">
+            <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3" id="globalWishlistClearBtn">
+              <i class="bi bi-trash3 me-1"></i> Clear Wishlist
+            </button>
+            <div class="d-flex gap-2">
+              <a href="wishlist.html" class="btn btn-light btn-sm rounded-pill px-3 border" id="globalWishlistViewFullBtn">
+                <i class="bi bi-box-arrow-up-right me-1"></i> Full Page View
+              </a>
+              <button type="button" class="btn btn-deal btn-sm rounded-pill px-4" id="globalWishlistAddAllBtn">
+                <i class="bi bi-cart-plus-fill me-1"></i> Add All To Cart
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Back to top button -->
+    <button type="button" id="backToTop" aria-label="Back to top">
+      <i class="bi bi-arrow-up"></i>
+    </button>
+
+    <!-- Bootstrap 5.3 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Shared App Scripts -->
+    <script src="./products.js"></script>
+    <script src="./script.js"></script>
+  </body>
+</html>

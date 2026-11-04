@@ -1,0 +1,6 @@
+{
+  "name": "SNAPDEALZ - Bold Deal Store",
+  "description": "A high-octane, mobile-first e-commerce deal store featuring lightning deals, smart cart, dynamic product details, live search & category filters, and user authentication.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,705 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shopping Cart | SNAPZDEALZ Store</title>
+    <meta name="description" content="Review your selected deals, apply discount coupons, and complete your order with secure checkout." />
+    <meta property="og:title" content="Shopping Cart | SNAPZDEALZ Store" />
+    <meta property="og:description" content="Review your selected deals, apply discount coupons, and complete your order with secure checkout." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5.3 CSS & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Custom Deal Theme CSS -->
+    <link rel="stylesheet" href="./style.css">
+  </head>
+  <body>
+    <!-- Preloader -->
+    <div id="preloader">
+      <div class="spinner-deal"></div>
+      <div class="mt-3 fw-bold text-dark font-monospace tracking-wide">SNAPZDEALZ</div>
+      <span class="small text-muted">Calculating maximum savings...</span>
+    </div>
+
+    <!-- Announcement Ticker -->
+    <div class="top-ticker text-center">
+      <div class="container d-flex flex-wrap justify-content-center align-items-center gap-2">
+        <span class="badge bg-warning text-dark fw-bold">⚡ FREE SHIPPING</span>
+        <span>AUTOMATIC FREE 2-DAY DELIVERY ON ORDERS OVER $50</span>
+        <a href="#" class="text-warning text-decoration-none fw-bold ms-md-3 small d-inline-flex align-items-center" data-bs-toggle="modal" data-bs-target="#trackOrderModal">
+          <i class="bi bi-geo-alt-fill me-1"></i>Track Order
+        </a>
+      </div>
+    </div>
+
+    <!-- Sticky Navbar -->
+    <nav class="navbar navbar-expand-lg snap-navbar">
+      <div class="container">
+        <a class="navbar-brand" href="index.html">
+          <i class="bi bi-lightning-charge-fill text-warning"></i>
+          <span>SNAPZ</span><span class="logo-badge">DEALZ</span>
+        </a>
+
+        <div class="d-flex align-items-center gap-2 order-lg-3 ms-auto ms-lg-0">
+          <button type="button" class="nav-action-btn" data-bs-toggle="modal" data-bs-target="#globalSearchModal" aria-label="Search">
+            <i class="bi bi-search"></i>
+          </button>
+
+          <!-- Wishlist Modal Trigger -->
+          <button type="button" class="nav-action-btn nav-wishlist-trigger" data-bs-toggle="modal" data-bs-target="#globalWishlistModal" title="Saved Wishlist" aria-label="Saved Wishlist">
+            <i class="bi bi-heart"></i>
+            <span class="nav-badge-count wishlist-count-badge" style="display: none;">0</span>
+          </button>
+
+          <a href="cart.html" class="nav-action-btn" title="Shopping Cart" aria-label="Shopping Cart">
+            <i class="bi bi-cart3"></i>
+            <span class="nav-badge-count cart-count-badge" style="display: none;">0</span>
+          </a>
+
+          <div id="userNavContainer" class="ms-1"></div>
+
+          <button class="navbar-toggler border-0 shadow-none px-2" type="button" data-bs-toggle="collapse" data-bs-target="#snapNavbarNav" aria-controls="snapNavbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-list fs-1 text-dark"></i>
+          </button>
+        </div>
+
+        <div class="collapse navbar-collapse order-lg-2" id="snapNavbarNav">
+          <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="shop.html">Shop All</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="shop.html?category=mens-shoes">Men's Shoes</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="shop.html?category=mens-clothing">Men's Clothes</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="shop.html?category=womens-clothing">Women's Clothes</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="shop.html?category=ladies-bags">Ladies Bags</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="shop.html?category=health-beauty">Beauty</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="about.html">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="contact.html">Contact</a>
+            </li>
+            <li class="nav-item d-none d-lg-block">
+              <a class="nav-link text-warning fw-bold" href="login.html"><i class="bi bi-person-circle me-1"></i>VIP Sign In</a>
+            </li>
+          </ul>
+          <!-- Mobile Drawer Quick Auth Links (Inside Home Toggle Menu) -->
+          <div class="mobile-drawer-auth d-lg-none mt-3 pt-3 border-top"></div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Cart Header Banner -->
+    <header class="py-4 bg-white border-bottom mb-4">
+      <div class="container">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb mb-2">
+            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+            <li class="breadcrumb-item"><a href="shop.html">Shop</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Cart</li>
+          </ol>
+        </nav>
+        <h1 class="deal-heading fs-2 mb-1">YOUR SHOPPING CART</h1>
+        <p class="text-muted small mb-0">Items are reserved in your cart for a limited time. Finalize before stock runs out.</p>
+      </div>
+    </header>
+
+    <!-- Main Cart Content -->
+    <main class="container pb-5">
+      <!-- Empty Cart State -->
+      <div id="emptyCartState" class="bg-white rounded-4 shadow-sm border p-4 p-md-5 my-4" style="display: none;">
+        <div class="text-center py-3">
+          <div class="empty-cart-icon-wrapper mb-3">
+            <div class="rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 100px; height: 100px; background-color: #fff9e6; border: 2px dashed #f9b800;">
+              <i class="bi bi-cart-x text-warning" style="font-size: 3.5rem;"></i>
+            </div>
+          </div>
+          <h2 class="fw-bold text-dark mb-2">Your Cart is Currently Empty</h2>
+          <p class="text-muted max-w-md mx-auto mb-4" style="max-width: 500px;">
+            You haven't bagged any deals yet! Explore our trending steals with factory-direct pricing and up to 60% savings.
+          </p>
+          <div class="d-flex flex-wrap gap-2 justify-content-center mb-5">
+            <a href="shop.html" class="btn btn-deal btn-lg px-4 py-2">
+              <i class="bi bi-lightning-charge-fill me-1"></i> Browse Today's Deals
+            </a>
+            <a href="index.html#categories" class="btn btn-deal-outline btn-lg px-4 py-2">
+              <i class="bi bi-grid-fill me-1"></i> Explore Categories
+            </a>
+          </div>
+        </div>
+
+        <!-- Recommended Deals for Empty Cart -->
+        <div class="pt-4 border-top">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+              <h5 class="fw-bold mb-1"><i class="bi bi-fire text-danger me-2"></i>Trending Deals You Might Love</h5>
+              <p class="text-muted small mb-0">High-demand items at lowest prices today</p>
+            </div>
+            <a href="shop.html" class="btn btn-sm btn-deal-outline px-3">
+              View All <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+          </div>
+          <div class="row g-3 g-md-4" id="emptyCartSuggestions">
+            <!-- Dynamically populated from products.js -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Cart Layout -->
+      <div class="row g-4" id="cartContentWrapper">
+        <!-- Cart Items List (Left Column) -->
+        <div class="col-lg-8">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold mb-0">Cart Items</h5>
+            <button type="button" class="btn btn-sm btn-outline-danger border-0 fw-semibold" id="clearCartBtn">
+              <i class="bi bi-trash"></i> Empty Cart
+            </button>
+          </div>
+
+          <div id="cartItemsList">
+            <!-- Dynamically populated by script.js -->
+          </div>
+
+          <!-- Trust Badges Under Cart Items -->
+          <div class="mt-4 p-3 bg-white rounded-3 border d-flex flex-wrap align-items-center justify-content-around text-center text-muted small gap-3">
+            <div><i class="bi bi-shield-check text-warning fs-5 align-middle me-1"></i> 256-Bit SSL Checkout</div>
+            <div><i class="bi bi-arrow-counterclockwise text-warning fs-5 align-middle me-1"></i> 30-Day Money-Back Guarantee</div>
+            <div><i class="bi bi-box-seam text-warning fs-5 align-middle me-1"></i> Dispatched within 24 Hours</div>
+          </div>
+        </div>
+
+        <!-- Order Summary (Right Column) -->
+        <div class="col-lg-4">
+          <div class="bg-white p-4 rounded-4 border shadow-sm sticky-top" style="top: 90px;">
+            <h5 class="fw-bold pb-2 border-bottom mb-3">Order Summary</h5>
+
+            <div class="d-flex justify-content-between mb-2 small">
+              <span class="text-muted">Subtotal:</span>
+              <span class="fw-bold font-monospace text-dark" id="cartSubtotal">$0.00</span>
+            </div>
+
+            <div class="d-flex justify-content-between mb-2 small">
+              <span class="text-muted">Discount / Coupon:</span>
+              <span class="fw-bold font-monospace text-danger" id="cartDiscount">-$0.00</span>
+            </div>
+
+            <div class="d-flex justify-content-between mb-3 small">
+              <span class="text-muted">Estimated Shipping:</span>
+              <span class="fw-bold font-monospace text-success" id="cartShipping">FREE</span>
+            </div>
+
+            <div id="promoStatusText" class="small mb-3"></div>
+
+            <!-- Coupon Input -->
+            <div class="mb-4">
+              <label class="form-label small fw-bold text-uppercase text-muted">Promo Code</label>
+              <div class="input-group">
+                <input type="text" id="promoCodeInput" class="form-control text-uppercase" placeholder="e.g. BUNDLE20">
+                <button class="btn btn-deal" type="button" id="applyPromoBtn">Apply</button>
+              </div>
+              <span class="small text-muted d-block mt-1" style="font-size: 0.75rem;">Try code <strong>BUNDLE20</strong> or <strong>SNAPZ10</strong></span>
+            </div>
+
+            <div class="border-top pt-3 mb-4 d-flex justify-content-between align-items-baseline">
+              <div>
+                <span class="fw-bold fs-5">Estimated Total:</span>
+                <span class="d-block small text-muted">Including local taxes & insurance</span>
+              </div>
+              <span class="fs-3 fw-bold font-monospace text-dark" id="cartTotal">$0.00</span>
+            </div>
+
+            <button type="button" class="btn btn-deal w-100 py-3 mb-3 fs-6" id="proceedCheckoutBtn">
+              <i class="bi bi-lock-fill"></i> Proceed to Checkout
+            </button>
+
+            <a href="shop.html" class="btn btn-deal-outline w-100 py-2 small">
+              <i class="bi bi-arrow-left"></i> Continue Shopping
+            </a>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Checkout Modal -->
+    <div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+          <div class="modal-header border-0 pb-0">
+            <h5 class="modal-title fw-bold" id="checkoutModalLabel">
+              <i class="bi bi-lock-fill text-warning me-2"></i> Fast & Secure Checkout
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-4">
+            <form id="checkoutOrderForm" novalidate>
+              <h6 class="fw-bold text-uppercase small text-muted mb-3">1. Shipping Information</h6>
+              <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold">Full Name</label>
+                  <input type="text" class="form-control" id="checkoutFullName" name="fullName" required placeholder="Alex Johnson">
+                  <div class="invalid-feedback">Please enter your name.</div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold">Email Address (For tracking)</label>
+                  <input type="email" class="form-control" id="checkoutEmail" name="email" required placeholder="alex@example.com">
+                  <div class="invalid-feedback">Please enter a valid email.</div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold">Phone Number (For courier update)</label>
+                  <input type="tel" class="form-control" id="checkoutPhone" name="phone" required placeholder="0300 1234567">
+                  <div class="invalid-feedback">Please enter your contact phone number.</div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold">City</label>
+                  <input type="text" class="form-control" id="checkoutCity" name="city" required placeholder="San Francisco">
+                  <div class="invalid-feedback">City is required.</div>
+                </div>
+                <div class="col-12">
+                  <label class="form-label small fw-semibold">Street Address</label>
+                  <input type="text" class="form-control" id="checkoutAddress" name="address" required placeholder="123 Shopping Blvd, Apt 4B">
+                  <div class="invalid-feedback">Please enter delivery address.</div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold">State / Region</label>
+                  <input type="text" class="form-control" id="checkoutState" name="state" required placeholder="California">
+                  <div class="invalid-feedback">State is required.</div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small fw-semibold">Postal Code</label>
+                  <input type="text" class="form-control" id="checkoutZip" name="zip" required placeholder="94103">
+                  <div class="invalid-feedback">Postal code is required.</div>
+                </div>
+              </div>
+
+              <h6 class="fw-bold text-uppercase small text-muted mb-3">2. Select Payment Method</h6>
+              <div class="checkout-payment-methods">
+                <!-- Option 1: Cash on Delivery (COD) -->
+                <label class="payment-method-card" for="paymentCOD">
+                  <div class="payment-method-header">
+                    <input class="form-check-input mt-0 payment-radio" type="radio" name="paymentType" id="paymentCOD" value="cod" checked>
+                    <div class="payment-icon-circle payment-icon-cod">
+                      <i class="bi bi-cash-stack"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                      <div class="d-flex align-items-center justify-content-between">
+                        <span class="fw-bold text-dark">Cash On Delivery (COD)</span>
+                        <span class="badge bg-warning text-dark fw-bold rounded-pill" style="font-size: 0.72rem;">No Prepayment</span>
+                      </div>
+                      <span class="small text-muted d-block">Pay with cash upon delivery at your doorstep</span>
+                    </div>
+                  </div>
+                  <div class="payment-dynamic-details" id="codDetails">
+                    <div class="d-flex align-items-start gap-2 text-dark small">
+                      <i class="bi bi-info-circle-fill text-warning fs-5 flex-shrink-0"></i>
+                      <div>
+                        <strong>Physical Cash Required:</strong> Please have exact cash ready when the courier rider arrives with your package. No online transaction required now.
+                      </div>
+                    </div>
+                  </div>
+                </label>
+
+                <!-- Option 2: EasyPaisa -->
+                <label class="payment-method-card" for="paymentEasyPaisa">
+                  <div class="payment-method-header">
+                    <input class="form-check-input mt-0 payment-radio" type="radio" name="paymentType" id="paymentEasyPaisa" value="easypaisa">
+                    <div class="payment-icon-circle payment-icon-easypaisa">
+                      <i class="bi bi-phone-fill"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                      <div class="d-flex align-items-center justify-content-between">
+                        <span class="fw-bold text-dark">EasyPaisa Mobile Account</span>
+                        <span class="badge bg-success text-white fw-bold rounded-pill" style="font-size: 0.72rem;">Instant Mobile</span>
+                      </div>
+                      <span class="small text-muted d-block">Instant approval via your EasyPaisa wallet / OTP</span>
+                    </div>
+                  </div>
+                  <div class="payment-dynamic-details d-none" id="easypaisaDetails">
+                    <div class="row g-2">
+                      <div class="col-md-7">
+                        <label class="form-label small fw-bold">EasyPaisa Mobile Number</label>
+                        <div class="input-group">
+                          <span class="input-group-text bg-white"><i class="bi bi-phone text-success"></i></span>
+                          <input type="tel" class="form-control" id="easypaisaNumber" placeholder="0300 1234567" pattern="[0-9]{11}">
+                        </div>
+                        <span class="text-muted" style="font-size: 0.72rem;">11-digit mobile account number</span>
+                      </div>
+                      <div class="col-md-5">
+                        <label class="form-label small fw-bold">Account Holder Name</label>
+                        <input type="text" class="form-control" id="easypaisaName" placeholder="As per CNIC">
+                      </div>
+                      <div class="col-12 mt-2">
+                        <span class="small text-muted d-block">
+                          <i class="bi bi-check-circle-fill text-success"></i> An instant authorization prompt / OTP will be sent to your EasyPaisa app.
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </label>
+
+                <!-- Option 3: JazzCash -->
+                <label class="payment-method-card" for="paymentJazzCash">
+                  <div class="payment-method-header">
+                    <input class="form-check-input mt-0 payment-radio" type="radio" name="paymentType" id="paymentJazzCash" value="jazzcash">
+                    <div class="payment-icon-circle payment-icon-jazzcash">
+                      <i class="bi bi-wallet2"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                      <div class="d-flex align-items-center justify-content-between">
+                        <span class="fw-bold text-dark">JazzCash Mobile Account</span>
+                        <span class="badge bg-danger text-white fw-bold rounded-pill" style="font-size: 0.72rem;">MPIN Verified</span>
+                      </div>
+                      <span class="small text-muted d-block">Fast mobile wallet payment with JazzCash MPIN</span>
+                    </div>
+                  </div>
+                  <div class="payment-dynamic-details d-none" id="jazzcashDetails">
+                    <div class="row g-2">
+                      <div class="col-md-7">
+                        <label class="form-label small fw-bold">JazzCash Mobile Number</label>
+                        <div class="input-group">
+                          <span class="input-group-text bg-white"><i class="bi bi-phone text-danger"></i></span>
+                          <input type="tel" class="form-control" id="jazzcashNumber" placeholder="0300 7654321" pattern="[0-9]{11}">
+                        </div>
+                        <span class="text-muted" style="font-size: 0.72rem;">11-digit mobile account number</span>
+                      </div>
+                      <div class="col-md-5">
+                        <label class="form-label small fw-bold">CNIC Last 6 Digits</label>
+                        <input type="text" class="form-control" id="jazzcashCnic" placeholder="e.g. 543210" maxlength="6">
+                      </div>
+                      <div class="col-12 mt-2">
+                        <span class="small text-muted d-block">
+                          <i class="bi bi-shield-check text-danger"></i> Enter your MPIN on your phone when prompted to authorize payment.
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </label>
+
+                <!-- Option 4: Credit / Debit Card -->
+                <label class="payment-method-card" for="paymentCard">
+                  <div class="payment-method-header">
+                    <input class="form-check-input mt-0 payment-radio" type="radio" name="paymentType" id="paymentCard" value="card">
+                    <div class="payment-icon-circle payment-icon-card">
+                      <i class="bi bi-credit-card-2-front"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                      <div class="d-flex align-items-center justify-content-between">
+                        <span class="fw-bold text-dark">Credit / Debit Card</span>
+                        <span class="badge bg-primary text-white fw-bold rounded-pill" style="font-size: 0.72rem;">International</span>
+                      </div>
+                      <span class="small text-muted d-block">Visa, Mastercard, PayPak, UnionPay</span>
+                    </div>
+                  </div>
+                  <div class="payment-dynamic-details d-none" id="cardDetails">
+                    <div class="row g-2">
+                      <div class="col-12">
+                        <label class="form-label small fw-bold">Card Number</label>
+                        <input type="text" class="form-control font-monospace" id="cardNumberInput" placeholder="4242 •••• •••• 4242" value="4242 4242 4242 4242">
+                      </div>
+                      <div class="col-6">
+                        <label class="form-label small fw-bold">Expiration Date</label>
+                        <input type="text" class="form-control" id="cardExpiryInput" placeholder="MM/YY" value="12/28">
+                      </div>
+                      <div class="col-6">
+                        <label class="form-label small fw-bold">CVV Security Code</label>
+                        <input type="password" class="form-control" id="cardCvvInput" placeholder="•••" maxlength="4" value="123">
+                      </div>
+                    </div>
+                  </div>
+                </label>
+              </div>
+
+              <div class="form-check mb-4">
+                <input class="form-check-input" type="checkbox" id="termsCheckout" required checked>
+                <label class="form-check-label small text-muted" for="termsCheckout">
+                  I agree to the SnapzDealz terms of service and confirm the delivery address.
+                </label>
+              </div>
+
+              <div class="d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-deal-outline" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-deal px-4" id="submitOrderBtn">
+                  <i class="bi bi-check2-circle"></i> Confirm & Place Order
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order Success Modal -->
+    <div class="modal fade" id="orderSuccessModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 text-center p-4" style="border-radius: 20px;">
+          <div class="my-3 text-warning">
+            <i class="bi bi-check-circle-fill" style="font-size: 4rem;"></i>
+          </div>
+          <h3 class="fw-bold">Order Confirmed!</h3>
+          <p class="text-muted small">Thank you for your order! Your confirmation <strong id="orderSuccessRefNumber">#SNP-98242</strong> has been logged with instant package dispatch.</p>
+          <div class="my-3 p-3 bg-light rounded-3 text-start small">
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-muted">Payment Method:</span> 
+              <strong id="orderSuccessPaymentMethod" class="text-dark">Cash On Delivery</strong>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-muted">Payment Status:</span> 
+              <strong id="orderSuccessStatus" class="text-warning">Pay upon Courier Delivery</strong>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-muted">Estimated Delivery:</span> 
+              <strong class="text-dark">2 to 3 Business Days</strong>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-muted">Fulfillment Sync:</span> 
+              <span class="text-success fw-bold"><i class="bi bi-shield-lock-fill me-1"></i> Encrypted Cloud Sync Active</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-muted">Tracking Notification:</span> 
+              <span class="text-success"><i class="bi bi-chat-dots-fill"></i> SMS & Email Sent</span>
+            </div>
+            <div class="d-flex justify-content-between">
+              <span class="text-muted"><i class="bi bi-whatsapp text-success me-1"></i> WhatsApp Receipt:</span> 
+              <span class="text-success fw-bold" id="orderSuccessWhatsAppStatus"><i class="bi bi-check-circle-fill"></i> Automated Message Sent</span>
+            </div>
+          </div>
+          <a href="#" target="_blank" class="btn btn-outline-success w-100 py-2 mb-2 fw-bold d-flex align-items-center justify-content-center gap-2" id="orderSuccessWhatsAppBtn">
+            <i class="bi bi-whatsapp fs-5"></i> Open Receipt on WhatsApp
+          </a>
+          <button type="button" class="btn btn-deal w-100 py-2 mb-2 fw-bold" id="orderSuccessTrackBtn">
+            <i class="bi bi-truck me-1"></i> Track Order Status
+          </button>
+          <a href="shop.html" class="btn btn-deal-outline w-100 py-2">
+            Continue Hunting Deals
+          </a>
+          <button type="button" class="btn btn-link text-danger text-decoration-none small mt-2 d-inline-flex align-items-center justify-content-center w-100" id="orderSuccessCancelBtn">
+            <i class="bi bi-x-circle me-1"></i> Changed your mind? Cancel this order
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty Cart Confirmation Modal -->
+    <div class="modal fade" id="emptyCartModal" tabindex="-1" aria-labelledby="emptyCartModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 text-center p-4 shadow-lg" style="border-radius: 20px;">
+          <div class="my-2 text-danger">
+            <div class="rounded-circle d-inline-flex align-items-center justify-content-center bg-danger-subtle p-3" style="width: 72px; height: 72px;">
+              <i class="bi bi-trash3-fill text-danger fs-1"></i>
+            </div>
+          </div>
+          <h4 class="fw-bold mb-2 mt-2" id="emptyCartModalLabel">Empty Your Cart?</h4>
+          <p class="text-muted small mb-4">
+            Are you sure you want to remove all items from your cart? All reserved deal prices and applied discounts will be reset.
+          </p>
+          <div class="d-flex gap-2 justify-content-center">
+            <button type="button" class="btn btn-light rounded-pill px-4 fw-semibold" data-bs-dismiss="modal">
+              Keep My Items
+            </button>
+            <button type="button" class="btn btn-danger rounded-pill px-4 fw-semibold shadow-sm" id="confirmEmptyCartBtn">
+              <i class="bi bi-trash-fill me-1"></i> Yes, Empty Cart
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Global Search Modal -->
+    <div class="modal fade search-modal-backdrop" id="globalSearchModal" tabindex="-1" aria-labelledby="globalSearchModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+          <div class="modal-header border-0 pb-0">
+            <h5 class="modal-title fw-bold" id="globalSearchModalLabel">
+              <i class="bi bi-search text-warning me-2"></i> Search Deal Store
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-4">
+            <div class="input-group mb-3">
+              <span class="input-group-text bg-light border-0"><i class="bi bi-search text-muted"></i></span>
+              <input type="text" id="globalSearchInput" class="form-control form-control-lg bg-light border-0" placeholder="Search shoes, bags, serums, electronics...">
+            </div>
+            <div id="globalSearchResults" class="mt-3" style="max-height: 350px; overflow-y: auto;">
+              <p class="text-muted small text-center my-3">Type product name or category to search in real time...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Back to top button -->
+    <button type="button" id="backToTop" aria-label="Back to top">
+      <i class="bi bi-arrow-up"></i>
+    </button>
+
+    <!-- Premium Footer -->
+    <footer class="premium-footer" data-bs-theme="dark">
+      <div class="container">
+        <div class="footer-main-grid mb-4">
+          <!-- Col 1: Brand & Bio -->
+          <div class="footer-col-brand">
+            <a class="navbar-brand text-white mb-3 d-inline-flex" href="index.html">
+              <i class="bi bi-lightning-charge-fill text-warning"></i>
+              <span class="text-white">SNAP</span><span class="logo-badge">DEALZ</span>
+            </a>
+            <p class="footer-desc mb-3">SnapzDealz is your curated destination for verified high-octane deals and direct-to-consumer savings on top brands.</p>
+            <div class="footer-social-row">
+              <a href="#" class="footer-social-icon" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+              <a href="#" class="footer-social-icon" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+              <a href="#" class="footer-social-icon" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
+              <a href="#" class="footer-social-icon" aria-label="TikTok"><i class="bi bi-tiktok"></i></a>
+              <a href="#" class="footer-social-icon" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+            </div>
+          </div>
+
+          <!-- Col 2: Quick Links -->
+          <div class="footer-col-links">
+            <h5>Explore Drops</h5>
+            <ul class="footer-links">
+              <li><a href="shop.html"><i class="bi bi-chevron-right text-warning small"></i> Shop All Deals</a></li>
+              <li><a href="shop.html?category=mens-shoes"><i class="bi bi-chevron-right text-warning small"></i> Men's Shoes</a></li>
+              <li><a href="shop.html?category=mens-clothing"><i class="bi bi-chevron-right text-warning small"></i> Men's Clothing</a></li>
+              <li><a href="shop.html?category=womens-clothing"><i class="bi bi-chevron-right text-warning small"></i> Women's Clothing</a></li>
+              <li><a href="shop.html?category=ladies-bags"><i class="bi bi-chevron-right text-warning small"></i> Ladies Handbags</a></li>
+              <li><a href="cart.html"><i class="bi bi-chevron-right text-warning small"></i> Shopping Cart</a></li>
+              <li><a href="#" data-bs-toggle="modal" data-bs-target="#trackOrderModal"><i class="bi bi-truck text-warning small"></i> Track Order</a></li>
+            </ul>
+          </div>
+
+          <!-- Col 3: Legal & Policies -->
+          <div class="footer-col-categories">
+            <h5>Legal & Policies</h5>
+            <ul class="footer-links">
+              <li><a href="privacy.html"><i class="bi bi-chevron-right text-warning small"></i> Privacy Policy</a></li>
+              <li><a href="terms.html"><i class="bi bi-chevron-right text-warning small"></i> Terms & Conditions</a></li>
+              <li><a href="about.html"><i class="bi bi-chevron-right text-warning small"></i> About SnapzDealz</a></li>
+              <li><a href="contact.html"><i class="bi bi-chevron-right text-warning small"></i> Contact & Helpdesk</a></li>
+            </ul>
+          </div>
+
+          <!-- Col 4: Contact & Support -->
+          <div class="footer-col-contact">
+            <h5>Customer Support</h5>
+            <ul class="footer-links">
+              <li class="footer-contact-item">
+                <i class="bi bi-geo-alt-fill"></i>
+                <span>742 Evergreen Terrace, Suite 400, San Francisco, CA</span>
+              </li>
+              <li class="footer-contact-item">
+                <i class="bi bi-telephone-fill"></i>
+                <span>1-800-SNAPZ-DEAL (Toll Free 24/7)</span>
+              </li>
+              <li class="footer-contact-item">
+                <i class="bi bi-envelope-fill"></i>
+                <span>support@snapzdealz.com</span>
+              </li>
+              <li class="footer-contact-item">
+                <i class="bi bi-shield-check"></i>
+                <span>30-Day Money-Back Guarantee</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Footer Bottom Bar -->
+        <div class="footer-bottom">
+          <div class="small">
+            &copy; 2026 SnapzDealz Inc. All rights reserved. Built for speed and maximum savings.
+          </div>
+          <div class="footer-payment-badges-wrap">
+            <span class="footer-payment-badge"><i class="bi bi-cash-stack text-warning"></i> CASH ON DELIVERY</span>
+            <span class="footer-payment-badge"><i class="bi bi-phone-fill text-success"></i> EASYPAISA</span>
+            <span class="footer-payment-badge"><i class="bi bi-wallet2 text-danger"></i> JAZZCASH</span>
+            <span class="footer-payment-badge"><i class="bi bi-credit-card-2-front"></i> DEBIT / CREDIT</span>
+            <span class="footer-payment-badge text-warning"><i class="bi bi-shield-check"></i> 256-BIT SSL</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Global Search Modal -->
+    <div class="modal fade search-modal-backdrop" id="globalSearchModal" tabindex="-1" aria-labelledby="globalSearchModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+          <div class="modal-header border-0 pb-0">
+            <h5 class="modal-title fw-bold" id="globalSearchModalLabel">
+              <i class="bi bi-search text-warning me-2"></i> Search Deal Store
+            </h5>
+            <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-4">
+            <div class="input-group mb-3">
+              <span class="input-group-text bg-light border-0"><i class="bi bi-search text-muted"></i></span>
+              <input type="text" id="globalSearchInput" class="form-control form-control-lg bg-light border-0" placeholder="Search shoes, bags, serums, electronics...">
+            </div>
+            <div id="globalSearchResults" class="mt-3" style="max-height: 350px; overflow-y: auto;">
+              <p class="text-muted small text-center my-3">Type product name or category to search in real time...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Global Wishlist Modal -->
+    <div class="modal fade" id="globalWishlistModal" tabindex="-1" aria-labelledby="globalWishlistModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+          <div class="modal-header border-0 pb-2 px-4 pt-4">
+            <h5 class="modal-title fw-bold d-flex align-items-center gap-2" id="globalWishlistModalLabel">
+              <i class="bi bi-heart-fill text-danger"></i>
+              <span>My Saved Wishlist</span>
+              <span class="badge bg-warning text-dark fs-6 px-2.5 py-1 rounded-pill" id="globalWishlistModalCountBadge">0</span>
+            </h5>
+            <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body px-4 py-2" id="globalWishlistModalBody">
+            <div class="text-center py-4">
+              <div class="spinner-border text-warning" role="status"></div>
+            </div>
+          </div>
+          <div class="modal-footer border-0 px-4 pb-4 pt-2 d-flex justify-content-between flex-wrap gap-2" id="globalWishlistModalFooter">
+            <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3" id="globalWishlistClearBtn">
+              <i class="bi bi-trash3 me-1"></i> Clear Wishlist
+            </button>
+            <div class="d-flex gap-2">
+              <a href="wishlist.html" class="btn btn-light btn-sm rounded-pill px-3 border" id="globalWishlistViewFullBtn">
+                <i class="bi bi-box-arrow-up-right me-1"></i> Full Page View
+              </a>
+              <button type="button" class="btn btn-deal btn-sm rounded-pill px-4" id="globalWishlistAddAllBtn">
+                <i class="bi bi-cart-plus-fill me-1"></i> Add All To Cart
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap 5.3 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Shared App Scripts -->
+    <script src="./products.js"></script>
+    <script src="./script.js"></script>
+  </body>
+</html>

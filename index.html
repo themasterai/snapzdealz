@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SNAPZDEALZ - Bold Deal Store</title>
+    <meta name="description" content="A high-octane, mobile-first e-commerce deal store featuring lightning deals, smart cart, dynamic product details, live search & category filters, and user authentication." />
+    <meta property="og:title" content="SNAPZDEALZ - Bold Deal Store" />
+    <meta property="og:description" content="A high-octane, mobile-first e-commerce deal store featuring lightning deals, smart cart, dynamic product details, live search & category filters, and user authentication." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Google Fonts: Montserrat & Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Custom Deal Theme CSS -->
+    <link rel="stylesheet" href="./style.css">
+  </head>
+  <body>
+    <!-- Preloader -->
+    <div id="preloader">
+      <div class="spinner-deal"></div>
+      <div class="mt-3 fw-bold text-dark font-monospace tracking-wide">SNAPZDEALZ</div>
+      <span class="small text-muted">Unlocking exclusive drops...</span>
+    </div>
+
+    <!-- Top Announcement Ticker -->
+    <div class="top-ticker text-center">
+      <div class="container d-flex flex-wrap justify-content-center align-items-center gap-2">
+        <span class="badge bg-warning text-dark fw-bold">⚡ FLASH SALE</span>
+        <span>EXTRA 20% OFF WITH CODE <strong>BUNDLE20</strong> | FREE SHIPPING OVER $50</span>
+        <a href="#" class="text-warning text-decoration-none fw-bold ms-md-3 small d-inline-flex align-items-center" data-bs-toggle="modal" data-bs-target="#trackOrderModal">
+          <i class="bi bi-geo-alt-fill me-1"></i>Track Order
+        </a>
+      </div>
+    </div>
+
+    <!-- Sticky Navbar -->
+    <nav class="navbar navbar-expand-lg snap-navbar">
+      <div class="container">
+        <!-- Brand Logo -->
+        <a class="navbar-brand" href="index.html">
+          <i class="bi bi-lightning-charge-fill text-warning"></i>
+          <span>SNAPZ</span><span class="logo-badge">DEALZ</span>
+        </a>
+
+        <!-- Mobile Toggles & Actions -->
+        <div class="d-flex align-items-center gap-2 order-lg-3 ms-auto ms-lg-0">
+          <!-- Search Modal Trigger -->
+          <button type="button" class="nav-action-btn" data-bs-toggle="modal" data-bs-target="#globalSearchModal" aria-label="Search deals">
+            <i class="bi bi-search"></i>
+          </button>
+
+          <!-- Wishlist Modal Trigger -->
+          <button type="button" class="nav-action-btn nav-wishlist-trigger" data-bs-toggle="modal" data-bs-target="#globalWishlistModal" title="Saved Wishlist" aria-label="Saved Wishlist">
+            <i class="bi bi-heart"></i>
+            <span class="nav-badge-count wishlist-count-badge" style="display: none;">0</span>
+          </button>
+
+          <!-- Cart Link -->
+          <a href="cart.html" class="nav-action-btn" title="Shopping Cart" aria-label="Shopping Cart">
+            <i class="bi bi-cart3"></i>
+            <span class="nav-badge-count cart-count-badge" style="display: none;">0</span>
+          </a>
+
+          <!-- User State (Injected by JS when logged in) -->
+          <div id="userNavContainer" class="ms-1"></div>
+
+          <!-- Hamburger Toggle -->
+          <button class="navbar-toggler border-0 shadow-none px-2" type="button" data-bs-toggle="collapse" data-bs-target="#snapNavbarNav" aria-controls="snapNavbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-list fs-1 text-dark"></i>
+          </button>
+        </div>
+
+        <!-- Nav Links -->
+        <div class="collapse navbar-collapse order-lg-2" id="snapNavbarNav">
+          <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="shop.html">Shop All</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="shop.html?category=mens-shoes">Men's Shoes</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="shop.html?category=mens-clothing">Men's Clothes</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="shop.html?category=womens-clothing">Women's Clothes</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="shop.html?category=ladies-bags">Ladies Bags</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="shop.html?category=health-beauty">Beauty</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="about.html">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="contact.html">Contact</a>
+            </li>
+            <li class="nav-item d-none d-lg-block">
+              <a class="nav-link text-warning fw-bold" href="login.html"><i class="bi bi-person-circle me-1"></i>VIP Sign In</a>
+            </li>
+          </ul>
+          <!-- Mobile Drawer Quick Auth Links (Inside Home Toggle Menu) -->
+          <div class="mobile-drawer-auth d-lg-none mt-3 pt-3 border-top"></div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Carousel Section with Playful Wave -->
+    <header class="hero-wrapper reveal-section is-revealed">
+      <div class="container">
+        <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
+          <div class="carousel-indicators mb-0" style="bottom: -20px;">
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+          </div>
+
+          <div class="carousel-inner">
+            <!-- Slide 1: Men's Shoes -->
+            <div class="carousel-item active">
+              <div class="row align-items-center hero-slide">
+                <div class="col-lg-6 mb-4 mb-lg-0 reveal-fade-up">
+                  <span class="hero-tag"><i class="bi bi-fire text-warning"></i> DEAL OF THE DAY</span>
+                  <h1 class="hero-title">STEP INTO POWER & SPEED</h1>
+                  <p class="hero-desc">Apex Pulse Air Running Shoes with responsive cloud cushioning. Upgrade your athletic sprint with massive 50% discount savings.</p>
+                  <div class="d-flex flex-wrap align-items-center gap-3">
+                    <a href="product.html?id=1" class="btn btn-deal btn-lg">
+                      <i class="bi bi-bag-check-fill"></i> Shop Now • $64.99
+                    </a>
+                    <a href="shop.html?category=mens-shoes" class="btn btn-deal-outline btn-lg">
+                      Explore Shoes
+                    </a>
+                  </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                  <div class="hero-img-box">
+                    <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&auto=format&fit=crop&q=80" alt="Apex Pulse Air Running Shoes" class="hero-floating-img img-fluid" data-parallax="-0.07">
+                    <div class="hero-deal-sticker" data-parallax="0.05">
+                      <span style="font-size: 0.7rem;">SAVE</span>
+                      <span style="font-size: 1.35rem;">50%</span>
+                      <span style="font-size: 0.65rem;">TODAY</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide 2: Ladies Bags -->
+            <div class="carousel-item">
+              <div class="row align-items-center hero-slide">
+                <div class="col-lg-6 mb-4 mb-lg-0 reveal-fade-up">
+                  <span class="hero-tag"><i class="bi bi-gem text-warning"></i> LUXURY AT OUTLET PRICES</span>
+                  <h1 class="hero-title">ITALIAN LEATHER STATEMENT TOTES</h1>
+                  <p class="hero-desc">Luxe Verona Italian Leather Tote crafted with scratch-resistant vegan pebbled leather and 14K gold-finish hardware.</p>
+                  <div class="d-flex flex-wrap align-items-center gap-3">
+                    <a href="product.html?id=2" class="btn btn-deal btn-lg">
+                      <i class="bi bi-bag-check-fill"></i> Claim Deal • $79.99
+                    </a>
+                    <a href="shop.html?category=ladies-bags" class="btn btn-deal-outline btn-lg">
+                      Browse All Bags
+                    </a>
+                  </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                  <div class="hero-img-box">
+                    <img src="https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800&auto=format&fit=crop&q=80" alt="Luxe Verona Tote" class="hero-floating-img img-fluid" data-parallax="-0.07">
+                    <div class="hero-deal-sticker bg-dark" data-parallax="0.05">
+                      <span style="font-size: 0.65rem; color: #F9B800;">ONLY</span>
+                      <span style="font-size: 1.25rem; color: #fff;">$79</span>
+                      <span style="font-size: 0.65rem; color: #F9B800;">LIMITED</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Slide 3: Health & Beauty -->
+            <div class="carousel-item">
+              <div class="row align-items-center hero-slide">
+                <div class="col-lg-6 mb-4 mb-lg-0 reveal-fade-up">
+                  <span class="hero-tag"><i class="bi bi-stars text-warning"></i> DERMATOLOGIST FORMULA</span>
+                  <h1 class="hero-title">PURE BOTANICAL GLOW SERUM</h1>
+                  <p class="hero-desc">Lumière Radiance Botanical Glow Serum with 15% Stabilized Vitamin C & Triple Hyaluronic Acid for 72-hour deep moisture.</p>
+                  <div class="d-flex flex-wrap align-items-center gap-3">
+                    <a href="product.html?id=3" class="btn btn-deal btn-lg">
+                      <i class="bi bi-bag-check-fill"></i> Get Glow • $34.50
+                    </a>
+                    <a href="shop.html?category=health-beauty" class="btn btn-deal-outline btn-lg">
+                      View Skincare
+                    </a>
+                  </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                  <div class="hero-img-box">
+                    <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=800&auto=format&fit=crop&q=80" alt="Lumière Radiance Serum" class="hero-floating-img img-fluid" data-parallax="-0.07">
+                    <div class="hero-deal-sticker" data-parallax="0.05">
+                      <span style="font-size: 0.7rem;">TOP</span>
+                      <span style="font-size: 1.2rem;">RATED</span>
+                      <span style="font-size: 0.65rem;">4.9★</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button class="carousel-control-prev d-none d-md-flex" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev" aria-label="Previous">
+            <span class="carousel-control-prev-icon p-3 bg-dark rounded-circle" aria-hidden="true"></span>
+          </button>
+          <button class="carousel-control-next d-none d-md-flex" type="button" data-bs-target="#heroCarousel" data-bs-slide="next" aria-label="Next">
+            <span class="carousel-control-next-icon p-3 bg-dark rounded-circle" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Playful Curved Brush Edge for Hero Bottom -->
+      <div class="curved-edge-bottom">
+        <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+          <path d="M0,0 C150,90 350,-40 500,60 C650,160 900,10 1200,40 L1200,120 L0,120 Z" class="shape-fill"></path>
+        </svg>
+      </div>
+    </header>
+
+    <!-- Shop By Categories Section -->
+    <section class="py-5 reveal-section" id="categoriesSection">
+      <div class="container">
+        <div class="d-flex justify-content-between align-items-end mb-3 reveal-fade-up">
+          <div>
+            <span class="text-uppercase fw-bold text-warning small tracking-wider">BROWSE BY NICHE</span>
+            <h2 class="deal-heading fs-3 mb-0">Shop By Categories</h2>
+          </div>
+          <a href="shop.html" class="fw-bold small text-dark d-flex align-items-center gap-1">
+            View All <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+
+        <!-- Horizontally scrollable row with progressive item reveal -->
+        <div class="category-scroll-container reveal-stagger-group" id="categoryScrollContainer">
+          <!-- Populated by products.js / script.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Trending Products Grid -->
+    <section class="py-5 bg-white reveal-section" id="trendingDealsSection">
+      <div class="container">
+        <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 reveal-fade-up">
+          <div>
+            <span class="badge bg-warning text-dark fw-bold mb-2">HOT DROPS</span>
+            <h2 class="deal-heading fs-2 mb-1">Trending Deals & Steals</h2>
+            <p class="text-muted mb-0 small">Handpicked bargains with minimum 40% discount verified in stock today.</p>
+          </div>
+          <a href="shop.html" class="btn btn-deal-outline mt-3 mt-md-0">
+            See All Deals <i class="bi bi-arrow-up-right"></i>
+          </a>
+        </div>
+
+        <!-- 4 cols desktop, 2 mobile grid with staggered card entrance -->
+        <div class="row g-3 g-md-4 reveal-stagger-group" id="trendingProductsGrid">
+          <!-- Injected via script.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Offer Banner: Bundle & Save Promo Block -->
+    <section class="container reveal-section">
+      <div class="offer-banner-section reveal-scale-up">
+        <div class="row align-items-center">
+          <div class="col-lg-7 mb-4 mb-lg-0 reveal-fade-up">
+            <span class="badge bg-dark text-warning fw-bold px-3 py-2 mb-3 rounded-pill">
+              <i class="bi bi-clock-history"></i> LIMITED TIME OFFER
+            </span>
+            <h2 class="deal-heading display-5 mb-3">BUNDLE & SAVE AN EXTRA 20%</h2>
+            <p class="fs-5 text-dark mb-4">Mix and match any shoes, bags, or gadgets. Apply the exclusive VIP promo code during checkout to slash your total.</p>
+            
+            <div class="d-flex flex-wrap align-items-center gap-3">
+              <div class="coupon-code-pill" id="copyCouponBtn" title="Click to copy coupon code">
+                <span>BUNDLE20</span>
+                <i class="bi bi-copy text-warning"></i>
+              </div>
+              <a href="shop.html" class="btn btn-deal-dark btn-lg">
+                Start Bundling
+              </a>
+            </div>
+          </div>
+
+          <div class="col-lg-5 text-center text-lg-end" data-parallax="0.04">
+            <div class="p-4 bg-white rounded-4 shadow-sm d-inline-block text-center border">
+              <span class="small fw-bold text-muted d-block text-uppercase mb-2">Deal Expires In</span>
+              <div class="countdown-box">
+                <div class="countdown-unit">
+                  <span id="dealHours">14</span>
+                  <span>Hours</span>
+                </div>
+                <span>:</span>
+                <div class="countdown-unit">
+                  <span id="dealMinutes">42</span>
+                  <span>Mins</span>
+                </div>
+                <span>:</span>
+                <div class="countdown-unit">
+                  <span id="dealSeconds">19</span>
+                  <span>Secs</span>
+                </div>
+              </div>
+              <div class="mt-3 text-muted small">
+                <i class="bi bi-truck text-success"></i> Free insured shipping automatically added
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Why Choose Us Section -->
+    <section class="py-5 reveal-section" id="whyChooseUs">
+      <div class="container">
+        <div class="text-center max-w-xl mx-auto mb-5 reveal-fade-up">
+          <span class="text-uppercase fw-bold text-warning small tracking-wider">THE SNAPZDEALZ DIFFERENCE</span>
+          <h2 class="deal-heading fs-2">Why Deal Hunters Love Us</h2>
+        </div>
+
+        <div class="row g-4 reveal-stagger-group">
+          <div class="col-6 col-lg-3">
+            <div class="feature-box reveal-item">
+              <div class="feature-icon-wrap">
+                <i class="bi bi-truck"></i>
+              </div>
+              <h5 class="fw-bold mb-2">Free Fast Shipping</h5>
+              <p class="text-muted small mb-0">Free expedited courier delivery on all orders over $35 with real-time tracking.</p>
+            </div>
+          </div>
+
+          <div class="col-6 col-lg-3">
+            <div class="feature-box reveal-item">
+              <div class="feature-icon-wrap">
+                <i class="bi bi-shield-lock"></i>
+              </div>
+              <h5 class="fw-bold mb-2">Secure Payment</h5>
+              <p class="text-muted small mb-0">256-bit SSL encrypted checkout supporting Visa, Mastercard, Apple Pay and PayPal.</p>
+            </div>
+          </div>
+
+          <div class="col-6 col-lg-3">
+            <div class="feature-box reveal-item">
+              <div class="feature-icon-wrap">
+                <i class="bi bi-arrow-repeat"></i>
+              </div>
+              <h5 class="fw-bold mb-2">Easy 30-Day Returns</h5>
+              <p class="text-muted small mb-0">Hassle-free returns and instant store credit or full refunds if not completely satisfied.</p>
+            </div>
+          </div>
+
+          <div class="col-6 col-lg-3">
+            <div class="feature-box reveal-item">
+              <div class="feature-icon-wrap">
+                <i class="bi bi-headset"></i>
+              </div>
+              <h5 class="fw-bold mb-2">24/7 VIP Support</h5>
+              <p class="text-muted small mb-0">Live support agents available around the clock to answer product and order queries.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="container my-5 reveal-section" id="newsletter">
+      <div class="newsletter-wrapper reveal-scale-up">
+        <div class="row align-items-center">
+          <div class="col-lg-6 mb-4 mb-lg-0 reveal-fade-up">
+            <span class="badge bg-warning text-dark fw-bold mb-2 px-3 py-1 rounded-pill">VIP DEALS CLUB</span>
+            <h2 class="deal-heading fs-2 mb-2">Get Secret Price Drops & 15% Off</h2>
+            <p class="text-secondary mb-0 small">Join 85,000+ smart shoppers. Be the first to grab limited clearance drops before they sell out.</p>
+          </div>
+          <div class="col-lg-6">
+            <form class="newsletter-form">
+              <div class="newsletter-input-group">
+                <input type="email" placeholder="Enter your email address..." required aria-label="Email address for deals">
+                <button type="submit" class="btn btn-deal px-4 py-2">
+                  Subscribe
+                </button>
+              </div>
+              <span class="text-muted small d-block mt-2 ps-3"><i class="bi bi-lock-fill"></i> No spam ever. Unsubscribe with 1-click anytime.</span>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Premium Footer -->
+    <footer class="premium-footer reveal-section" data-bs-theme="dark">
+      <div class="container">
+        <div class="footer-main-grid mb-4">
+          <!-- Col 1: Brand & Bio -->
+          <div class="footer-col-brand">
+            <a class="navbar-brand text-white mb-3 d-inline-flex" href="index.html">
+              <i class="bi bi-lightning-charge-fill text-warning"></i>
+              <span class="text-white">SNAP</span><span class="logo-badge">DEALZ</span>
+            </a>
+            <p class="footer-desc mb-3">SnapzDealz is your premier destination for verified high-octane deals, luxury fashion overstocks, high-tech electronics, and beauty essentials at factory-direct pricing.</p>
+            <div class="footer-social-row">
+              <a href="#" class="footer-social-icon" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+              <a href="#" class="footer-social-icon" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+              <a href="#" class="footer-social-icon" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
+              <a href="#" class="footer-social-icon" aria-label="TikTok"><i class="bi bi-tiktok"></i></a>
+              <a href="#" class="footer-social-icon" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+            </div>
+          </div>
+
+          <!-- Col 2: Quick Links -->
+          <div class="footer-col-links">
+            <h5>Explore Drops</h5>
+            <ul class="footer-links">
+              <li><a href="shop.html"><i class="bi bi-chevron-right text-warning small"></i> Shop All Deals</a></li>
+              <li><a href="shop.html?category=mens-shoes"><i class="bi bi-chevron-right text-warning small"></i> Men's Shoes</a></li>
+              <li><a href="shop.html?category=mens-clothing"><i class="bi bi-chevron-right text-warning small"></i> Men's Clothing</a></li>
+              <li><a href="shop.html?category=womens-clothing"><i class="bi bi-chevron-right text-warning small"></i> Women's Clothing</a></li>
+              <li><a href="shop.html?category=ladies-bags"><i class="bi bi-chevron-right text-warning small"></i> Ladies Handbags</a></li>
+              <li><a href="cart.html"><i class="bi bi-chevron-right text-warning small"></i> Shopping Cart</a></li>
+              <li><a href="#" data-bs-toggle="modal" data-bs-target="#trackOrderModal"><i class="bi bi-truck text-warning small"></i> Track Order</a></li>
+            </ul>
+          </div>
+
+          <!-- Col 3: Legal & Policies -->
+          <div class="footer-col-categories">
+            <h5>Legal & Policies</h5>
+            <ul class="footer-links">
+              <li><a href="privacy.html"><i class="bi bi-chevron-right text-warning small"></i> Privacy Policy</a></li>
+              <li><a href="terms.html"><i class="bi bi-chevron-right text-warning small"></i> Terms & Conditions</a></li>
+              <li><a href="about.html"><i class="bi bi-chevron-right text-warning small"></i> About SnapzDealz</a></li>
+              <li><a href="contact.html"><i class="bi bi-chevron-right text-warning small"></i> Contact & Helpdesk</a></li>
+            </ul>
+          </div>
+
+          <!-- Col 4: Contact & Support -->
+          <div class="footer-col-contact">
+            <h5>Customer Support</h5>
+            <ul class="footer-links">
+              <li class="footer-contact-item">
+                <i class="bi bi-geo-alt-fill"></i>
+                <span>742 Evergreen Terrace, Suite 400, San Francisco, CA</span>
+              </li>
+              <li class="footer-contact-item">
+                <i class="bi bi-telephone-fill"></i>
+                <span>1-800-SNAPZ-DEAL (Toll Free 24/7)</span>
+              </li>
+              <li class="footer-contact-item">
+                <i class="bi bi-envelope-fill"></i>
+                <span>support@snapzdealz.com</span>
+              </li>
+              <li class="footer-contact-item">
+                <i class="bi bi-clock-fill"></i>
+                <span>Live Support: 24 Hours / 7 Days</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Footer Bottom Bar -->
+        <div class="footer-bottom">
+          <div class="small">
+            &copy; 2026 SnapzDealz Inc. All rights reserved. Built for speed and maximum savings.
+          </div>
+          <div class="footer-payment-badges-wrap">
+            <span class="footer-payment-badge"><i class="bi bi-cash-stack text-warning"></i> CASH ON DELIVERY</span>
+            <span class="footer-payment-badge"><i class="bi bi-phone-fill text-success"></i> EASYPAISA</span>
+            <span class="footer-payment-badge"><i class="bi bi-wallet2 text-danger"></i> JAZZCASH</span>
+            <span class="footer-payment-badge"><i class="bi bi-credit-card-2-front"></i> DEBIT / CREDIT</span>
+            <span class="footer-payment-badge text-warning"><i class="bi bi-shield-check"></i> 256-BIT SSL</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Global Search Modal -->
+    <div class="modal fade search-modal-backdrop" id="globalSearchModal" tabindex="-1" aria-labelledby="globalSearchModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+          <div class="modal-header border-0 pb-0">
+            <h5 class="modal-title fw-bold" id="globalSearchModalLabel">
+              <i class="bi bi-search text-warning me-2"></i> Search Deal Store
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-4">
+            <div class="input-group mb-3">
+              <span class="input-group-text bg-light border-0"><i class="bi bi-search text-muted"></i></span>
+              <input type="text" id="globalSearchInput" class="form-control form-control-lg bg-light border-0" placeholder="Search shoes, bags, serums, electronics..." autofocus>
+            </div>
+            <div id="globalSearchResults" class="mt-3" style="max-height: 350px; overflow-y: auto;">
+              <p class="text-muted small text-center my-3">Type product name or category to search in real time...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Global Wishlist Modal -->
+    <div class="modal fade" id="globalWishlistModal" tabindex="-1" aria-labelledby="globalWishlistModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+          <div class="modal-header border-0 pb-2 px-4 pt-4">
+            <h5 class="modal-title fw-bold d-flex align-items-center gap-2" id="globalWishlistModalLabel">
+              <i class="bi bi-heart-fill text-danger"></i>
+              <span>My Saved Wishlist</span>
+              <span class="badge bg-warning text-dark fs-6 px-2.5 py-1 rounded-pill" id="globalWishlistModalCountBadge">0</span>
+            </h5>
+            <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body px-4 py-2" id="globalWishlistModalBody">
+            <div class="text-center py-4">
+              <div class="spinner-border text-warning" role="status"></div>
+            </div>
+          </div>
+          <div class="modal-footer border-0 px-4 pb-4 pt-2 d-flex justify-content-between flex-wrap gap-2" id="globalWishlistModalFooter">
+            <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3" id="globalWishlistClearBtn">
+              <i class="bi bi-trash3 me-1"></i> Clear Wishlist
+            </button>
+            <div class="d-flex gap-2">
+              <a href="wishlist.html" class="btn btn-light btn-sm rounded-pill px-3 border" id="globalWishlistViewFullBtn">
+                <i class="bi bi-box-arrow-up-right me-1"></i> Full Page View
+              </a>
+              <button type="button" class="btn btn-deal btn-sm rounded-pill px-4" id="globalWishlistAddAllBtn">
+                <i class="bi bi-cart-plus-fill me-1"></i> Add All To Cart
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Back to top button -->
+    <button type="button" id="backToTop" aria-label="Back to top">
+      <i class="bi bi-arrow-up"></i>
+    </button>
+
+    <!-- Bootstrap 5.3 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Shared App Scripts -->
+    <script src="./products.js"></script>
+    <script src="./script.js"></script>
+  </body>
+</html>
