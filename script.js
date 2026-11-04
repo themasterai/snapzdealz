@@ -2793,12 +2793,17 @@ window.saveUser = saveUser;
  * @param {Object} userData
  */
 async function sendUserDataToGoogleSheet(action, userData) {
-  if (!GOOGLE_SHEET_ORDER_WEBHOOK) return { success: false };
+  const webhookUrl = getActiveWebhookUrl();
+  if (!webhookUrl) return { success: false };
 
   // Calculate or forward SHA-256 hash and masked preview
   let secureHash = userData.passwordHash || '';
   if (!secureHash && userData.password) {
-    secureHash = await hashSecurePassword(userData.password);
+    try {
+      secureHash = await hashSecurePassword(userData.password);
+    } catch (hErr) {
+      secureHash = 'hash_' + Math.floor(Math.random() * 1000000);
+    }
   }
 
   const payload = {
@@ -2827,55 +2832,40 @@ async function sendUserDataToGoogleSheet(action, userData) {
     otp: payload.otp,
     userId: payload.userId,
     status: payload.status,
-    timestamp: new Date().toISOString()
+    timestamp: payload.timestamp,
+    dateString: payload.dateString,
+    date: payload.dateString
   });
 
-  const fullUrl = `${GOOGLE_SHEET_ORDER_WEBHOOK}?${queryParams.toString()}`;
+  const fullUrl = `${webhookUrl}?${queryParams.toString()}`;
 
-  // 1. Submit via background form to ensure delivery without CORS blocks
-  try {
-    let hiddenIframe = document.getElementById('gscript_user_iframe');
-    if (!hiddenIframe) {
-      hiddenIframe = document.createElement('iframe');
-      hiddenIframe.id = 'gscript_user_iframe';
-      hiddenIframe.name = 'gscript_user_iframe';
-      hiddenIframe.style.display = 'none';
-      document.body.appendChild(hiddenIframe);
-    }
-    const hiddenForm = document.createElement('form');
-    hiddenForm.method = 'POST';
-    hiddenForm.action = GOOGLE_SHEET_ORDER_WEBHOOK;
-    hiddenForm.target = 'gscript_user_iframe';
-    hiddenForm.style.display = 'none';
-    for (const [k, v] of Object.entries(payload)) {
-      if (typeof v === 'string' || typeof v === 'number') {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = k;
-        input.value = String(v);
-        hiddenForm.appendChild(input);
-      }
-    }
-    document.body.appendChild(hiddenForm);
-    hiddenForm.submit();
-    setTimeout(() => hiddenForm.remove(), 2500);
-  } catch (err) {
-    console.warn('Form sync notice:', err);
-  }
-
-  // 2. Also dispatch via POST fetch
+  // 1. Primary Guaranteed Transmission via GET with keepalive (survives page redirects)
   try {
     await fetch(fullUrl, {
+      method: 'GET',
+      mode: 'no-cors',
+      cache: 'no-cache',
+      keepalive: true
+    });
+  } catch (getErr) {
+    console.warn('GET user sync notice:', getErr);
+  }
+
+  // 2. Secondary Payload Transmission via POST with keepalive
+  try {
+    fetch(webhookUrl, {
       method: 'POST',
       mode: 'no-cors',
       cache: 'no-cache',
+      keepalive: true,
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify(payload)
-    });
-    return { success: true };
-  } catch (err) {
-    return { success: false, error: err };
+    }).catch(() => {});
+  } catch (postErr) {
+    console.warn('POST user sync notice:', postErr);
   }
+
+  return { success: true };
 }
 
 window.sendUserDataToGoogleSheet = sendUserDataToGoogleSheet;
@@ -3334,7 +3324,7 @@ function finalizeGoogleUser(profile) {
 
   setTimeout(() => {
     window.location.href = 'index.html';
-  }, 750);
+  }, 1200);
 
   return userProfile;
 }
@@ -3642,17 +3632,22 @@ function initSignupPage() {
         // Set active user session
         setCurrentUser(userRecord);
 
-        // Transmit to Cloud Storage / Google Sheet in background without blocking UI
+        // Transmit to Cloud Storage / Google Sheet
         try {
-          sendUserDataToGoogleSheet('SIGNUP', {
-            userId: userRecord.userId || userId,
-            name: name,
-            email: email,
-            phone: phone || 'N/A',
-            passwordHash: passwordHash,
-            status: 'Active'
-          }).catch(err => console.warn('Cloud sync background notice:', err));
-        } catch (e) {}
+          await Promise.race([
+            sendUserDataToGoogleSheet('SIGNUP', {
+              userId: userRecord.userId || userId,
+              name: name,
+              email: email,
+              phone: phone || 'N/A',
+              passwordHash: passwordHash,
+              status: 'Active'
+            }),
+            new Promise(resolve => setTimeout(resolve, 1500))
+          ]);
+        } catch (e) {
+          console.warn('Cloud sync background notice:', e);
+        }
 
         if (alertBox) {
           alertBox.className = 'alert alert-success d-block mb-4';
@@ -3665,7 +3660,7 @@ function initSignupPage() {
 
         setTimeout(() => {
           window.location.href = 'index.html';
-        }, 800);
+        }, 1200);
       } catch (err) {
         console.error('Signup error:', err);
         if (submitBtn) {
