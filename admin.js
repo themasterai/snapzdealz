@@ -4,7 +4,16 @@
  * Hardened with Salted SHA-256 PIN Authentication, PII Privacy Mode, Brute-Force Shield, and Session Expiry
  */
 
-const GOOGLE_SHEET_ORDER_WEBHOOK = 'https://script.google.com/macros/s/AKfycbxok04-fGeaORcDyDwG8qYODD-903xt4q8xq2YTJBCG2fQ6gAF1rmy8FEUyHrozYdQ2/exec';
+const DEFAULT_GOOGLE_SHEET_WEBHOOK = 'https://script.google.com/macros/s/AKfycbxok04-fGeaORcDyDwG8qYODD-903xt4q8xq2YTJBCG2fQ6gAF1rmy8FEUyHrozYdQ2/exec';
+const WEBHOOK_STORAGE_KEY = 'snapdealz_google_sheet_webhook';
+function getActiveWebhookUrl() {
+  try {
+    return localStorage.getItem(WEBHOOK_STORAGE_KEY) || DEFAULT_GOOGLE_SHEET_WEBHOOK;
+  } catch (e) {
+    return DEFAULT_GOOGLE_SHEET_WEBHOOK;
+  }
+}
+const GOOGLE_SHEET_ORDER_WEBHOOK = getActiveWebhookUrl();
 const STORAGE_ORDERS_KEY = 'snapdealz_orders_v1';
 
 // Security Storage Keys
@@ -507,6 +516,90 @@ function initEventListeners() {
       if (secModalEl && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
         const bsModal = bootstrap.Modal.getInstance(secModalEl);
         if (bsModal) bsModal.hide();
+      }
+    });
+  }
+
+  // Google Sheet Webhook Settings
+  const webhookInput = document.getElementById('adminGoogleSheetWebhookInput');
+  const saveWebhookBtn = document.getElementById('saveWebhookBtn');
+  const testWebhookBtn = document.getElementById('testWebhookBtn');
+  const resetWebhookBtn = document.getElementById('resetWebhookBtn');
+  const testWebhookResult = document.getElementById('testWebhookResult');
+
+  if (webhookInput) {
+    webhookInput.value = getActiveWebhookUrl();
+  }
+
+  if (saveWebhookBtn && webhookInput) {
+    saveWebhookBtn.addEventListener('click', () => {
+      const val = webhookInput.value.trim();
+      if (!val || !val.startsWith('http')) {
+        showAdminToast('❌ Please enter a valid URL starting with https://');
+        return;
+      }
+      localStorage.setItem(WEBHOOK_STORAGE_KEY, val);
+      showAdminToast('✅ Google Sheet Webhook URL saved successfully!');
+    });
+  }
+
+  if (resetWebhookBtn && webhookInput) {
+    resetWebhookBtn.addEventListener('click', () => {
+      localStorage.removeItem(WEBHOOK_STORAGE_KEY);
+      webhookInput.value = DEFAULT_GOOGLE_SHEET_WEBHOOK;
+      showAdminToast('Reset to default Google Sheet Webhook URL.');
+    });
+  }
+
+  if (testWebhookBtn && webhookInput) {
+    testWebhookBtn.addEventListener('click', async () => {
+      const targetUrl = webhookInput.value.trim() || getActiveWebhookUrl();
+      testWebhookBtn.disabled = true;
+      testWebhookBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Sending Test Order...';
+      if (testWebhookResult) {
+        testWebhookResult.className = 'small mt-2 alert alert-info py-1 px-2 d-block';
+        testWebhookResult.innerHTML = 'Connecting to Google Sheet...';
+      }
+
+      const testId = `SNP-TEST-${Math.floor(1000 + Math.random() * 9000)}`;
+      const testQuery = new URLSearchParams({
+        orderNumber: testId,
+        orderId: testId,
+        customerName: 'Test Customer (Admin Probe)',
+        phone: '03001234567',
+        email: 'admin.test@snapzdealz.com',
+        address: 'Test Street 123, Office 4B',
+        city: 'Karachi',
+        paymentMethod: 'Cash on Delivery',
+        itemsSummary: 'SnapzDealz Connection Probe (x1)',
+        subtotal: '99.00',
+        discount: '0.00',
+        shipping: '0.00',
+        total: '99.00',
+        status: 'Pending',
+        date: new Date().toLocaleString()
+      });
+
+      try {
+        await fetch(`${targetUrl}?${testQuery.toString()}`, {
+          method: 'GET',
+          mode: 'no-cors',
+          cache: 'no-cache'
+        });
+        if (testWebhookResult) {
+          testWebhookResult.className = 'small mt-2 alert alert-success py-1.5 px-2 d-block';
+          testWebhookResult.innerHTML = `<strong>✅ Success!</strong> Test order <strong>#${testId}</strong> dispatched to Google Sheet. Check your sheet to verify!`;
+        }
+        showAdminToast(`✅ Test order #${testId} dispatched to Google Sheet!`);
+        setTimeout(() => loadAndDisplayOrders(true), 1500);
+      } catch (err) {
+        if (testWebhookResult) {
+          testWebhookResult.className = 'small mt-2 alert alert-danger py-1.5 px-2 d-block';
+          testWebhookResult.innerHTML = `⚠️ Notice: ${err.message || 'Check Webhook URL & deployment permissions.'}`;
+        }
+      } finally {
+        testWebhookBtn.disabled = false;
+        testWebhookBtn.innerHTML = '<i class="bi bi-send-check me-1"></i> Send Test Order';
       }
     });
   }
