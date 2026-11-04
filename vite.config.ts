@@ -1,5 +1,25 @@
+import fs from 'fs';
 import path from 'path';
 import {defineConfig, Plugin} from 'vite';
+
+// Plugin to copy standalone runtime scripts and styles to dist
+const copyStaticFilesPlugin = (): Plugin => ({
+  name: 'copy-static-files',
+  closeBundle() {
+    const files = ['products.js', 'script.js', 'admin.js', 'style.css', '.nojekyll'];
+    const distDir = path.resolve(__dirname, 'dist');
+    if (!fs.existsSync(distDir)) {
+      fs.mkdirSync(distDir, { recursive: true });
+    }
+    for (const f of files) {
+      const src = path.resolve(__dirname, f);
+      const dest = path.resolve(distDir, f);
+      if (fs.existsSync(src)) {
+        fs.copyFileSync(src, dest);
+      }
+    }
+  },
+});
 
 // Plugin to remove Vite's development HMR client script from injected HTML,
 // stopping WebSocket reconnect loops and spontaneous page reloads in cloud previews.
@@ -15,7 +35,8 @@ const disableDevReloadPlugin = (): Plugin => ({
 
 export default defineConfig(() => {
   return {
-    plugins: [disableDevReloadPlugin()],
+    base: './',
+    plugins: [disableDevReloadPlugin(), copyStaticFilesPlugin()],
     build: {
       rollupOptions: {
         input: {
