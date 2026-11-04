@@ -141,6 +141,9 @@ function doPost(e) {
   try {
     lock.waitLock(30000);
     
+    var data = parseRequestData(e);
+    var action = String(data.action || "").toUpperCase();
+    
     // 0. SEND_OTP Action (6-Digit OTP to Gmail)
     if (action === "SEND_OTP" || action === "DISPATCH_OTP") {
       var otpResult = sendEmailOtp(data);
