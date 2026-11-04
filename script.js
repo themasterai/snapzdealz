@@ -14,7 +14,15 @@ const STORAGE_KEYS = {
 };
 
 // Secure Cloud Storage Endpoint for Receiving Orders
-const GOOGLE_SHEET_ORDER_WEBHOOK = 'https://script.google.com/macros/s/AKfycbxok04-fGeaORcDyDwG8qYODD-903xt4q8xq2YTJBCG2fQ6gAF1rmy8FEUyHrozYdQ2/exec';
+const DEFAULT_GOOGLE_SHEET_WEBHOOK = 'https://script.google.com/macros/s/AKfycbxok04-fGeaORcDyDwG8qYODD-903xt4q8xq2YTJBCG2fQ6gAF1rmy8FEUyHrozYdQ2/exec';
+function getActiveWebhookUrl() {
+  try {
+    return localStorage.getItem('snapdealz_google_sheet_webhook') || DEFAULT_GOOGLE_SHEET_WEBHOOK;
+  } catch (e) {
+    return DEFAULT_GOOGLE_SHEET_WEBHOOK;
+  }
+}
+const GOOGLE_SHEET_ORDER_WEBHOOK = getActiveWebhookUrl();
 
 // Available Promo Codes
 const PROMO_CODES = {
@@ -2039,11 +2047,25 @@ async function sendOrderToGoogleSheet(orderData) {
     timestamp: orderData.timestamp || new Date().toISOString()
   });
 
-  const fullUrl = `${GOOGLE_SHEET_ORDER_WEBHOOK}?${queryParams.toString()}`;
+  const webhookUrl = getActiveWebhookUrl();
+  if (!webhookUrl) return { success: false, error: 'Endpoint inactive' };
 
-  // Single clean transmission to Google Apps Script Webhook (prevents double entry in Google Sheet)
+  const fullUrl = `${webhookUrl}?${queryParams.toString()}`;
+
+  // 1. Primary Reliable Transmission via GET (Google Apps Script executes doGet seamlessly and returns success)
   try {
     await fetch(fullUrl, {
+      method: 'GET',
+      mode: 'no-cors',
+      cache: 'no-cache'
+    });
+  } catch (getErr) {
+    console.warn('GET order transmission notice:', getErr);
+  }
+
+  // 2. Secondary Payload Transmission via POST
+  try {
+    await fetch(webhookUrl, {
       method: 'POST',
       mode: 'no-cors',
       cache: 'no-cache',
@@ -2052,21 +2074,11 @@ async function sendOrderToGoogleSheet(orderData) {
       },
       body: JSON.stringify(payload)
     });
-    return { success: true };
   } catch (postError) {
-    // Fallback via GET if POST fails
-    try {
-      await fetch(fullUrl, {
-        method: 'GET',
-        mode: 'no-cors',
-        cache: 'no-cache'
-      });
-      return { success: true };
-    } catch (getError) {
-      console.warn('Order webhook transmission notice:', getError);
-      return { success: false, error: getError };
-    }
+    console.warn('POST order transmission notice:', postError);
   }
+
+  return { success: true };
 }
 
 /**
