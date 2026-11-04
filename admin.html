@@ -854,6 +854,30 @@
               </div>
             </div>
 
+            <!-- Google Sheet Webhook Integration Settings -->
+            <div class="mb-3 p-3 bg-light rounded-3 border">
+              <label class="form-label small fw-bold text-dark d-flex align-items-center justify-content-between mb-1" for="adminGoogleSheetWebhookInput">
+                <span><i class="bi bi-file-earmark-spreadsheet-fill text-success me-1"></i> Google Sheet Webhook URL</span>
+                <span class="badge bg-success-subtle text-success" id="webhookStatusBadge">Active</span>
+              </label>
+              <p class="text-muted small mb-2" style="font-size: 0.78rem;">
+                Checkout orders & customer registrations are sent directly to this Google Apps Script Webhook.
+              </p>
+              <div class="input-group input-group-sm mb-2">
+                <input type="url" class="form-control font-monospace" id="adminGoogleSheetWebhookInput" placeholder="https://script.google.com/macros/s/.../exec">
+                <button type="button" class="btn btn-dark fw-bold px-3" id="saveWebhookBtn">Save</button>
+              </div>
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-sm btn-outline-success rounded-pill fw-semibold" id="testWebhookBtn">
+                  <i class="bi bi-send-check me-1"></i> Send Test Order
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill fw-semibold" id="resetWebhookBtn">
+                  Reset Default
+                </button>
+              </div>
+              <div id="testWebhookResult" class="small mt-2 d-none"></div>
+            </div>
+
             <!-- Danger Zone / Reset to Default -->
             <div class="p-3 bg-light rounded-3 border">
               <div class="d-flex justify-content-between align-items-center">
