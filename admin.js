@@ -221,6 +221,7 @@ async function initAdminDashboard() {
   updatePiiButtonUi();
   initSessionInactivityWatcher();
   initAdminProductsManager();
+  initAdminHeroManager();
   initCancelledOrdersCleaner();
   const isAuth = checkAdminAuth();
   if (isAuth) {
@@ -1843,58 +1844,69 @@ function setupProductEventListeners() {
   // Explicit tab switching handlers to guarantee 100% reliable tab opening across all mobile browsers
   const prodTabBtn = document.getElementById('tabProductsBtn');
   const ordersTabBtn = document.getElementById('tabOrdersBtn');
+  const heroTabBtn = document.getElementById('tabHeroBtn');
   const prodPane = document.getElementById('tabProductsPane');
   const ordersPane = document.getElementById('tabOrdersPane');
+  const heroPane = document.getElementById('tabHeroPane');
+
+  function switchAdminPortalTab(target) {
+    const tabConfigs = [
+      { id: 'orders', btn: ordersTabBtn, pane: ordersPane, onOpen: () => {} },
+      { id: 'products', btn: prodTabBtn, pane: prodPane, onOpen: () => renderAdminProducts() },
+      { id: 'hero', btn: heroTabBtn, pane: heroPane, onOpen: () => renderAdminHeroSlides() }
+    ];
+
+    tabConfigs.forEach(t => {
+      const isMatch = t.id === target;
+      if (t.btn) {
+        if (isMatch) {
+          t.btn.classList.add('active');
+          t.btn.setAttribute('aria-selected', 'true');
+        } else {
+          t.btn.classList.remove('active');
+          t.btn.setAttribute('aria-selected', 'false');
+        }
+      }
+      if (t.pane) {
+        if (isMatch) {
+          t.pane.style.setProperty('display', 'block', 'important');
+          t.pane.classList.add('show', 'active');
+          t.onOpen();
+        } else {
+          t.pane.style.setProperty('display', 'none', 'important');
+          t.pane.classList.remove('show', 'active');
+        }
+      }
+    });
+  }
 
   if (prodTabBtn) {
     prodTabBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      if (ordersTabBtn) {
-        ordersTabBtn.classList.remove('active');
-        ordersTabBtn.setAttribute('aria-selected', 'false');
-      }
-      prodTabBtn.classList.add('active');
-      prodTabBtn.setAttribute('aria-selected', 'true');
-
-      if (ordersPane) {
-        ordersPane.style.setProperty('display', 'none', 'important');
-        ordersPane.classList.remove('show', 'active');
-      }
-      if (prodPane) {
-        prodPane.style.setProperty('display', 'block', 'important');
-        prodPane.classList.add('show', 'active');
-      }
-      renderAdminProducts();
+      switchAdminPortalTab('products');
     });
   }
 
   if (ordersTabBtn) {
     ordersTabBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      if (prodTabBtn) {
-        prodTabBtn.classList.remove('active');
-        prodTabBtn.setAttribute('aria-selected', 'false');
-      }
-      ordersTabBtn.classList.add('active');
-      ordersTabBtn.setAttribute('aria-selected', 'true');
-
-      if (prodPane) {
-        prodPane.style.setProperty('display', 'none', 'important');
-        prodPane.classList.remove('show', 'active');
-      }
-      if (ordersPane) {
-        ordersPane.style.setProperty('display', 'block', 'important');
-        ordersPane.classList.add('show', 'active');
-      }
+      switchAdminPortalTab('orders');
     });
   }
 
-  // Check URL query param or hash to auto-open products tab
+  if (heroTabBtn) {
+    heroTabBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      switchAdminPortalTab('hero');
+    });
+  }
+
+  // Check URL query param or hash to auto-open hero or products tab
   const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get('tab') === 'products' || window.location.hash === '#products') {
-    if (prodTabBtn) {
-      setTimeout(() => prodTabBtn.click(), 100);
-    }
+  if (urlParams.get('tab') === 'hero' || window.location.hash === '#hero') {
+    setTimeout(() => switchAdminPortalTab('hero'), 100);
+  } else if (urlParams.get('tab') === 'products' || window.location.hash === '#products') {
+    setTimeout(() => switchAdminPortalTab('products'), 100);
   }
 
   // Category Filter Pills
@@ -2179,4 +2191,323 @@ function setupProductEventListeners() {
     });
   }
 }
+
+/* ==========================================================================
+   HERO CAROUSEL BANNERS MANAGEMENT
+   ========================================================================== */
+
+function initAdminHeroManager() {
+  renderAdminHeroSlides();
+  setupHeroEventListeners();
+}
+
+function renderAdminHeroSlides() {
+  const container = document.getElementById('heroSlidesEditorContainer');
+  if (!container) return;
+
+  const slides = typeof loadHeroSlides === 'function' ? loadHeroSlides() : [];
+  const catalog = typeof loadProductsCatalog === 'function' ? loadProductsCatalog() : (typeof products !== 'undefined' ? products : []);
+
+  if (!slides || !slides.length) {
+    container.innerHTML = '<div class="col-12 alert alert-warning">No hero slides found. Click Factory Reset to restore defaults.</div>';
+    return;
+  }
+
+  container.innerHTML = slides.map((slide, idx) => {
+    const isDark = slide.stickerTheme === 'dark';
+    const tagIcon = slide.tagIcon || 'bi-fire';
+
+    // Catalog products options
+    const productOptions = catalog.map(p => {
+      const isSelected = Number(slide.productId) === Number(p.id) ? 'selected' : '';
+      return `<option value="${p.id}" ${isSelected}>${escapeHtml(p.name)} — $${Number(p.price).toFixed(2)} (${escapeHtml(p.category)})</option>`;
+    }).join('');
+
+    return `
+      <div class="col-12 col-xl-4">
+        <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white hero-slide-edit-card" data-slide-index="${idx}">
+          
+          <!-- Slide Card Header -->
+          <div class="card-header bg-dark text-white p-3 d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-warning text-dark fw-bold rounded-pill px-2.5 py-1">SLIDE ${idx + 1}</span>
+              <span class="small fw-bold text-uppercase tracking-wider text-light">${idx === 0 ? 'First (Active)' : `Banner ${idx + 1}`}</span>
+            </div>
+            <span class="badge bg-secondary-subtle text-light-emphasis small rounded-pill">
+              <i class="bi bi-display me-1"></i> Live on Store
+            </span>
+          </div>
+
+          <div class="card-body p-3 p-md-4">
+            
+            <!-- Quick 1-Click Product Auto-Fill Dropdown -->
+            <div class="p-3 rounded-3 mb-3" style="background-color: #fff9e6; border: 1.5px dashed #F9B800;">
+              <label class="form-label small fw-bold text-dark mb-1 d-flex align-items-center gap-1">
+                <i class="bi bi-magic text-warning"></i>
+                <span>1-Click Auto-Fill from Store Product:</span>
+              </label>
+              <select class="form-select form-select-sm hero-product-picker rounded-pill border-warning" data-slide-index="${idx}">
+                <option value="">-- Choose Any Store Product --</option>
+                ${productOptions}
+              </select>
+              <div class="text-muted small mt-1" style="font-size: 0.72rem;">
+                Product select karte hi Title, Details, Photo, Price aur Links auto-fill ho jayenge!
+              </div>
+            </div>
+
+            <!-- Slide Main Title -->
+            <div class="mb-3">
+              <label class="form-label small fw-bold text-dark">
+                Banner Headline / Title <span class="text-danger">*</span>
+              </label>
+              <input type="text" class="form-control form-control-sm hero-input-title" data-slide-index="${idx}" value="${escapeHtml(slide.title || '')}" required placeholder="e.g. STEP INTO POWER & SPEED">
+            </div>
+
+            <!-- Badge / Tag & Icon -->
+            <div class="row g-2 mb-3">
+              <div class="col-7">
+                <label class="form-label small fw-bold text-dark">Tag / Label</label>
+                <input type="text" class="form-control form-control-sm hero-input-tag" data-slide-index="${idx}" value="${escapeHtml(slide.tag || '')}" placeholder="DEAL OF THE DAY">
+              </div>
+              <div class="col-5">
+                <label class="form-label small fw-bold text-dark">Tag Icon</label>
+                <select class="form-select form-select-sm hero-input-tag-icon" data-slide-index="${idx}">
+                  <option value="bi-fire" ${tagIcon === 'bi-fire' ? 'selected' : ''}>🔥 Fire</option>
+                  <option value="bi-gem" ${tagIcon === 'bi-gem' ? 'selected' : ''}>💎 Gem / Luxury</option>
+                  <option value="bi-stars" ${tagIcon === 'bi-stars' ? 'selected' : ''}>⭐ Stars / Top</option>
+                  <option value="bi-lightning-charge-fill" ${tagIcon === 'bi-lightning-charge-fill' ? 'selected' : ''}>⚡ Flash Deal</option>
+                  <option value="bi-tag-fill" ${tagIcon === 'bi-tag-fill' ? 'selected' : ''}>🏷️ Discount</option>
+                  <option value="bi-heart-fill" ${tagIcon === 'bi-heart-fill' ? 'selected' : ''}>❤️ Trending</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Description -->
+            <div class="mb-3">
+              <label class="form-label small fw-bold text-dark">Subtitle Description</label>
+              <textarea class="form-control form-control-sm hero-input-desc" data-slide-index="${idx}" rows="2" placeholder="Short description of deal...">${escapeHtml(slide.description || '')}</textarea>
+            </div>
+
+            <!-- Button 1 (Primary CTA) -->
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="form-label small fw-bold text-dark">Primary Button Text</label>
+                <input type="text" class="form-control form-control-sm hero-input-btn1-text" data-slide-index="${idx}" value="${escapeHtml(slide.btnPrimaryText || 'Shop Now')}" placeholder="Shop Now • $64.99">
+              </div>
+              <div class="col-6">
+                <label class="form-label small fw-bold text-dark">Primary Button Link</label>
+                <input type="text" class="form-control form-control-sm hero-input-btn1-link" data-slide-index="${idx}" value="${escapeHtml(slide.btnPrimaryLink || 'product.html?id=1')}" placeholder="product.html?id=1">
+              </div>
+            </div>
+
+            <!-- Button 2 (Secondary CTA) -->
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="form-label small fw-bold text-dark">Secondary Button Text</label>
+                <input type="text" class="form-control form-control-sm hero-input-btn2-text" data-slide-index="${idx}" value="${escapeHtml(slide.btnSecondaryText || 'Explore More')}" placeholder="Explore Deals">
+              </div>
+              <div class="col-6">
+                <label class="form-label small fw-bold text-dark">Secondary Button Link</label>
+                <input type="text" class="form-control form-control-sm hero-input-btn2-link" data-slide-index="${idx}" value="${escapeHtml(slide.btnSecondaryLink || 'shop.html')}" placeholder="shop.html">
+              </div>
+            </div>
+
+            <!-- Image URL & Live Preview -->
+            <div class="mb-3">
+              <label class="form-label small fw-bold text-dark">Hero Image URL</label>
+              <div class="input-group input-group-sm mb-2">
+                <span class="input-group-text bg-light"><i class="bi bi-image"></i></span>
+                <input type="url" class="form-control hero-input-image" data-slide-index="${idx}" value="${escapeHtml(slide.imageUrl || '')}" placeholder="https://images.unsplash.com/...">
+              </div>
+              
+              <!-- Thumbnail Preview Box -->
+              <div class="d-flex align-items-center gap-3 p-2 rounded-3 bg-light border">
+                <div style="width: 70px; height: 60px; border-radius: 8px; overflow: hidden; background: #eee; flex-shrink: 0;" class="border">
+                  <img src="${escapeHtml(slide.imageUrl)}" alt="Preview" class="w-100 h-100 object-fit-cover hero-preview-img-${idx}" onerror="this.src='https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&auto=format&fit=crop&q=80'">
+                </div>
+                <div class="small text-muted flex-grow-1" style="font-size: 0.75rem;">
+                  <strong class="text-dark d-block">Live Image Preview</strong>
+                  Transparent background ya high-res product photo recommended hai.
+                </div>
+              </div>
+            </div>
+
+            <!-- Circular Discount Badge / Sticker -->
+            <div class="p-3 bg-light rounded-3 border">
+              <label class="form-label small fw-bold text-dark mb-2 d-flex justify-content-between align-items-center">
+                <span>Circular Discount Sticker:</span>
+                <span class="badge ${isDark ? 'bg-dark text-warning' : 'bg-warning text-dark'}">Preview</span>
+              </label>
+              <div class="row g-2">
+                <div class="col-4">
+                  <input type="text" class="form-control form-control-sm hero-input-sticker-top" data-slide-index="${idx}" value="${escapeHtml(slide.stickerTop || 'SAVE')}" placeholder="SAVE">
+                </div>
+                <div class="col-4">
+                  <input type="text" class="form-control form-control-sm hero-input-sticker-mid" data-slide-index="${idx}" value="${escapeHtml(slide.stickerMiddle || '50%')}" placeholder="50%">
+                </div>
+                <div class="col-4">
+                  <input type="text" class="form-control form-control-sm hero-input-sticker-btm" data-slide-index="${idx}" value="${escapeHtml(slide.stickerBottom || 'TODAY')}" placeholder="TODAY">
+                </div>
+                <div class="col-12 mt-2">
+                  <div class="d-flex align-items-center justify-content-between">
+                    <span class="small text-muted" style="font-size: 0.75rem;">Badge Theme:</span>
+                    <div class="btn-group btn-group-sm" role="group">
+                      <input type="radio" class="btn-check hero-sticker-theme" name="stickerTheme_${idx}" id="theme_light_${idx}" value="default" ${!isDark ? 'checked' : ''} data-slide-index="${idx}">
+                      <label class="btn btn-outline-warning py-0 px-2 small text-dark" for="theme_light_${idx}">Yellow</label>
+
+                      <input type="radio" class="btn-check hero-sticker-theme" name="stickerTheme_${idx}" id="theme_dark_${idx}" value="dark" ${isDark ? 'checked' : ''} data-slide-index="${idx}">
+                      <label class="btn btn-outline-dark py-0 px-2 small" for="theme_dark_${idx}">Dark</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function setupHeroEventListeners() {
+  // Product picker change
+  document.querySelectorAll('.hero-product-picker').forEach(picker => {
+    picker.addEventListener('change', (e) => {
+      const idx = e.target.getAttribute('data-slide-index');
+      const prodId = e.target.value;
+      if (!prodId) return;
+
+      const catalog = typeof loadProductsCatalog === 'function' ? loadProductsCatalog() : (typeof products !== 'undefined' ? products : []);
+      const prod = catalog.find(p => Number(p.id) === Number(prodId));
+      if (!prod) return;
+
+      const card = document.querySelector(`.hero-slide-edit-card[data-slide-index="${idx}"]`);
+      if (!card) return;
+
+      const titleInput = card.querySelector('.hero-input-title');
+      const descInput = card.querySelector('.hero-input-desc');
+      const btn1TextInput = card.querySelector('.hero-input-btn1-text');
+      const btn1LinkInput = card.querySelector('.hero-input-btn1-link');
+      const btn2TextInput = card.querySelector('.hero-input-btn2-text');
+      const btn2LinkInput = card.querySelector('.hero-input-btn2-link');
+      const imgInput = card.querySelector('.hero-input-image');
+      const previewImg = card.querySelector(`.hero-preview-img-${idx}`);
+      const tagInput = card.querySelector('.hero-input-tag');
+      const stickerTopInput = card.querySelector('.hero-input-sticker-top');
+      const stickerMidInput = card.querySelector('.hero-input-sticker-mid');
+      const stickerBtmInput = card.querySelector('.hero-input-sticker-btm');
+
+      const imgUrl = (Array.isArray(prod.images) && prod.images[0]) || prod.image || '';
+      const discount = prod.oldPrice && prod.oldPrice > prod.price 
+        ? Math.round(((prod.oldPrice - prod.price) / prod.oldPrice) * 100) 
+        : 0;
+
+      if (titleInput) titleInput.value = prod.name.toUpperCase();
+      if (descInput) descInput.value = prod.description || `Special limited deal on ${prod.name}. Grab yours now!`;
+      if (btn1TextInput) btn1TextInput.value = `Shop Now • $${Number(prod.price).toFixed(2)}`;
+      if (btn1LinkInput) btn1LinkInput.value = `product.html?id=${prod.id}`;
+      const catSlug = prod.categorySlug || (prod.category || '').toLowerCase().replace(/[^a-z0-9]/g, '-');
+      if (btn2TextInput) btn2TextInput.value = `Explore ${prod.category || 'Deals'}`;
+      if (btn2LinkInput) btn2LinkInput.value = `shop.html?category=${catSlug}`;
+      if (imgInput) imgInput.value = imgUrl;
+      if (previewImg && imgUrl) previewImg.src = imgUrl;
+      if (tagInput) tagInput.value = prod.badge ? `${prod.badge} DEAL` : 'DEAL OF THE DAY';
+      if (stickerTopInput) stickerTopInput.value = 'SAVE';
+      if (stickerMidInput) stickerMidInput.value = discount > 0 ? `${discount}%` : (prod.badge || 'HOT');
+      if (stickerBtmInput) stickerBtmInput.value = 'TODAY';
+
+      showAdminToast(`✨ Slide ${Number(idx) + 1} auto-filled with "${prod.name}"!`);
+    });
+  });
+
+  // Image URL input live preview
+  document.querySelectorAll('.hero-input-image').forEach(input => {
+    input.addEventListener('input', (e) => {
+      const idx = e.target.getAttribute('data-slide-index');
+      const preview = document.querySelector(`.hero-preview-img-${idx}`);
+      if (preview && e.target.value.trim()) {
+        preview.src = e.target.value.trim();
+      }
+    });
+  });
+
+  // Save Hero Banners Action
+  const saveAction = (e) => {
+    if (e) e.preventDefault();
+    const cards = document.querySelectorAll('.hero-slide-edit-card');
+    const newSlides = [];
+
+    cards.forEach((card, idx) => {
+      const title = card.querySelector('.hero-input-title')?.value.trim() || `Featured Deal ${idx + 1}`;
+      const tag = card.querySelector('.hero-input-tag')?.value.trim() || 'SPECIAL DEAL';
+      const tagIcon = card.querySelector('.hero-input-tag-icon')?.value || 'bi-fire';
+      const description = card.querySelector('.hero-input-desc')?.value.trim() || '';
+      const btnPrimaryText = card.querySelector('.hero-input-btn1-text')?.value.trim() || 'Shop Now';
+      const btnPrimaryLink = card.querySelector('.hero-input-btn1-link')?.value.trim() || 'shop.html';
+      const btnSecondaryText = card.querySelector('.hero-input-btn2-text')?.value.trim() || 'Explore';
+      const btnSecondaryLink = card.querySelector('.hero-input-btn2-link')?.value.trim() || 'shop.html';
+      const imageUrl = card.querySelector('.hero-input-image')?.value.trim() || 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&auto=format&fit=crop&q=80';
+      const stickerTop = card.querySelector('.hero-input-sticker-top')?.value.trim() || 'SAVE';
+      const stickerMiddle = card.querySelector('.hero-input-sticker-mid')?.value.trim() || '50%';
+      const stickerBottom = card.querySelector('.hero-input-sticker-btm')?.value.trim() || 'TODAY';
+      const themeRadio = card.querySelector(`input[name="stickerTheme_${idx}"]:checked`);
+      const stickerTheme = themeRadio ? themeRadio.value : 'default';
+      const productPicker = card.querySelector('.hero-product-picker');
+      const productId = productPicker ? productPicker.value : null;
+
+      newSlides.push({
+        id: idx + 1,
+        productId: productId || null,
+        tag,
+        tagIcon,
+        title,
+        description,
+        btnPrimaryText,
+        btnPrimaryLink,
+        btnSecondaryText,
+        btnSecondaryLink,
+        imageUrl,
+        imageAlt: title,
+        stickerTop,
+        stickerMiddle,
+        stickerBottom,
+        stickerTheme
+      });
+    });
+
+    if (typeof saveHeroSlides === 'function') {
+      saveHeroSlides(newSlides);
+    }
+    showAdminToast('🎯 All 3 Hero Banners saved successfully! Homepage updated in real time.');
+  };
+
+  const form = document.getElementById('adminHeroSlidesForm');
+  if (form) form.addEventListener('submit', saveAction);
+
+  const saveTopBtn = document.getElementById('saveHeroBannersBtn');
+  if (saveTopBtn) saveTopBtn.addEventListener('click', saveAction);
+
+  const saveBtmBtn = document.getElementById('saveHeroBannersBottomBtn');
+  if (saveBtmBtn) saveBtmBtn.addEventListener('click', saveAction);
+
+  // Reset Factory Defaults Action
+  const resetAction = () => {
+    if (confirm('Reset all 3 Hero Carousel slides back to default products and deals?')) {
+      if (typeof resetHeroSlides === 'function') {
+        resetHeroSlides();
+      }
+      renderAdminHeroSlides();
+      setupHeroEventListeners();
+      showAdminToast('🔄 Hero Carousel banners reset to factory defaults.');
+    }
+  };
+
+  const resetTopBtn = document.getElementById('resetHeroBannersBtn');
+  if (resetTopBtn) resetTopBtn.addEventListener('click', resetAction);
+
+  const resetBtmBtn = document.getElementById('resetHeroBannersBottomBtn');
+  if (resetBtmBtn) resetBtmBtn.addEventListener('click', resetAction);
+}
+
 
