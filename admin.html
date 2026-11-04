@@ -351,6 +351,9 @@
                 <button class="btn flex-fill py-2 px-2 px-md-3 rounded-pill fw-bold small text-nowrap admin-tab-btn" id="tabProductsBtn" type="button">
                   <i class="bi bi-tags-fill text-warning me-1"></i> Products (<span id="adminLiveProductCount">14</span>)
                 </button>
+                <button class="btn flex-fill py-2 px-2 px-md-3 rounded-pill fw-bold small text-nowrap admin-tab-btn" id="tabHeroBtn" type="button">
+                  <i class="bi bi-images text-warning me-1"></i> Hero Banners
+                </button>
               </div>
             </div>
 
@@ -682,6 +685,76 @@
           </div>
 
         </div><!-- End #tabProductsPane -->
+
+        <!-- TAB 3: HERO CAROUSEL BANNERS -->
+        <div class="tab-pane fade" id="tabHeroPane" role="tabpanel" aria-labelledby="tabHeroBtn">
+
+          <!-- Breadcrumb & Title Bar -->
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+            <div>
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1 small">
+                  <li class="breadcrumb-item"><a href="index.html" class="text-muted text-decoration-none">SnapzDealz</a></li>
+                  <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">Hero Banners Manager</li>
+                </ol>
+              </nav>
+              <h2 class="deal-heading fs-3 mb-0 text-dark">
+                <i class="bi bi-images text-warning me-2"></i>Homepage Hero Carousel Banners
+              </h2>
+              <span class="text-muted small">Storefront ke 3 hero slides ko yahan se customize karein. Dropdown se direct product pick karein ya apna custom text/image dalein.</span>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <a href="index.html" target="_blank" class="btn btn-sm btn-outline-dark rounded-pill px-3 py-1.5 fw-bold text-nowrap">
+                <i class="bi bi-eye-fill me-1"></i> View Live Store
+              </a>
+              <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1.5 fw-bold text-nowrap" id="resetHeroBannersBtn">
+                <i class="bi bi-arrow-counterclockwise me-1"></i> Factory Reset
+              </button>
+              <button type="button" class="btn btn-sm btn-deal rounded-pill px-4 py-1.5 fw-bold shadow-sm text-nowrap" id="saveHeroBannersBtn">
+                <i class="bi bi-check2-circle me-1"></i> Save All Banners
+              </button>
+            </div>
+          </div>
+
+          <!-- Helpful instruction banner -->
+          <div class="alert alert-warning border-0 bg-warning-subtle text-dark p-3 rounded-4 mb-4 d-flex align-items-center gap-3">
+            <div class="fs-3 text-warning">
+              <i class="bi bi-magic"></i>
+            </div>
+            <div class="small">
+              <strong>1-Click Product Auto-Fill:</strong> Har slide ke upar diye gaye <em>"Choose Product from Catalog"</em> dropdown se koi bhi product select karein. Title, Description, Image URL, Price, aur Buy Button ka link khud-b-khud set ho jayega!
+            </div>
+          </div>
+
+          <!-- Hero Slides Editor Form -->
+          <form id="adminHeroSlidesForm">
+            <div class="row g-4" id="heroSlidesEditorContainer">
+              <!-- Dynamically rendered by admin.js -->
+              <div class="col-12 text-center py-5">
+                <div class="spinner-border text-warning" role="status"></div>
+                <div class="text-muted small mt-2">Loading hero banner configurations...</div>
+              </div>
+            </div>
+
+            <!-- Bottom Save Bar -->
+            <div class="card border-0 shadow-sm rounded-4 p-3 mt-4 bg-white d-flex flex-row justify-content-between align-items-center flex-wrap gap-3">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-info-circle-fill text-warning fs-5"></i>
+                <span class="small text-muted">Jab aap <strong>"Save All Banners"</strong> pe click karenge, to website ke homepage par naye slides live ho jayenge!</span>
+              </div>
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-3 small fw-semibold" id="resetHeroBannersBottomBtn">
+                  Restore Defaults
+                </button>
+                <button type="submit" class="btn btn-deal rounded-pill px-4 small fw-bold" id="saveHeroBannersBottomBtn">
+                  <i class="bi bi-check2-circle me-1"></i> Save All Banners
+                </button>
+              </div>
+            </div>
+          </form>
+
+        </div><!-- End #tabHeroPane -->
       </div><!-- End #adminPortalTabContent -->
 
       </div><!-- End #adminMainPortal -->
