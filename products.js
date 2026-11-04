@@ -1002,3 +1002,100 @@ function resetProductsCatalog() {
   return products;
 }
 
+/* ==========================================================================
+   HERO CAROUSEL SLIDES MANAGEMENT
+   ========================================================================== */
+
+const DEFAULT_HERO_SLIDES = [
+  {
+    id: 1,
+    productId: 1,
+    tag: "DEAL OF THE DAY",
+    tagIcon: "bi-fire",
+    title: "STEP INTO POWER & SPEED",
+    description: "Apex Pulse Air Running Shoes with responsive cloud cushioning. Upgrade your athletic sprint with massive 50% discount savings.",
+    btnPrimaryText: "Shop Now • $64.99",
+    btnPrimaryLink: "product.html?id=1",
+    btnSecondaryText: "Explore Shoes",
+    btnSecondaryLink: "shop.html?category=mens-shoes",
+    imageUrl: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&auto=format&fit=crop&q=80",
+    imageAlt: "Apex Pulse Air Running Shoes",
+    stickerTop: "SAVE",
+    stickerMiddle: "50%",
+    stickerBottom: "TODAY",
+    stickerTheme: "default"
+  },
+  {
+    id: 2,
+    productId: 2,
+    tag: "LUXURY AT OUTLET PRICES",
+    tagIcon: "bi-gem",
+    title: "ITALIAN LEATHER STATEMENT TOTES",
+    description: "Luxe Verona Italian Leather Tote crafted with scratch-resistant vegan pebbled leather and 14K gold-finish hardware.",
+    btnPrimaryText: "Claim Deal • $79.99",
+    btnPrimaryLink: "product.html?id=2",
+    btnSecondaryText: "Browse All Bags",
+    btnSecondaryLink: "shop.html?category=ladies-bags",
+    imageUrl: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800&auto=format&fit=crop&q=80",
+    imageAlt: "Luxe Verona Tote",
+    stickerTop: "ONLY",
+    stickerMiddle: "$79",
+    stickerBottom: "LIMITED",
+    stickerTheme: "dark"
+  },
+  {
+    id: 3,
+    productId: 3,
+    tag: "DERMATOLOGIST FORMULA",
+    tagIcon: "bi-stars",
+    title: "PURE BOTANICAL GLOW SERUM",
+    description: "Lumière Radiance Botanical Glow Serum with 15% Stabilized Vitamin C & Triple Hyaluronic Acid for 72-hour deep moisture.",
+    btnPrimaryText: "Get Glow • $34.50",
+    btnPrimaryLink: "product.html?id=3",
+    btnSecondaryText: "View Skincare",
+    btnSecondaryLink: "shop.html?category=health-beauty",
+    imageUrl: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=800&auto=format&fit=crop&q=80",
+    imageAlt: "Lumière Radiance Serum",
+    stickerTop: "TOP",
+    stickerMiddle: "RATED",
+    stickerBottom: "4.9★",
+    stickerTheme: "default"
+  }
+];
+
+const STORAGE_HERO_SLIDES_KEY = 'snapdealz_hero_slides_v1';
+
+function loadHeroSlides() {
+  try {
+    const raw = localStorage.getItem(STORAGE_HERO_SLIDES_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  } catch (e) {
+    console.warn("Could not parse hero slides from localStorage", e);
+  }
+  return JSON.parse(JSON.stringify(DEFAULT_HERO_SLIDES));
+}
+
+function saveHeroSlides(slides) {
+  try {
+    if (!Array.isArray(slides)) return false;
+    localStorage.setItem(STORAGE_HERO_SLIDES_KEY, JSON.stringify(slides));
+    return true;
+  } catch (e) {
+    console.error("Failed to save hero slides to localStorage", e);
+    return false;
+  }
+}
+
+function resetHeroSlides() {
+  try {
+    localStorage.removeItem(STORAGE_HERO_SLIDES_KEY);
+  } catch (e) {}
+  return JSON.parse(JSON.stringify(DEFAULT_HERO_SLIDES));
+}
+
+
