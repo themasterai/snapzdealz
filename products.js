@@ -164,9 +164,7 @@ const DEFAULT_PRODUCTS = [
     colors: ["#1f1f1f", "#C0C0C0", "#F9B800"],
     sizes: ["42mm Case"],
     images: [
-      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=800&auto=format&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=800&auto=format&fit=crop&q=80"
+      "Luxury Silver Watch Gift Set .png"
     ],
     description: "Sleek matte black stainless steel case paired with scratch-proof sapphire crystal glass. Features Japanese quartz precision movement and 100m water resistance.",
     features: [
