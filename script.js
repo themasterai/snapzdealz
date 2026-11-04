@@ -1225,7 +1225,73 @@ function bindProductCardEvents(container = document) {
    7. HOME PAGE LOGIC
    ========================================================================== */
 
+/** Render Dynamic Hero Carousel from Storage / Defaults */
+function renderHeroCarousel() {
+  const carousel = document.getElementById('heroCarousel');
+  if (!carousel) return;
+
+  const slides = typeof loadHeroSlides === 'function' ? loadHeroSlides() : [];
+  if (!slides || !slides.length) return;
+
+  const indicators = carousel.querySelector('.carousel-indicators');
+  const inner = carousel.querySelector('.carousel-inner');
+
+  const sanitize = (str) => {
+    if (str === null || str === undefined) return '';
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+  };
+
+  if (indicators) {
+    indicators.innerHTML = slides.map((slide, idx) => `
+      <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="${idx}" class="${idx === 0 ? 'active' : ''}" aria-current="${idx === 0 ? 'true' : 'false'}" aria-label="Slide ${idx + 1}"></button>
+    `).join('');
+  }
+
+  if (inner) {
+    inner.innerHTML = slides.map((slide, idx) => {
+      const isDark = slide.stickerTheme === 'dark';
+      const icon = slide.tagIcon || 'bi-fire';
+      const topSticker = slide.stickerTop || 'SAVE';
+      const midSticker = slide.stickerMiddle || '50%';
+      const btmSticker = slide.stickerBottom || 'TODAY';
+
+      return `
+        <div class="carousel-item ${idx === 0 ? 'active' : ''}">
+          <div class="row align-items-center hero-slide">
+            <div class="col-lg-6 mb-4 mb-lg-0 reveal-fade-up">
+              <span class="hero-tag"><i class="bi ${icon} text-warning"></i> ${sanitize(slide.tag || 'DEAL OF THE DAY')}</span>
+              <h1 class="hero-title">${sanitize(slide.title || 'SPECIAL STORE DEAL')}</h1>
+              <p class="hero-desc">${sanitize(slide.description || '')}</p>
+              <div class="d-flex flex-wrap align-items-center gap-3">
+                <a href="${sanitize(slide.btnPrimaryLink || 'shop.html')}" class="btn btn-deal btn-lg">
+                  <i class="bi bi-bag-check-fill"></i> ${sanitize(slide.btnPrimaryText || 'Shop Now')}
+                </a>
+                <a href="${sanitize(slide.btnSecondaryLink || 'shop.html')}" class="btn btn-deal-outline btn-lg">
+                  ${sanitize(slide.btnSecondaryText || 'Explore Deals')}
+                </a>
+              </div>
+            </div>
+            <div class="col-lg-6 text-center">
+              <div class="hero-img-box">
+                <img src="${sanitize(slide.imageUrl)}" alt="${sanitize(slide.imageAlt || slide.title || 'Product')}" class="hero-floating-img img-fluid" data-parallax="-0.07">
+                <div class="hero-deal-sticker ${isDark ? 'bg-dark' : ''}" data-parallax="0.05">
+                  <span style="font-size: 0.7rem; ${isDark ? 'color: #F9B800;' : ''}">${sanitize(topSticker)}</span>
+                  <span style="font-size: 1.35rem; ${isDark ? 'color: #fff;' : ''}">${sanitize(midSticker)}</span>
+                  <span style="font-size: 0.65rem; ${isDark ? 'color: #F9B800;' : ''}">${sanitize(btmSticker)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+}
+
 function initHomePage() {
+  // Render Dynamic Hero Carousel (from admin settings or default)
+  renderHeroCarousel();
+
   // Shop By Categories row
   const categoryScroll = document.getElementById('categoryScrollContainer');
   if (categoryScroll && typeof categoriesData !== 'undefined') {
