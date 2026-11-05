@@ -280,6 +280,20 @@ function checkAdminAuth() {
     if (lockBtn) lockBtn.classList.add('d-none');
     if (secBtn) secBtn.classList.add('d-none');
     if (piiBtn) piiBtn.classList.add('d-none');
+    
+    // Always blank the PIN input and reset visibility whenever locked or logged out
+    const pinInput = document.getElementById('adminPinInput');
+    if (pinInput) {
+      pinInput.value = '';
+      pinInput.setAttribute('type', 'password');
+    }
+    const togglePinVisBtn = document.getElementById('toggleAdminPinVisBtn');
+    if (togglePinVisBtn) {
+      const icon = togglePinVisBtn.querySelector('i');
+      if (icon) icon.className = 'bi bi-eye';
+    }
+    const pinErr = document.getElementById('adminPinError');
+    if (pinErr) pinErr.classList.add('d-none');
     checkLockoutUi();
     return false;
   }
@@ -398,10 +412,23 @@ function initEventListeners() {
         if (errEl) errEl.classList.add('d-none');
         sessionStorage.setItem(ADMIN_AUTH_KEY, 'true');
         sessionStorage.setItem(ADMIN_LAST_ACTIVE_KEY, Date.now().toString());
+
+        // Immediately wipe the password from input field
+        const pinInput = document.getElementById('adminPinInput');
+        if (pinInput) {
+          pinInput.value = '';
+          pinInput.setAttribute('type', 'password');
+        }
+        const togglePinVisBtn = document.getElementById('toggleAdminPinVisBtn');
+        if (togglePinVisBtn) {
+          const icon = togglePinVisBtn.querySelector('i');
+          if (icon) icon.className = 'bi bi-eye';
+        }
+
         checkAdminAuth();
         loadAndDisplayOrders();
         initAdminProductsManager();
-        showAdminToast('🔓 Welcome Administrator! Cryptographic session initiated.');
+        showAdminToast('🔓 Welcome Administrator! Session initiated.');
       } else {
         const failureRec = AdminRateLimiter.recordFailure(4, 60);
         const remaining = Math.max(0, 4 - failureRec.attempts);
@@ -610,7 +637,20 @@ function initEventListeners() {
     sessionStorage.removeItem(ADMIN_AUTH_KEY);
     sessionStorage.removeItem(ADMIN_LAST_ACTIVE_KEY);
     checkAdminAuth();
-    showAdminToast('Admin dashboard locked.');
+    const pinInput = document.getElementById('adminPinInput');
+    if (pinInput) {
+      pinInput.value = '';
+      pinInput.setAttribute('type', 'password');
+      setTimeout(() => pinInput.focus(), 100);
+    }
+    const togglePinVisBtn = document.getElementById('toggleAdminPinVisBtn');
+    if (togglePinVisBtn) {
+      const icon = togglePinVisBtn.querySelector('i');
+      if (icon) icon.className = 'bi bi-eye';
+    }
+    const pinErr = document.getElementById('adminPinError');
+    if (pinErr) pinErr.classList.add('d-none');
+    showAdminToast('🔒 Admin dashboard locked.');
   };
 
   const lockBtn = document.getElementById('adminLockBtn');
