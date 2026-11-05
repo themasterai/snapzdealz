@@ -1286,6 +1286,28 @@ function renderHeroCarousel() {
       `;
     }).join('');
   }
+
+  // Cleanly re-initialize Bootstrap Carousel instance so slide cycling works flawlessly
+  if (window.bootstrap && bootstrap.Carousel) {
+    try {
+      const existing = bootstrap.Carousel.getInstance(carousel);
+      if (existing) {
+        existing.dispose();
+      }
+      new bootstrap.Carousel(carousel, {
+        interval: 5000,
+        ride: 'carousel',
+        pause: 'hover'
+      });
+    } catch (e) {
+      console.warn("Bootstrap carousel init notice:", e);
+    }
+  }
+
+  // Trigger parallax and scroll reveals on dynamically rendered hero elements
+  if (typeof initParallaxEffects === 'function') {
+    initParallaxEffects();
+  }
 }
 
 function initHomePage() {
