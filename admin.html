@@ -310,10 +310,10 @@
                 <i class="bi bi-shield-slash-fill me-1"></i> Security Lockout Active! Please wait <strong id="adminLockoutCountdown">60s</strong> before retrying.
               </div>
 
-              <form id="adminPinForm">
+              <form id="adminPinForm" autocomplete="off">
                 <div class="mb-3">
                   <div class="input-group">
-                    <input type="password" id="adminPinInput" class="form-control form-control-lg text-center font-monospace fs-4 fw-bold" placeholder="••••" maxlength="8" value="1234" required autofocus>
+                    <input type="password" id="adminPinInput" class="form-control form-control-lg text-center font-monospace fs-4 fw-bold" placeholder="••••" maxlength="8" autocomplete="new-password" required autofocus>
                     <button class="btn btn-outline-secondary" type="button" id="toggleAdminPinVisBtn" aria-label="Toggle PIN visibility">
                       <i class="bi bi-eye"></i>
                     </button>
