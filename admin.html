@@ -1064,12 +1064,32 @@
                   <div class="invalid-feedback">Stock quantity is required.</div>
                 </div>
 
-                <!-- Image URL & Quick Sample Presets -->
+                <!-- Image Upload & URL with Device Storage Support -->
                 <div class="col-12">
-                  <label class="form-label small fw-bold text-dark">Product Image URL <span class="text-danger">*</span></label>
-                  <div class="input-group mb-2">
-                    <span class="input-group-text"><i class="bi bi-image"></i></span>
-                    <input type="url" class="form-control" id="newProdImageUrl" placeholder="https://images.unsplash.com/photo-..." value="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80" required>
+                  <label class="form-label small fw-bold text-dark d-flex justify-content-between align-items-center mb-1">
+                    <span>Product Image <span class="text-danger">*</span></span>
+                    <span class="badge bg-warning-subtle text-dark border" style="font-size: 0.7rem;">Device Upload or URL</span>
+                  </label>
+                  
+                  <!-- Device File Upload Button + Direct Path Input -->
+                  <div class="p-3 border rounded-3 bg-light mb-2">
+                    <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                      <label for="newProdFileInput" class="btn btn-sm btn-dark text-white rounded-pill px-3 py-1.5 fw-bold d-inline-flex align-items-center gap-1 cursor-pointer shadow-sm">
+                        <i class="bi bi-upload text-warning"></i>
+                        <span>Choose from Device (Mobile / PC)</span>
+                      </label>
+                      <input type="file" id="newProdFileInput" accept="image/*" class="d-none">
+                      <span class="small text-muted" id="newProdFileName">PNG, JPG, WebP supported</span>
+                    </div>
+
+                    <div class="input-group input-group-sm mb-1">
+                      <span class="input-group-text bg-white"><i class="bi bi-link-45deg"></i> Image URL / Path</span>
+                      <input type="text" class="form-control" id="newProdImageUrl" placeholder="images/my-product.jpg ya https://images.unsplash.com/..." value="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80" required>
+                    </div>
+                    
+                    <div class="text-muted" style="font-size: 0.74rem;">
+                      💡 <strong>Device Storage:</strong> Upar button se computer/phone se photo chunein, ya website ka path (jaise <code>images/product.jpg</code>), ya koi bhi internet image URL paste karein.
+                    </div>
                   </div>
                   
                   <!-- Quick Preset Chips -->
@@ -1084,11 +1104,11 @@
                   </div>
 
                   <!-- Live Image Preview Box -->
-                  <div class="p-2 border rounded-3 bg-light d-flex align-items-center gap-3">
-                    <img id="newProdImagePreview" src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80" alt="Preview" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid #d1d5db;">
+                  <div class="p-2 border rounded-3 bg-white d-flex align-items-center gap-3">
+                    <img id="newProdImagePreview" src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80" alt="Preview" style="width: 65px; height: 65px; object-fit: cover; border-radius: 10px; border: 1px solid #d1d5db;">
                     <div class="small">
                       <div class="fw-semibold text-dark">Live Image Preview</div>
-                      <span class="text-muted" style="font-size: 0.75rem;">Verified image displays nicely on product cards</span>
+                      <span class="text-muted" style="font-size: 0.75rem;">Verified image customer storefront par isi tarah display hogi</span>
                     </div>
                   </div>
                 </div>
@@ -1205,12 +1225,32 @@
                   <div class="form-text small">Enter 0 to mark as "Out of Stock".</div>
                 </div>
 
-                <!-- Image URL & Quick Sample Presets -->
+                <!-- Image Upload & URL with Device Storage Support -->
                 <div class="col-12">
-                  <label class="form-label small fw-bold text-dark">Product Image URL <span class="text-danger">*</span></label>
-                  <div class="input-group mb-2">
-                    <span class="input-group-text"><i class="bi bi-image"></i></span>
-                    <input type="url" class="form-control" id="editProdImageUrl" placeholder="https://images.unsplash.com/photo-..." required>
+                  <label class="form-label small fw-bold text-dark d-flex justify-content-between align-items-center mb-1">
+                    <span>Product Image <span class="text-danger">*</span></span>
+                    <span class="badge bg-warning-subtle text-dark border" style="font-size: 0.7rem;">Device Upload or URL</span>
+                  </label>
+                  
+                  <!-- Device File Upload Button + Direct Path Input -->
+                  <div class="p-3 border rounded-3 bg-light mb-2">
+                    <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                      <label for="editProdFileInput" class="btn btn-sm btn-dark text-white rounded-pill px-3 py-1.5 fw-bold d-inline-flex align-items-center gap-1 cursor-pointer shadow-sm">
+                        <i class="bi bi-upload text-warning"></i>
+                        <span>Choose from Device (Mobile / PC)</span>
+                      </label>
+                      <input type="file" id="editProdFileInput" accept="image/*" class="d-none">
+                      <span class="small text-muted" id="editProdFileName">PNG, JPG, WebP supported</span>
+                    </div>
+
+                    <div class="input-group input-group-sm mb-1">
+                      <span class="input-group-text bg-white"><i class="bi bi-link-45deg"></i> Image URL / Path</span>
+                      <input type="text" class="form-control" id="editProdImageUrl" placeholder="images/my-product.jpg ya https://images.unsplash.com/..." required>
+                    </div>
+                    
+                    <div class="text-muted" style="font-size: 0.74rem;">
+                      💡 <strong>Device Storage:</strong> Upar button se computer/phone se photo chunein, ya website ka path (jaise <code>images/product.jpg</code>), ya koi bhi internet image URL paste karein.
+                    </div>
                   </div>
                   
                   <!-- Quick Preset Chips -->
@@ -1225,11 +1265,11 @@
                   </div>
 
                   <!-- Live Image Preview Box -->
-                  <div class="p-2 border rounded-3 bg-light d-flex align-items-center gap-3">
-                    <img id="editProdImagePreview" src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80" alt="Preview" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid #d1d5db;">
+                  <div class="p-2 border rounded-3 bg-white d-flex align-items-center gap-3">
+                    <img id="editProdImagePreview" src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80" alt="Preview" style="width: 65px; height: 65px; object-fit: cover; border-radius: 10px; border: 1px solid #d1d5db;">
                     <div class="small">
                       <div class="fw-semibold text-dark">Live Image Preview</div>
-                      <span class="text-muted" style="font-size: 0.75rem;">Verified image displays nicely on product cards</span>
+                      <span class="text-muted" style="font-size: 0.75rem;">Verified image customer storefront par isi tarah display hogi</span>
                     </div>
                   </div>
                 </div>
