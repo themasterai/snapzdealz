@@ -1568,6 +1568,46 @@ function showAdminToast(message) {
    PRODUCT CATALOG & INVENTORY MANAGEMENT
    ========================================================================== */
 
+/**
+ * Helper to process and compress local image files from device storage
+ * Converts uploaded file to optimized, responsive JPEG Data URL
+ */
+function processImageFile(file, maxWidth = 900, maxHeight = 900, quality = 0.85) {
+  return new Promise((resolve, reject) => {
+    if (!file || !file.type.startsWith('image/')) {
+      return reject(new Error('Please select a valid image file (PNG, JPG, WebP)'));
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+        if (width > maxWidth || height > maxHeight) {
+          if (width > height) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          } else {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+        resolve(dataUrl);
+      };
+      img.onerror = () => resolve(e.target.result);
+      img.src = e.target.result;
+    };
+    reader.onerror = (err) => reject(err);
+    reader.readAsDataURL(file);
+  });
+}
+
 let activeProductCategoryFilter = 'ALL';
 let activeProductSearchQuery = '';
 
@@ -1958,6 +1998,31 @@ function setupProductEventListeners() {
     });
   }
 
+  // Device Storage File Upload for New Product
+  const newFileInput = document.getElementById('newProdFileInput');
+  const newFileName = document.getElementById('newProdFileName');
+  if (newFileInput) {
+    newFileInput.addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      try {
+        if (newFileName) newFileName.textContent = `Processing ${file.name}...`;
+        const dataUrl = await processImageFile(file, 900, 900, 0.85);
+        const input = document.getElementById('newProdImageUrl');
+        const preview = document.getElementById('newProdImagePreview');
+        if (input) input.value = dataUrl;
+        if (preview) preview.src = dataUrl;
+        if (newFileName) {
+          newFileName.innerHTML = `<span class="text-success fw-bold"><i class="bi bi-check-circle-fill"></i> ${escapeHtml(file.name)}</span> (${Math.round(file.size / 1024)} KB)`;
+        }
+        showAdminToast(`📸 Image "${file.name}" loaded from device storage!`);
+      } catch (err) {
+        alert('Could not load image: ' + err.message);
+        if (newFileName) newFileName.textContent = 'Failed to load image';
+      }
+    });
+  }
+
   // Sample image chips click in modal
   document.querySelectorAll('.preset-img-chip').forEach(chip => {
     chip.addEventListener('click', () => {
@@ -1968,6 +2033,7 @@ function setupProductEventListeners() {
         input.value = url;
         if (preview) preview.src = url;
       }
+      if (newFileName) newFileName.textContent = 'Preset photo selected';
     });
   });
 
@@ -2088,6 +2154,31 @@ function setupProductEventListeners() {
     });
   }
 
+  // Device Storage File Upload for Edit Product
+  const editFileInput = document.getElementById('editProdFileInput');
+  const editFileName = document.getElementById('editProdFileName');
+  if (editFileInput) {
+    editFileInput.addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      try {
+        if (editFileName) editFileName.textContent = `Processing ${file.name}...`;
+        const dataUrl = await processImageFile(file, 900, 900, 0.85);
+        const input = document.getElementById('editProdImageUrl');
+        const preview = document.getElementById('editProdImagePreview');
+        if (input) input.value = dataUrl;
+        if (preview) preview.src = dataUrl;
+        if (editFileName) {
+          editFileName.innerHTML = `<span class="text-success fw-bold"><i class="bi bi-check-circle-fill"></i> ${escapeHtml(file.name)}</span> (${Math.round(file.size / 1024)} KB)`;
+        }
+        showAdminToast(`📸 Image "${file.name}" loaded from device storage!`);
+      } catch (err) {
+        alert('Could not load image: ' + err.message);
+        if (editFileName) editFileName.textContent = 'Failed to load image';
+      }
+    });
+  }
+
   // Edit modal sample image preset chips click
   document.querySelectorAll('.edit-preset-chip').forEach(chip => {
     chip.addEventListener('click', () => {
@@ -2098,6 +2189,7 @@ function setupProductEventListeners() {
         input.value = url;
         if (preview) preview.src = url;
       }
+      if (editFileName) editFileName.textContent = 'Preset photo selected';
     });
   });
 
@@ -2198,7 +2290,6 @@ function setupProductEventListeners() {
 
 function initAdminHeroManager() {
   renderAdminHeroSlides();
-  setupHeroEventListeners();
 }
 
 function renderAdminHeroSlides() {
@@ -2227,15 +2318,15 @@ function renderAdminHeroSlides() {
       <div class="col-12 col-xl-4">
         <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white hero-slide-edit-card" data-slide-index="${idx}">
           
-          <!-- Slide Card Header -->
+          <!-- Slide Card Header with Separate Update Button -->
           <div class="card-header bg-dark text-white p-3 d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center gap-2">
               <span class="badge bg-warning text-dark fw-bold rounded-pill px-2.5 py-1">SLIDE ${idx + 1}</span>
-              <span class="small fw-bold text-uppercase tracking-wider text-light">${idx === 0 ? 'First (Active)' : `Banner ${idx + 1}`}</span>
+              <span class="small fw-bold text-uppercase tracking-wider text-light">${idx === 0 ? 'First (Active)' : `Slide ${idx + 1}`}</span>
             </div>
-            <span class="badge bg-secondary-subtle text-light-emphasis small rounded-pill">
-              <i class="bi bi-display me-1"></i> Live on Store
-            </span>
+            <button type="button" class="btn btn-warning btn-sm rounded-pill px-3 py-1 fw-bold btn-save-individual-slide shadow-sm" data-slide-index="${idx}" title="Save only this slide">
+              <i class="bi bi-check2-circle me-1"></i> Update Slide ${idx + 1}
+            </button>
           </div>
 
           <div class="card-body p-3 p-md-4">
@@ -2251,7 +2342,7 @@ function renderAdminHeroSlides() {
                 ${productOptions}
               </select>
               <div class="text-muted small mt-1" style="font-size: 0.72rem;">
-                Product select karte hi Title, Details, Photo, Price aur Links auto-fill ho jayenge!
+                Store se product select karte hi Title, Details, Photo, Price aur Links auto-fill ho jayenge!
               </div>
             </div>
 
@@ -2312,28 +2403,45 @@ function renderAdminHeroSlides() {
               </div>
             </div>
 
-            <!-- Image URL & Live Preview -->
-            <div class="mb-3">
-              <label class="form-label small fw-bold text-dark">Hero Image URL</label>
+            <!-- Image Upload & URL with Device Storage Support -->
+            <div class="p-3 bg-light rounded-3 border mb-3">
+              <label class="form-label small fw-bold text-dark d-flex justify-content-between align-items-center mb-1">
+                <span>Slide Image <span class="text-danger">*</span></span>
+                <span class="badge bg-warning-subtle text-dark border" style="font-size: 0.7rem;">Device Upload or URL</span>
+              </label>
+
+              <!-- Device File Upload Button -->
+              <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                <label class="btn btn-sm btn-dark text-white rounded-pill px-3 py-1 fw-bold d-inline-flex align-items-center gap-1 cursor-pointer shadow-sm">
+                  <i class="bi bi-upload text-warning"></i>
+                  <span>Choose from Device (Mobile / PC)</span>
+                  <input type="file" accept="image/*" class="d-none hero-file-input" data-slide-index="${idx}">
+                </label>
+                <span class="small text-muted hero-file-name-${idx}">PNG, JPG, WebP</span>
+              </div>
+
+              <!-- Direct URL or Local Path Input -->
               <div class="input-group input-group-sm mb-2">
-                <span class="input-group-text bg-light"><i class="bi bi-image"></i></span>
-                <input type="url" class="form-control hero-input-image" data-slide-index="${idx}" value="${escapeHtml(slide.imageUrl || '')}" placeholder="https://images.unsplash.com/...">
+                <span class="input-group-text bg-white"><i class="bi bi-link-45deg"></i> Image URL / Path</span>
+                <input type="text" class="form-control hero-input-image" data-slide-index="${idx}" value="${escapeHtml(slide.imageUrl || '')}" placeholder="images/banner.jpg ya https://images.unsplash.com/...">
+              </div>
+
+              <div class="text-muted mb-2" style="font-size: 0.72rem;">
+                💡 <strong>Device Storage:</strong> Upar button se computer/phone se photo chunein, ya website ka path (jaise <code>images/banner.jpg</code>), ya internet image URL paste karein.
               </div>
               
               <!-- Thumbnail Preview Box -->
-              <div class="d-flex align-items-center gap-3 p-2 rounded-3 bg-light border">
-                <div style="width: 70px; height: 60px; border-radius: 8px; overflow: hidden; background: #eee; flex-shrink: 0;" class="border">
-                  <img src="${escapeHtml(slide.imageUrl)}" alt="Preview" class="w-100 h-100 object-fit-cover hero-preview-img-${idx}" onerror="this.src='https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&auto=format&fit=crop&q=80'">
-                </div>
-                <div class="small text-muted flex-grow-1" style="font-size: 0.75rem;">
+              <div class="d-flex align-items-center gap-3 p-2 rounded-3 bg-white border">
+                <img src="${escapeHtml(slide.imageUrl)}" alt="Preview" class="hero-preview-img-${idx}" style="width: 75px; height: 65px; object-fit: cover; border-radius: 8px; border: 1px solid #d1d5db;" onerror="this.src='https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&auto=format&fit=crop&q=80'">
+                <div class="small">
                   <strong class="text-dark d-block">Live Image Preview</strong>
-                  Transparent background ya high-res product photo recommended hai.
+                  <span class="text-muted" style="font-size: 0.73rem;">Transparent PNG ya high-res product photo recommended hai.</span>
                 </div>
               </div>
             </div>
 
             <!-- Circular Discount Badge / Sticker -->
-            <div class="p-3 bg-light rounded-3 border">
+            <div class="p-3 bg-light rounded-3 border mb-3">
               <label class="form-label small fw-bold text-dark mb-2 d-flex justify-content-between align-items-center">
                 <span>Circular Discount Sticker:</span>
                 <span class="badge ${isDark ? 'bg-dark text-warning' : 'bg-warning text-dark'}">Preview</span>
@@ -2364,14 +2472,55 @@ function renderAdminHeroSlides() {
             </div>
 
           </div>
+
+          <!-- Slide Card Footer with Dedicated Update Button for this Slide -->
+          <div class="card-footer bg-light p-3 border-top d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3 btn-reset-individual-slide" data-slide-index="${idx}">
+              <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Slide ${idx + 1}
+            </button>
+            <button type="button" class="btn btn-deal btn-sm rounded-pill px-4 py-2 fw-bold btn-save-individual-slide" data-slide-index="${idx}">
+              <i class="bi bi-check2-circle me-1"></i> Update Slide ${idx + 1}
+            </button>
+          </div>
+
         </div>
       </div>
     `;
   }).join('');
+
+  // Re-bind all events immediately after rendering so buttons & inputs always work!
+  setupHeroEventListeners();
 }
 
 function setupHeroEventListeners() {
-  // Product picker change
+  // 1. Device Storage Image Upload for each Hero Slide
+  document.querySelectorAll('.hero-file-input').forEach(fileInput => {
+    fileInput.addEventListener('change', async (e) => {
+      const idx = e.target.getAttribute('data-slide-index');
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      const fileNameLabel = document.querySelector(`.hero-file-name-${idx}`);
+      const imgInput = document.querySelector(`.hero-input-image[data-slide-index="${idx}"]`);
+      const previewImg = document.querySelector(`.hero-preview-img-${idx}`);
+
+      try {
+        if (fileNameLabel) fileNameLabel.textContent = `Processing ${file.name}...`;
+        const dataUrl = await processImageFile(file, 900, 900, 0.85);
+        if (imgInput) imgInput.value = dataUrl;
+        if (previewImg) previewImg.src = dataUrl;
+        if (fileNameLabel) {
+          fileNameLabel.innerHTML = `<span class="text-success fw-bold"><i class="bi bi-check-circle-fill"></i> ${escapeHtml(file.name)}</span> (${Math.round(file.size / 1024)} KB)`;
+        }
+        showAdminToast(`📸 Slide ${Number(idx) + 1} image loaded from device storage!`);
+      } catch (err) {
+        alert('Could not load image: ' + err.message);
+        if (fileNameLabel) fileNameLabel.textContent = 'Failed to load image';
+      }
+    });
+  });
+
+  // 2. Product picker change (1-Click Auto-Fill)
   document.querySelectorAll('.hero-product-picker').forEach(picker => {
     picker.addEventListener('change', (e) => {
       const idx = e.target.getAttribute('data-slide-index');
@@ -2421,7 +2570,7 @@ function setupHeroEventListeners() {
     });
   });
 
-  // Image URL input live preview
+  // 3. Image URL input live preview
   document.querySelectorAll('.hero-input-image').forEach(input => {
     input.addEventListener('input', (e) => {
       const idx = e.target.getAttribute('data-slide-index');
@@ -2432,48 +2581,94 @@ function setupHeroEventListeners() {
     });
   });
 
-  // Save Hero Banners Action
-  const saveAction = (e) => {
+  // Helper to read data from a specific slide card
+  function extractSlideData(card, idx) {
+    const title = card.querySelector('.hero-input-title')?.value.trim() || `Featured Deal ${idx + 1}`;
+    const tag = card.querySelector('.hero-input-tag')?.value.trim() || 'SPECIAL DEAL';
+    const tagIcon = card.querySelector('.hero-input-tag-icon')?.value || 'bi-fire';
+    const description = card.querySelector('.hero-input-desc')?.value.trim() || '';
+    const btnPrimaryText = card.querySelector('.hero-input-btn1-text')?.value.trim() || 'Shop Now';
+    const btnPrimaryLink = card.querySelector('.hero-input-btn1-link')?.value.trim() || 'shop.html';
+    const btnSecondaryText = card.querySelector('.hero-input-btn2-text')?.value.trim() || 'Explore';
+    const btnSecondaryLink = card.querySelector('.hero-input-btn2-link')?.value.trim() || 'shop.html';
+    const imageUrl = card.querySelector('.hero-input-image')?.value.trim() || 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&auto=format&fit=crop&q=80';
+    const stickerTop = card.querySelector('.hero-input-sticker-top')?.value.trim() || 'SAVE';
+    const stickerMiddle = card.querySelector('.hero-input-sticker-mid')?.value.trim() || '50%';
+    const stickerBottom = card.querySelector('.hero-input-sticker-btm')?.value.trim() || 'TODAY';
+    const themeRadio = card.querySelector(`input[name="stickerTheme_${idx}"]:checked`);
+    const stickerTheme = themeRadio ? themeRadio.value : 'default';
+    const productPicker = card.querySelector('.hero-product-picker');
+    const productId = productPicker ? productPicker.value : null;
+
+    return {
+      id: idx + 1,
+      productId: productId || null,
+      tag,
+      tagIcon,
+      title,
+      description,
+      btnPrimaryText,
+      btnPrimaryLink,
+      btnSecondaryText,
+      btnSecondaryLink,
+      imageUrl,
+      imageAlt: title,
+      stickerTop,
+      stickerMiddle,
+      stickerBottom,
+      stickerTheme
+    };
+  }
+
+  // 4. SEPARATE UPDATE BUTTON FOR EACH INDIVIDUAL SLIDE (Slide 1, Slide 2, Slide 3)
+  document.querySelectorAll('.btn-save-individual-slide').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const idx = parseInt(btn.getAttribute('data-slide-index'), 10);
+      const card = document.querySelector(`.hero-slide-edit-card[data-slide-index="${idx}"]`);
+      if (!card) return;
+
+      const currentSlides = typeof loadHeroSlides === 'function' ? loadHeroSlides() : [];
+      const updatedSlide = extractSlideData(card, idx);
+      
+      // Update specifically this slide
+      currentSlides[idx] = updatedSlide;
+
+      if (typeof saveHeroSlides === 'function') {
+        saveHeroSlides(currentSlides);
+      }
+
+      showAdminToast(`🎉 Slide ${idx + 1} updated and saved successfully! Storefront is live.`);
+    });
+  });
+
+  // 5. INDIVIDUAL RESET BUTTON FOR EACH SLIDE
+  document.querySelectorAll('.btn-reset-individual-slide').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const idx = parseInt(btn.getAttribute('data-slide-index'), 10);
+      if (confirm(`Reset Slide ${idx + 1} back to default?`)) {
+        const currentSlides = typeof loadHeroSlides === 'function' ? loadHeroSlides() : [];
+        if (typeof DEFAULT_HERO_SLIDES !== 'undefined' && DEFAULT_HERO_SLIDES[idx]) {
+          currentSlides[idx] = JSON.parse(JSON.stringify(DEFAULT_HERO_SLIDES[idx]));
+          if (typeof saveHeroSlides === 'function') {
+            saveHeroSlides(currentSlides);
+          }
+          renderAdminHeroSlides();
+          showAdminToast(`🔄 Slide ${idx + 1} reset back to default.`);
+        }
+      }
+    });
+  });
+
+  // 6. Global Save Action (Top and Bottom "Save All Banners" buttons)
+  const saveAllAction = (e) => {
     if (e) e.preventDefault();
     const cards = document.querySelectorAll('.hero-slide-edit-card');
     const newSlides = [];
 
     cards.forEach((card, idx) => {
-      const title = card.querySelector('.hero-input-title')?.value.trim() || `Featured Deal ${idx + 1}`;
-      const tag = card.querySelector('.hero-input-tag')?.value.trim() || 'SPECIAL DEAL';
-      const tagIcon = card.querySelector('.hero-input-tag-icon')?.value || 'bi-fire';
-      const description = card.querySelector('.hero-input-desc')?.value.trim() || '';
-      const btnPrimaryText = card.querySelector('.hero-input-btn1-text')?.value.trim() || 'Shop Now';
-      const btnPrimaryLink = card.querySelector('.hero-input-btn1-link')?.value.trim() || 'shop.html';
-      const btnSecondaryText = card.querySelector('.hero-input-btn2-text')?.value.trim() || 'Explore';
-      const btnSecondaryLink = card.querySelector('.hero-input-btn2-link')?.value.trim() || 'shop.html';
-      const imageUrl = card.querySelector('.hero-input-image')?.value.trim() || 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&auto=format&fit=crop&q=80';
-      const stickerTop = card.querySelector('.hero-input-sticker-top')?.value.trim() || 'SAVE';
-      const stickerMiddle = card.querySelector('.hero-input-sticker-mid')?.value.trim() || '50%';
-      const stickerBottom = card.querySelector('.hero-input-sticker-btm')?.value.trim() || 'TODAY';
-      const themeRadio = card.querySelector(`input[name="stickerTheme_${idx}"]:checked`);
-      const stickerTheme = themeRadio ? themeRadio.value : 'default';
-      const productPicker = card.querySelector('.hero-product-picker');
-      const productId = productPicker ? productPicker.value : null;
-
-      newSlides.push({
-        id: idx + 1,
-        productId: productId || null,
-        tag,
-        tagIcon,
-        title,
-        description,
-        btnPrimaryText,
-        btnPrimaryLink,
-        btnSecondaryText,
-        btnSecondaryLink,
-        imageUrl,
-        imageAlt: title,
-        stickerTop,
-        stickerMiddle,
-        stickerBottom,
-        stickerTheme
-      });
+      newSlides.push(extractSlideData(card, idx));
     });
 
     if (typeof saveHeroSlides === 'function') {
@@ -2483,31 +2678,31 @@ function setupHeroEventListeners() {
   };
 
   const form = document.getElementById('adminHeroSlidesForm');
-  if (form) form.addEventListener('submit', saveAction);
+  if (form) form.addEventListener('submit', saveAllAction);
 
   const saveTopBtn = document.getElementById('saveHeroBannersBtn');
-  if (saveTopBtn) saveTopBtn.addEventListener('click', saveAction);
+  if (saveTopBtn) saveTopBtn.addEventListener('click', saveAllAction);
 
   const saveBtmBtn = document.getElementById('saveHeroBannersBottomBtn');
-  if (saveBtmBtn) saveBtmBtn.addEventListener('click', saveAction);
+  if (saveBtmBtn) saveBtmBtn.addEventListener('click', saveAllAction);
 
-  // Reset Factory Defaults Action
-  const resetAction = () => {
-    if (confirm('Reset all 3 Hero Carousel slides back to default products and deals?')) {
+  // 7. Global Factory Reset Action
+  const resetAllAction = () => {
+    if (confirm('Reset all 3 Hero Carousel slides back to default factory products?')) {
       if (typeof resetHeroSlides === 'function') {
         resetHeroSlides();
       }
       renderAdminHeroSlides();
-      setupHeroEventListeners();
-      showAdminToast('🔄 Hero Carousel banners reset to factory defaults.');
+      showAdminToast('🔄 All Hero Carousel banners reset to factory defaults.');
     }
   };
 
   const resetTopBtn = document.getElementById('resetHeroBannersBtn');
-  if (resetTopBtn) resetTopBtn.addEventListener('click', resetAction);
+  if (resetTopBtn) resetTopBtn.addEventListener('click', resetAllAction);
 
   const resetBtmBtn = document.getElementById('resetHeroBannersBottomBtn');
-  if (resetBtmBtn) resetBtmBtn.addEventListener('click', resetAction);
+  if (resetBtmBtn) resetBtmBtn.addEventListener('click', resetAllAction);
 }
+
 
 
