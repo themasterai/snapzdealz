@@ -222,6 +222,9 @@ async function initAdminDashboard() {
   initSessionInactivityWatcher();
   initAdminProductsManager();
   initAdminHeroManager();
+  initAdminNewsManager();
+  initAdminFooterManager();
+  initAdminCurrencyManager();
   initCancelledOrdersCleaner();
   const isAuth = checkAdminAuth();
   if (isAuth) {
@@ -916,7 +919,7 @@ function updateDashboardKPIs() {
   });
 
   if (totalOrdersEl) totalOrdersEl.textContent = allOrders.length;
-  if (totalRevenueEl) totalRevenueEl.textContent = `$${revenue.toFixed(2)}`;
+  if (totalRevenueEl) totalRevenueEl.textContent = (typeof formatCurrency === 'function') ? formatCurrency(revenue) : `$${revenue.toFixed(2)}`;
   if (activeShipmentsEl) activeShipmentsEl.textContent = activeCount;
   if (cancelledOrdersEl) cancelledOrdersEl.textContent = cancelledCount;
 }
@@ -1039,7 +1042,7 @@ function applyFiltersAndRender() {
           </div>
         </td>
         <td>
-          <div class="fw-bold font-monospace text-dark fs-6">$${Number(order.total || 0).toFixed(2)}</div>
+          <div class="fw-bold font-monospace text-dark fs-6">${(typeof formatCurrency === 'function') ? formatCurrency(order.total || 0) : `$${Number(order.total || 0).toFixed(2)}`}</div>
         </td>
         <td>
           <span class="admin-status-badge ${badgeClass}">
@@ -1231,7 +1234,7 @@ function openOrderDetailsModal(orderRef) {
       </div>
       <div class="d-flex justify-content-between fs-5 fw-bold text-dark border-top pt-2 mt-2">
         <span>Total Payable:</span>
-        <span class="font-monospace text-success">$${Number(order.total || 0).toFixed(2)}</span>
+        <span class="font-monospace text-success">${(typeof formatCurrency === 'function') ? formatCurrency(order.total || 0) : `$${Number(order.total || 0).toFixed(2)}`}</span>
       </div>
     </div>
   `;
@@ -1612,7 +1615,7 @@ function showAdminToast(message) {
  * Helper to process and compress local image files from device storage
  * Converts uploaded file to optimized, responsive JPEG Data URL
  */
-function processImageFile(file, maxWidth = 900, maxHeight = 900, quality = 0.85) {
+function processImageFile(file, maxWidth = 800, maxHeight = 800, quality = 0.75) {
   return new Promise((resolve, reject) => {
     if (!file || !file.type.startsWith('image/')) {
       return reject(new Error('Please select a valid image file (PNG, JPG, WebP)'));
@@ -1741,10 +1744,10 @@ function renderAdminProducts() {
           <span class="badge bg-light text-secondary border small mt-1">${escapeHtml(prod.category || 'General')}</span>
         </td>
         <td>
-          <span class="fw-bold text-dark font-monospace fs-6">$${Number(prod.price).toFixed(2)}</span>
+          <span class="fw-bold text-dark font-monospace fs-6">${(typeof formatCurrency === 'function') ? formatCurrency(prod.price) : `$${Number(prod.price).toFixed(2)}`}</span>
         </td>
         <td>
-          <span class="text-muted text-decoration-line-through small font-monospace">$${Number(prod.oldPrice || prod.price).toFixed(2)}</span>
+          <span class="text-muted text-decoration-line-through small font-monospace">${(typeof formatCurrency === 'function') ? formatCurrency(prod.oldPrice || prod.price) : `$${Number(prod.oldPrice || prod.price).toFixed(2)}`}</span>
           ${discount > 0 ? `<span class="badge bg-danger-subtle text-danger ms-1 small">-${discount}%</span>` : ''}
         </td>
         <td>
@@ -1802,6 +1805,9 @@ function renderAdminProducts() {
           deleteProductById(pId);
         }
         renderAdminProducts();
+        if (typeof renderAdminHeroSlides === 'function') {
+          renderAdminHeroSlides();
+        }
         showAdminToast(`🗑️ Product "${pName}" removed from store.`);
       }
     });
@@ -1925,15 +1931,25 @@ function setupProductEventListeners() {
   const prodTabBtn = document.getElementById('tabProductsBtn');
   const ordersTabBtn = document.getElementById('tabOrdersBtn');
   const heroTabBtn = document.getElementById('tabHeroBtn');
+  const newsTabBtn = document.getElementById('tabNewsBtn');
+  const footerTabBtn = document.getElementById('tabFooterBtn');
+  const currencyTabBtn = document.getElementById('tabCurrencyBtn');
+  
   const prodPane = document.getElementById('tabProductsPane');
   const ordersPane = document.getElementById('tabOrdersPane');
   const heroPane = document.getElementById('tabHeroPane');
+  const newsPane = document.getElementById('tabNewsPane');
+  const footerPane = document.getElementById('tabFooterPane');
+  const currencyPane = document.getElementById('tabCurrencyPane');
 
   function switchAdminPortalTab(target) {
     const tabConfigs = [
       { id: 'orders', btn: ordersTabBtn, pane: ordersPane, onOpen: () => {} },
       { id: 'products', btn: prodTabBtn, pane: prodPane, onOpen: () => renderAdminProducts() },
-      { id: 'hero', btn: heroTabBtn, pane: heroPane, onOpen: () => renderAdminHeroSlides() }
+      { id: 'hero', btn: heroTabBtn, pane: heroPane, onOpen: () => renderAdminHeroSlides() },
+      { id: 'news', btn: newsTabBtn, pane: newsPane, onOpen: () => renderAdminNewsSlides() },
+      { id: 'footer', btn: footerTabBtn, pane: footerPane, onOpen: () => populateAdminFooterSettings() },
+      { id: 'currency', btn: currencyTabBtn, pane: currencyPane, onOpen: () => populateAdminCurrencySettings() }
     ];
 
     tabConfigs.forEach(t => {
@@ -1981,12 +1997,32 @@ function setupProductEventListeners() {
     });
   }
 
-  // Check URL query param or hash to auto-open hero or products tab
+  if (newsTabBtn) {
+    newsTabBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      switchAdminPortalTab('news');
+    });
+  }
+
+  if (footerTabBtn) {
+    footerTabBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      switchAdminPortalTab('footer');
+    });
+  }
+
+  if (currencyTabBtn) {
+    currencyTabBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      switchAdminPortalTab('currency');
+    });
+  }
+
+  // Check URL query param or hash to auto-open specific tab
   const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get('tab') === 'hero' || window.location.hash === '#hero') {
-    setTimeout(() => switchAdminPortalTab('hero'), 100);
-  } else if (urlParams.get('tab') === 'products' || window.location.hash === '#products') {
-    setTimeout(() => switchAdminPortalTab('products'), 100);
+  const activeTabParam = urlParams.get('tab') || window.location.hash.replace('#', '');
+  if (['hero', 'products', 'news', 'footer', 'currency'].includes(activeTabParam)) {
+    setTimeout(() => switchAdminPortalTab(activeTabParam), 100);
   }
 
   // Category Filter Pills
@@ -2188,8 +2224,11 @@ function setupProductEventListeners() {
       addForm.reset();
       if (customCatWrap) customCatWrap.style.display = 'none';
 
-      // Refresh Inventory UI
+      // Refresh Inventory UI & Hero Slide Product Pickers
       renderAdminProducts();
+      if (typeof renderAdminHeroSlides === 'function') {
+        renderAdminHeroSlides();
+      }
       showAdminToast(`🎉 Product "${name}" published successfully! It is now live on your store.`);
     });
   }
@@ -2317,8 +2356,11 @@ function setupProductEventListeners() {
         bsModal.hide();
       }
 
-      // Refresh Inventory UI
+      // Refresh Inventory UI & Hero Slide Product Pickers
       renderAdminProducts();
+      if (typeof renderAdminHeroSlides === 'function') {
+        renderAdminHeroSlides();
+      }
       showAdminToast(`✏️ Product "${name}" updated successfully! Live store inventory refreshed.`);
     });
   }
@@ -2332,6 +2374,58 @@ function initAdminHeroManager() {
   renderAdminHeroSlides();
 }
 
+/**
+ * Add a new custom Hero Carousel Slide (for a new product or banner)
+ */
+function addNewHeroSlide() {
+  const currentSlides = typeof loadHeroSlides === 'function' ? loadHeroSlides() : [];
+  const nextNum = currentSlides.length + 1;
+  const catalog = typeof loadProductsCatalog === 'function' ? loadProductsCatalog() : (typeof products !== 'undefined' ? products : []);
+  
+  // Choose an unused catalog product if available, or fall back to catalog item
+  const usedProductIds = new Set(currentSlides.map(s => Number(s.productId)));
+  const availableProduct = catalog.find(p => !usedProductIds.has(Number(p.id))) || catalog[0] || null;
+
+  const newSlide = {
+    id: Date.now(),
+    productId: availableProduct ? availableProduct.id : null,
+    tag: "NEW ARRIVAL",
+    tagIcon: "bi-lightning-charge-fill",
+    title: availableProduct ? availableProduct.name.toUpperCase() : `EXCLUSIVE DEAL ${nextNum}`,
+    description: availableProduct 
+      ? (availableProduct.description || `Special limited deal on ${availableProduct.name}. Order now!`)
+      : "Discover our newest featured collection with massive limited-time savings today.",
+    btnPrimaryText: availableProduct ? `Shop Now • $${Number(availableProduct.price).toFixed(2)}` : "Shop Now",
+    btnPrimaryLink: availableProduct ? `product.html?id=${availableProduct.id}` : "shop.html",
+    btnSecondaryText: "Explore More",
+    btnSecondaryLink: "shop.html",
+    imageUrl: (availableProduct && ((Array.isArray(availableProduct.images) && availableProduct.images[0]) || availableProduct.image)) 
+      || "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&auto=format&fit=crop&q=80",
+    imageAlt: availableProduct ? availableProduct.name : `Hero Slide ${nextNum}`,
+    stickerTop: "NEW",
+    stickerMiddle: "DEAL",
+    stickerBottom: "HOT",
+    stickerTheme: "default"
+  };
+
+  currentSlides.push(newSlide);
+  if (typeof saveHeroSlides === 'function') {
+    saveHeroSlides(currentSlides);
+  }
+  renderAdminHeroSlides();
+  showAdminToast(`✨ Nayi Slide #${nextNum} add ho gayi! Ab aap is mein apni marzi ka product ya details dal sakte hain.`);
+
+  // Scroll to new slide
+  setTimeout(() => {
+    const newCard = document.querySelector(`.hero-slide-edit-card[data-slide-index="${currentSlides.length - 1}"]`);
+    if (newCard) {
+      newCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      newCard.classList.add('border-warning');
+      setTimeout(() => newCard.classList.remove('border-warning'), 2500);
+    }
+  }, 150);
+}
+
 function renderAdminHeroSlides() {
   const container = document.getElementById('heroSlidesEditorContainer');
   if (!container) return;
@@ -2340,7 +2434,30 @@ function renderAdminHeroSlides() {
   const catalog = typeof loadProductsCatalog === 'function' ? loadProductsCatalog() : (typeof products !== 'undefined' ? products : []);
 
   if (!slides || !slides.length) {
-    container.innerHTML = '<div class="col-12 alert alert-warning">No hero slides found. Click Factory Reset to restore defaults.</div>';
+    container.innerHTML = `
+      <div class="col-12 text-center py-5">
+        <div class="alert alert-warning py-4 px-3 rounded-4 shadow-sm max-w-md mx-auto">
+          <i class="bi bi-images fs-1 text-warning d-block mb-2"></i>
+          <h5 class="fw-bold text-dark">No Hero Slides Available</h5>
+          <p class="text-muted small mb-3">Homepage hero section mein abhi koi slide nahi hai. Naya slide add karein ya defaults restore karein.</p>
+          <div class="d-flex justify-content-center gap-2">
+            <button type="button" class="btn btn-success btn-sm rounded-pill px-3 py-1.5 fw-bold" onclick="addNewHeroSlide()">
+              <i class="bi bi-plus-circle-fill me-1"></i> Add First Slide
+            </button>
+            <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3 py-1.5 fw-bold" id="emptyStateResetHeroBtn">
+              <i class="bi bi-arrow-counterclockwise me-1"></i> Restore Defaults
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+    const emptyReset = document.getElementById('emptyStateResetHeroBtn');
+    if (emptyReset) {
+      emptyReset.addEventListener('click', () => {
+        if (typeof resetHeroSlides === 'function') resetHeroSlides();
+        renderAdminHeroSlides();
+      });
+    }
     return;
   }
 
@@ -2355,18 +2472,32 @@ function renderAdminHeroSlides() {
     }).join('');
 
     return `
-      <div class="col-12 col-xl-4">
+      <div class="col-12 col-xl-4 col-md-6">
         <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white hero-slide-edit-card" data-slide-index="${idx}">
           
-          <!-- Slide Card Header with Separate Update Button -->
+          <!-- Slide Card Header with Separate Update Button & Reordering -->
           <div class="card-header bg-dark text-white p-3 d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center gap-2">
               <span class="badge bg-warning text-dark fw-bold rounded-pill px-2.5 py-1">SLIDE ${idx + 1}</span>
-              <span class="small fw-bold text-uppercase tracking-wider text-light">${idx === 0 ? 'First (Active)' : `Slide ${idx + 1}`}</span>
+              <span class="small fw-bold text-uppercase tracking-wider text-light" style="font-size: 0.72rem;">
+                ${idx === 0 ? 'First (Active)' : `Slide ${idx + 1}`}
+              </span>
             </div>
-            <button type="button" class="btn btn-warning btn-sm rounded-pill px-3 py-1 fw-bold btn-save-individual-slide shadow-sm" data-slide-index="${idx}" title="Save only this slide">
-              <i class="bi bi-check2-circle me-1"></i> Update Slide ${idx + 1}
-            </button>
+            
+            <div class="d-flex align-items-center gap-1">
+              <!-- Reorder buttons -->
+              <button type="button" class="btn btn-outline-light btn-sm rounded-circle p-0 d-inline-flex align-items-center justify-content-center btn-move-slide-up" data-slide-index="${idx}" ${idx === 0 ? 'disabled' : ''} style="width: 26px; height: 26px;" title="Move earlier in slider">
+                <i class="bi bi-chevron-left" style="font-size: 0.75rem;"></i>
+              </button>
+              <button type="button" class="btn btn-outline-light btn-sm rounded-circle p-0 d-inline-flex align-items-center justify-content-center btn-move-slide-down" data-slide-index="${idx}" ${idx === slides.length - 1 ? 'disabled' : ''} style="width: 26px; height: 26px;" title="Move later in slider">
+                <i class="bi bi-chevron-right" style="font-size: 0.75rem;"></i>
+              </button>
+              
+              <!-- Top Update Button -->
+              <button type="button" class="btn btn-warning btn-sm rounded-pill px-2.5 py-1 fw-bold btn-save-individual-slide shadow-sm ms-1" data-slide-index="${idx}" title="Save only this slide">
+                <i class="bi bi-check2-circle me-1"></i> Update Slide ${idx + 1}
+              </button>
+            </div>
           </div>
 
           <div class="card-body p-3 p-md-4">
@@ -2472,7 +2603,7 @@ function renderAdminHeroSlides() {
               
               <!-- Thumbnail Preview Box -->
               <div class="d-flex align-items-center gap-3 p-2 rounded-3 bg-white border">
-                <img src="${escapeHtml(slide.imageUrl)}" alt="Preview" class="hero-preview-img-${idx}" style="width: 75px; height: 65px; object-fit: cover; border-radius: 8px; border: 1px solid #d1d5db;" onerror="this.src='https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&auto=format&fit=crop&q=80'">
+                <img src="${escapeHtml(slide.imageUrl || 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&auto=format&fit=crop&q=80')}" alt="Preview" class="hero-preview-img-${idx}" style="width: 75px; height: 65px; object-fit: cover; border-radius: 8px; border: 1px solid #d1d5db;" onerror="this.src='https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&auto=format&fit=crop&q=80'">
                 <div class="small">
                   <strong class="text-dark d-block">Live Image Preview</strong>
                   <span class="text-muted" style="font-size: 0.73rem;">Transparent PNG ya high-res product photo recommended hai.</span>
@@ -2513,12 +2644,20 @@ function renderAdminHeroSlides() {
 
           </div>
 
-          <!-- Slide Card Footer with Dedicated Update Button for this Slide -->
+          <!-- Slide Card Footer with Dedicated Update & Delete Buttons -->
           <div class="card-footer bg-light p-3 border-top d-flex flex-wrap justify-content-between align-items-center gap-2">
-            <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3 btn-reset-individual-slide" data-slide-index="${idx}">
-              <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Slide ${idx + 1}
-            </button>
-            <button type="button" class="btn btn-deal btn-sm rounded-pill px-4 py-2 fw-bold btn-save-individual-slide" data-slide-index="${idx}">
+            <div class="d-flex gap-1">
+              ${slides.length > 1 ? `
+                <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-2.5 btn-delete-individual-slide" data-slide-index="${idx}" title="Delete this slide from carousel">
+                  <i class="bi bi-trash3 me-1"></i> Delete
+                </button>
+              ` : ''}
+              <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-2.5 btn-reset-individual-slide" data-slide-index="${idx}" title="Reset slide values">
+                <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+              </button>
+            </div>
+            
+            <button type="button" class="btn btn-deal btn-sm rounded-pill px-3.5 py-1.5 fw-bold btn-save-individual-slide shadow-sm" data-slide-index="${idx}">
               <i class="bi bi-check2-circle me-1"></i> Update Slide ${idx + 1}
             </button>
           </div>
@@ -2528,7 +2667,7 @@ function renderAdminHeroSlides() {
     `;
   }).join('');
 
-  // Re-bind all events immediately after rendering so buttons & inputs always work!
+  // Re-bind all events immediately after rendering
   setupHeroEventListeners();
 }
 
@@ -2546,7 +2685,7 @@ function setupHeroEventListeners() {
 
       try {
         if (fileNameLabel) fileNameLabel.textContent = `Processing ${file.name}...`;
-        const dataUrl = await processImageFile(file, 900, 900, 0.85);
+        const dataUrl = await processImageFile(file, 800, 800, 0.75);
         if (imgInput) imgInput.value = dataUrl;
         if (previewImg) previewImg.src = dataUrl;
         if (fileNameLabel) {
@@ -2660,7 +2799,7 @@ function setupHeroEventListeners() {
     };
   }
 
-  // 4. SEPARATE UPDATE BUTTON FOR EACH INDIVIDUAL SLIDE (Slide 1, Slide 2, Slide 3)
+  // 4. SEPARATE UPDATE BUTTON FOR EACH INDIVIDUAL SLIDE (Slide 1, Slide 2, Slide 3, etc.)
   document.querySelectorAll('.btn-save-individual-slide').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
@@ -2682,26 +2821,120 @@ function setupHeroEventListeners() {
     });
   });
 
-  // 5. INDIVIDUAL RESET BUTTON FOR EACH SLIDE
-  document.querySelectorAll('.btn-reset-individual-slide').forEach(btn => {
+  // 5. DELETE INDIVIDUAL SLIDE BUTTON
+  document.querySelectorAll('.btn-delete-individual-slide').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
       const idx = parseInt(btn.getAttribute('data-slide-index'), 10);
-      if (confirm(`Reset Slide ${idx + 1} back to default?`)) {
-        const currentSlides = typeof loadHeroSlides === 'function' ? loadHeroSlides() : [];
-        if (typeof DEFAULT_HERO_SLIDES !== 'undefined' && DEFAULT_HERO_SLIDES[idx]) {
-          currentSlides[idx] = JSON.parse(JSON.stringify(DEFAULT_HERO_SLIDES[idx]));
-          if (typeof saveHeroSlides === 'function') {
-            saveHeroSlides(currentSlides);
-          }
-          renderAdminHeroSlides();
-          showAdminToast(`🔄 Slide ${idx + 1} reset back to default.`);
+      const currentSlides = typeof loadHeroSlides === 'function' ? loadHeroSlides() : [];
+
+      if (currentSlides.length <= 1) {
+        alert('Kam az kam aik (1) hero slide zaroori hai.');
+        return;
+      }
+
+      if (confirm(`Slide ${idx + 1} ko homepage slider se delete karna chahte hain?`)) {
+        currentSlides.splice(idx, 1);
+        if (typeof saveHeroSlides === 'function') {
+          saveHeroSlides(currentSlides);
         }
+        renderAdminHeroSlides();
+        showAdminToast(`🗑️ Slide ${idx + 1} delete ho gayi! Baki slides save ho chuki hain.`);
       }
     });
   });
 
-  // 6. Global Save Action (Top and Bottom "Save All Banners" buttons)
+  // 6. MOVE SLIDE UP / DOWN (REORDERING)
+  document.querySelectorAll('.btn-move-slide-up').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const idx = parseInt(btn.getAttribute('data-slide-index'), 10);
+      if (idx <= 0) return;
+      const currentSlides = typeof loadHeroSlides === 'function' ? loadHeroSlides() : [];
+      const temp = currentSlides[idx];
+      currentSlides[idx] = currentSlides[idx - 1];
+      currentSlides[idx - 1] = temp;
+      if (typeof saveHeroSlides === 'function') {
+        saveHeroSlides(currentSlides);
+      }
+      renderAdminHeroSlides();
+      showAdminToast(`↔️ Slide ${idx + 1} ko position ${idx} par shift kar diya.`);
+    });
+  });
+
+  document.querySelectorAll('.btn-move-slide-down').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const idx = parseInt(btn.getAttribute('data-slide-index'), 10);
+      const currentSlides = typeof loadHeroSlides === 'function' ? loadHeroSlides() : [];
+      if (idx >= currentSlides.length - 1) return;
+      const temp = currentSlides[idx];
+      currentSlides[idx] = currentSlides[idx + 1];
+      currentSlides[idx + 1] = temp;
+      if (typeof saveHeroSlides === 'function') {
+        saveHeroSlides(currentSlides);
+      }
+      renderAdminHeroSlides();
+      showAdminToast(`↔️ Slide ${idx + 1} ko position ${idx + 2} par shift kar diya.`);
+    });
+  });
+
+  // 7. RESET INDIVIDUAL SLIDE
+  document.querySelectorAll('.btn-reset-individual-slide').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const idx = parseInt(btn.getAttribute('data-slide-index'), 10);
+      if (confirm(`Slide ${idx + 1} ke changes reset karne hain?`)) {
+        const currentSlides = typeof loadHeroSlides === 'function' ? loadHeroSlides() : [];
+        if (typeof DEFAULT_HERO_SLIDES !== 'undefined' && DEFAULT_HERO_SLIDES[idx]) {
+          currentSlides[idx] = JSON.parse(JSON.stringify(DEFAULT_HERO_SLIDES[idx]));
+        } else {
+          currentSlides[idx] = {
+            id: Date.now(),
+            productId: null,
+            tag: "SPECIAL DEAL",
+            tagIcon: "bi-fire",
+            title: `HOT PRODUCT DEAL ${idx + 1}`,
+            description: "Exciting limited-time discount on top trending items.",
+            btnPrimaryText: "Shop Now",
+            btnPrimaryLink: "shop.html",
+            btnSecondaryText: "Explore More",
+            btnSecondaryLink: "shop.html",
+            imageUrl: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&auto=format&fit=crop&q=80",
+            imageAlt: "Deal",
+            stickerTop: "SAVE",
+            stickerMiddle: "50%",
+            stickerBottom: "TODAY",
+            stickerTheme: "default"
+          };
+        }
+        if (typeof saveHeroSlides === 'function') {
+          saveHeroSlides(currentSlides);
+        }
+        renderAdminHeroSlides();
+        showAdminToast(`🔄 Slide ${idx + 1} reset ho gayi.`);
+      }
+    });
+  });
+
+  // 8. ADD NEW SLIDE BUTTONS (Top & Bottom)
+  const addTopBtn = document.getElementById('addNewHeroSlideBtn');
+  if (addTopBtn) {
+    addTopBtn.onclick = (e) => {
+      e.preventDefault();
+      addNewHeroSlide();
+    };
+  }
+
+  const addBtmBtn = document.getElementById('addNewHeroSlideBottomBtn');
+  if (addBtmBtn) {
+    addBtmBtn.onclick = (e) => {
+      e.preventDefault();
+      addNewHeroSlide();
+    };
+  }
+
+  // 9. Global Save Action ("Save All Banners" buttons)
   const saveAllAction = (e) => {
     if (e) e.preventDefault();
     const cards = document.querySelectorAll('.hero-slide-edit-card');
@@ -2714,7 +2947,7 @@ function setupHeroEventListeners() {
     if (typeof saveHeroSlides === 'function') {
       saveHeroSlides(newSlides);
     }
-    showAdminToast('🎯 All 3 Hero Banners saved successfully! Homepage updated in real time.');
+    showAdminToast(`🎯 All ${newSlides.length} Hero Banners saved successfully! Homepage updated in real time.`);
   };
 
   const form = document.getElementById('adminHeroSlidesForm');
@@ -2726,9 +2959,9 @@ function setupHeroEventListeners() {
   const saveBtmBtn = document.getElementById('saveHeroBannersBottomBtn');
   if (saveBtmBtn) saveBtmBtn.addEventListener('click', saveAllAction);
 
-  // 7. Global Factory Reset Action
+  // 10. Global Factory Reset Action
   const resetAllAction = () => {
-    if (confirm('Reset all 3 Hero Carousel slides back to default factory products?')) {
+    if (confirm('Reset all Hero Carousel slides back to default factory products?')) {
       if (typeof resetHeroSlides === 'function') {
         resetHeroSlides();
       }
@@ -2743,6 +2976,965 @@ function setupHeroEventListeners() {
   const resetBtmBtn = document.getElementById('resetHeroBannersBottomBtn');
   if (resetBtmBtn) resetBtmBtn.addEventListener('click', resetAllAction);
 }
+
+/* ==========================================================================
+   HOMEPAGE NEWS & TOP TICKER SLIDER MANAGEMENT
+   ========================================================================== */
+
+function initAdminNewsManager() {
+  renderAdminNewsSlides();
+}
+
+/**
+ * Add a new custom News Slide
+ */
+function addNewNewsSlide() {
+  const currentNews = typeof loadNewsItems === 'function' ? loadNewsItems() : [];
+  const nextNum = currentNews.length + 1;
+
+  const newItem = {
+    id: Date.now(),
+    badge: "📢 NEW DROP",
+    badgeColor: "warning",
+    title: `EXCLUSIVE STORE ANNOUNCEMENT #${nextNum}`,
+    summary: "Naye product drops, mega discount promotions ya delivery alerts ki details yahan likhein.",
+    linkText: "Shop Deal Now",
+    linkUrl: "shop.html",
+    date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+    imageUrl: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800&auto=format&fit=crop&q=80",
+    showInTopTicker: true,
+    tickerText: `NEW ANNOUNCEMENT #${nextNum}: CHECK OUT LATEST DROPS & DEALS`
+  };
+
+  currentNews.push(newItem);
+  if (typeof saveNewsItems === 'function') {
+    saveNewsItems(currentNews);
+  }
+  renderAdminNewsSlides();
+  showAdminToast(`✨ Nayi News Slide #${nextNum} add ho gayi! Ab aap is mein apni details save karein.`);
+
+  // Scroll to new slide
+  setTimeout(() => {
+    const newCard = document.querySelector(`.news-slide-edit-card[data-news-index="${currentNews.length - 1}"]`);
+    if (newCard) {
+      newCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      newCard.classList.add('border-info');
+      setTimeout(() => newCard.classList.remove('border-info'), 2500);
+    }
+  }, 150);
+}
+
+function renderAdminNewsSlides() {
+  const container = document.getElementById('newsEditorContainer');
+  if (!container) return;
+
+  const items = typeof loadNewsItems === 'function' ? loadNewsItems() : [];
+
+  if (!items || !items.length) {
+    container.innerHTML = `
+      <div class="col-12 text-center py-5">
+        <div class="alert alert-info py-4 px-3 rounded-4 shadow-sm max-w-md mx-auto">
+          <i class="bi bi-newspaper fs-1 text-info d-block mb-2"></i>
+          <h5 class="fw-bold text-dark">No News Slides Available</h5>
+          <p class="text-muted small mb-3">Homepage news section mein abhi koi slide nahi hai. Nayi slide add karein ya defaults restore karein.</p>
+          <div class="d-flex justify-content-center gap-2">
+            <button type="button" class="btn btn-success btn-sm rounded-pill px-3 py-1.5 fw-bold" onclick="addNewNewsSlide()">
+              <i class="bi bi-plus-circle-fill me-1"></i> Add First News Slide
+            </button>
+            <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3 py-1.5 fw-bold" id="emptyStateResetNewsBtn">
+              <i class="bi bi-arrow-counterclockwise me-1"></i> Restore Defaults
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+    const emptyReset = document.getElementById('emptyStateResetNewsBtn');
+    if (emptyReset) {
+      emptyReset.addEventListener('click', () => {
+        if (typeof resetNewsItems === 'function') resetNewsItems();
+        renderAdminNewsSlides();
+      });
+    }
+    return;
+  }
+
+  container.innerHTML = items.map((item, idx) => {
+    const badgeColor = item.badgeColor || 'warning';
+
+    return `
+      <div class="col-12 col-xl-4 col-md-6">
+        <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden bg-white news-slide-edit-card" data-news-index="${idx}">
+          
+          <!-- Card Header -->
+          <div class="card-header bg-dark text-white p-3 d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge bg-info text-dark fw-bold rounded-pill px-2.5 py-1">NEWS #${idx + 1}</span>
+              <span class="small fw-bold text-uppercase tracking-wider text-light" style="font-size: 0.72rem;">
+                ${idx === 0 ? 'Active / 1st Slide' : `Slide ${idx + 1}`}
+              </span>
+            </div>
+
+            <div class="d-flex align-items-center gap-1">
+              <!-- Reorder buttons -->
+              <button type="button" class="btn btn-outline-light btn-sm rounded-circle p-0 d-inline-flex align-items-center justify-content-center btn-move-news-up" data-news-index="${idx}" ${idx === 0 ? 'disabled' : ''} style="width: 26px; height: 26px;" title="Move earlier in slider">
+                <i class="bi bi-chevron-left" style="font-size: 0.75rem;"></i>
+              </button>
+              <button type="button" class="btn btn-outline-light btn-sm rounded-circle p-0 d-inline-flex align-items-center justify-content-center btn-move-news-down" data-news-index="${idx}" ${idx === items.length - 1 ? 'disabled' : ''} style="width: 26px; height: 26px;" title="Move later in slider">
+                <i class="bi bi-chevron-right" style="font-size: 0.75rem;"></i>
+              </button>
+              
+              <!-- Top Update Button -->
+              <button type="button" class="btn btn-info btn-sm rounded-pill px-2.5 py-1 fw-bold text-dark btn-save-individual-news shadow-sm ms-1" data-news-index="${idx}" title="Save only this news slide">
+                <i class="bi bi-check2-circle me-1"></i> Update #${idx + 1}
+              </button>
+            </div>
+          </div>
+
+          <div class="card-body p-3 p-md-4">
+            
+            <!-- Category Badge & Color -->
+            <div class="row g-2 mb-3">
+              <div class="col-7">
+                <label class="form-label small fw-bold text-dark mb-1">Badge / Tag Text</label>
+                <input type="text" class="form-control form-control-sm news-input-badge" data-news-index="${idx}" value="${escapeHtml(item.badge || 'FLASH PROMO')}" placeholder="e.g. ⚡ FLASH PROMO">
+              </div>
+              <div class="col-5">
+                <label class="form-label small fw-bold text-dark mb-1">Badge Color</label>
+                <select class="form-select form-select-sm news-input-badge-color" data-news-index="${idx}">
+                  <option value="warning" ${badgeColor === 'warning' ? 'selected' : ''}>Yellow (Warning)</option>
+                  <option value="danger" ${badgeColor === 'danger' ? 'selected' : ''}>Red (Hot / Danger)</option>
+                  <option value="success" ${badgeColor === 'success' ? 'selected' : ''}>Green (Success / Shipping)</option>
+                  <option value="primary" ${badgeColor === 'primary' ? 'selected' : ''}>Blue (Drop / Launch)</option>
+                  <option value="info" ${badgeColor === 'info' ? 'selected' : ''}>Cyan (Notice)</option>
+                  <option value="dark" ${badgeColor === 'dark' ? 'selected' : ''}>Dark (Charcoal)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Headline / Title -->
+            <div class="mb-3">
+              <label class="form-label small fw-bold text-dark mb-1">
+                News Headline / Title <span class="text-danger">*</span>
+              </label>
+              <input type="text" class="form-control form-control-sm news-input-title" data-news-index="${idx}" value="${escapeHtml(item.title || '')}" required placeholder="Headline of announcement...">
+            </div>
+
+            <!-- Date / Subtag -->
+            <div class="mb-3">
+              <label class="form-label small fw-bold text-dark mb-1">Date / Display Time</label>
+              <input type="text" class="form-control form-control-sm news-input-date" data-news-index="${idx}" value="${escapeHtml(item.date || '')}" placeholder="e.g. Nov 6, 2026">
+            </div>
+
+            <!-- Summary / Content -->
+            <div class="mb-3">
+              <label class="form-label small fw-bold text-dark mb-1">Summary Description</label>
+              <textarea class="form-control form-control-sm news-input-summary" data-news-index="${idx}" rows="2" placeholder="Announcement details...">${escapeHtml(item.summary || '')}</textarea>
+            </div>
+
+            <!-- Button Action & Link -->
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="form-label small fw-bold text-dark mb-1">Button Text</label>
+                <input type="text" class="form-control form-control-sm news-input-btn-text" data-news-index="${idx}" value="${escapeHtml(item.linkText || 'Learn More')}" placeholder="Shop Deal Now">
+              </div>
+              <div class="col-6">
+                <label class="form-label small fw-bold text-dark mb-1">Button Link</label>
+                <input type="text" class="form-control form-control-sm news-input-btn-url" data-news-index="${idx}" value="${escapeHtml(item.linkUrl || 'shop.html')}" placeholder="shop.html ya link">
+              </div>
+            </div>
+
+            <!-- Top Header Announcement Ticker Settings -->
+            <div class="p-3 bg-light rounded-3 border mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <label class="form-label small fw-bold text-dark mb-0">
+                  <i class="bi bi-broadcast text-info me-1"></i> Top Header Ticker Slider
+                </label>
+                <div class="form-check form-switch m-0">
+                  <input class="form-check-input news-input-show-ticker" type="checkbox" id="newsTickerCheck_${idx}" data-news-index="${idx}" ${item.showInTopTicker !== false ? 'checked' : ''}>
+                  <label class="form-check-label small text-muted" for="newsTickerCheck_${idx}">Cycle in Ticker</label>
+                </div>
+              </div>
+              <input type="text" class="form-control form-control-sm news-input-ticker-text" data-news-index="${idx}" value="${escapeHtml(item.tickerText || item.title || '')}" placeholder="Short 1-line text for top header ticker...">
+              <span class="text-muted" style="font-size: 0.72rem;">Ye text website ke sab se upar black announcement bar mein slide ban kar chalega.</span>
+            </div>
+
+            <!-- Image Upload with Device Storage & URL -->
+            <div class="p-3 bg-light rounded-3 border mb-3">
+              <label class="form-label small fw-bold text-dark d-flex justify-content-between align-items-center mb-1">
+                <span>News Image <span class="text-danger">*</span></span>
+                <span class="badge bg-info-subtle text-dark border" style="font-size: 0.7rem;">Device or URL</span>
+              </label>
+
+              <!-- Device File Upload Button -->
+              <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                <label class="btn btn-sm btn-dark text-white rounded-pill px-3 py-1 fw-bold d-inline-flex align-items-center gap-1 cursor-pointer shadow-sm">
+                  <i class="bi bi-upload text-info"></i>
+                  <span>Choose from Device</span>
+                  <input type="file" accept="image/*" class="d-none news-file-input" data-news-index="${idx}">
+                </label>
+                <span class="small text-muted news-file-name-${idx}">PNG, JPG, WebP</span>
+              </div>
+
+              <!-- Direct URL -->
+              <div class="input-group input-group-sm mb-2">
+                <span class="input-group-text bg-white"><i class="bi bi-link-45deg"></i> URL</span>
+                <input type="text" class="form-control news-input-image" data-news-index="${idx}" value="${escapeHtml(item.imageUrl || '')}" placeholder="https://... ya local path">
+              </div>
+
+              <!-- Preview -->
+              <div class="d-flex align-items-center gap-3 p-2 rounded-3 bg-white border">
+                <img src="${escapeHtml(item.imageUrl || 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800&auto=format&fit=crop&q=80')}" alt="Preview" class="news-preview-img-${idx}" style="width: 75px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid #d1d5db;" onerror="this.src='https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800&auto=format&fit=crop&q=80'">
+                <div class="small">
+                  <strong class="text-dark d-block">Thumbnail Preview</strong>
+                  <span class="text-muted" style="font-size: 0.72rem;">Homepage News slider card par ye photo dikhai degi.</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Card Footer with Dedicated Update & Delete Buttons -->
+          <div class="card-footer bg-light p-3 border-top d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div class="d-flex gap-1">
+              ${items.length > 1 ? `
+                <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-2.5 btn-delete-individual-news" data-news-index="${idx}" title="Delete this news slide">
+                  <i class="bi bi-trash3 me-1"></i> Delete
+                </button>
+              ` : ''}
+              <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-2.5 btn-reset-individual-news" data-news-index="${idx}" title="Reset news slide">
+                <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+              </button>
+            </div>
+            
+            <button type="button" class="btn btn-info btn-sm rounded-pill px-3.5 py-1.5 fw-bold text-dark btn-save-individual-news shadow-sm" data-news-index="${idx}">
+              <i class="bi bi-check2-circle me-1"></i> Update News #${idx + 1}
+            </button>
+          </div>
+
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  setupNewsEventListeners();
+}
+
+function setupNewsEventListeners() {
+  // 1. Device Storage Image Upload for each News Slide
+  document.querySelectorAll('.news-file-input').forEach(fileInput => {
+    fileInput.addEventListener('change', async (e) => {
+      const idx = e.target.getAttribute('data-news-index');
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      const fileNameLabel = document.querySelector(`.news-file-name-${idx}`);
+      const imgInput = document.querySelector(`.news-input-image[data-news-index="${idx}"]`);
+      const previewImg = document.querySelector(`.news-preview-img-${idx}`);
+
+      try {
+        if (fileNameLabel) fileNameLabel.textContent = `Processing ${file.name}...`;
+        const dataUrl = await processImageFile(file, 800, 600, 0.75);
+        if (imgInput) imgInput.value = dataUrl;
+        if (previewImg) previewImg.src = dataUrl;
+        if (fileNameLabel) {
+          fileNameLabel.innerHTML = `<span class="text-success fw-bold"><i class="bi bi-check-circle-fill"></i> ${escapeHtml(file.name)}</span> (${Math.round(file.size / 1024)} KB)`;
+        }
+        showAdminToast(`📸 News Slide #${Number(idx) + 1} image loaded from device storage!`);
+      } catch (err) {
+        alert('Could not load image: ' + err.message);
+        if (fileNameLabel) fileNameLabel.textContent = 'Failed to load image';
+      }
+    });
+  });
+
+  // 2. URL live preview
+  document.querySelectorAll('.news-input-image').forEach(input => {
+    input.addEventListener('input', (e) => {
+      const idx = e.target.getAttribute('data-news-index');
+      const preview = document.querySelector(`.news-preview-img-${idx}`);
+      if (preview && e.target.value.trim()) {
+        preview.src = e.target.value.trim();
+      }
+    });
+  });
+
+  // Helper to extract data from a news card
+  function extractNewsData(card, idx) {
+    const badge = card.querySelector('.news-input-badge')?.value.trim() || 'UPDATE';
+    const badgeColor = card.querySelector('.news-input-badge-color')?.value || 'warning';
+    const title = card.querySelector('.news-input-title')?.value.trim() || `Store Announcement #${idx + 1}`;
+    const date = card.querySelector('.news-input-date')?.value.trim() || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const summary = card.querySelector('.news-input-summary')?.value.trim() || '';
+    const linkText = card.querySelector('.news-input-btn-text')?.value.trim() || 'Learn More';
+    const linkUrl = card.querySelector('.news-input-btn-url')?.value.trim() || 'shop.html';
+    const showInTopTicker = card.querySelector('.news-input-show-ticker')?.checked ?? true;
+    const tickerText = card.querySelector('.news-input-ticker-text')?.value.trim() || title;
+    const imageUrl = card.querySelector('.news-input-image')?.value.trim() || 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800&auto=format&fit=crop&q=80';
+
+    return {
+      id: idx + 1,
+      badge,
+      badgeColor,
+      title,
+      date,
+      summary,
+      linkText,
+      linkUrl,
+      showInTopTicker,
+      tickerText,
+      imageUrl
+    };
+  }
+
+  // 3. Save individual news slide
+  document.querySelectorAll('.btn-save-individual-news').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const idx = parseInt(btn.getAttribute('data-news-index'), 10);
+      const card = document.querySelector(`.news-slide-edit-card[data-news-index="${idx}"]`);
+      if (!card) return;
+
+      const currentNews = typeof loadNewsItems === 'function' ? loadNewsItems() : [];
+      const updatedItem = extractNewsData(card, idx);
+      currentNews[idx] = updatedItem;
+
+      if (typeof saveNewsItems === 'function') {
+        saveNewsItems(currentNews);
+      }
+      showAdminToast(`🎉 News Slide #${idx + 1} updated and saved! Storefront live updated.`);
+    });
+  });
+
+  // 4. Delete individual news slide
+  document.querySelectorAll('.btn-delete-individual-news').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const idx = parseInt(btn.getAttribute('data-news-index'), 10);
+      const currentNews = typeof loadNewsItems === 'function' ? loadNewsItems() : [];
+
+      if (currentNews.length <= 1) {
+        alert('Kam az kam aik (1) news slide zaroori hai.');
+        return;
+      }
+
+      if (confirm(`News Slide #${idx + 1} ko delete karna chahte hain?`)) {
+        currentNews.splice(idx, 1);
+        if (typeof saveNewsItems === 'function') {
+          saveNewsItems(currentNews);
+        }
+        renderAdminNewsSlides();
+        showAdminToast(`🗑️ News Slide #${idx + 1} delete ho gayi! Baki slides save ho chuki hain.`);
+      }
+    });
+  });
+
+  // 5. Move news slide up / down
+  document.querySelectorAll('.btn-move-news-up').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const idx = parseInt(btn.getAttribute('data-news-index'), 10);
+      if (idx <= 0) return;
+      const currentNews = typeof loadNewsItems === 'function' ? loadNewsItems() : [];
+      const temp = currentNews[idx];
+      currentNews[idx] = currentNews[idx - 1];
+      currentNews[idx - 1] = temp;
+      if (typeof saveNewsItems === 'function') {
+        saveNewsItems(currentNews);
+      }
+      renderAdminNewsSlides();
+      showAdminToast(`↔️ News Slide #${idx + 1} ko pehle shift kar diya.`);
+    });
+  });
+
+  document.querySelectorAll('.btn-move-news-down').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const idx = parseInt(btn.getAttribute('data-news-index'), 10);
+      const currentNews = typeof loadNewsItems === 'function' ? loadNewsItems() : [];
+      if (idx >= currentNews.length - 1) return;
+      const temp = currentNews[idx];
+      currentNews[idx] = currentNews[idx + 1];
+      currentNews[idx + 1] = temp;
+      if (typeof saveNewsItems === 'function') {
+        saveNewsItems(currentNews);
+      }
+      renderAdminNewsSlides();
+      showAdminToast(`↔️ News Slide #${idx + 1} ko baad mein shift kar diya.`);
+    });
+  });
+
+  // 6. Reset individual news slide
+  document.querySelectorAll('.btn-reset-individual-news').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const idx = parseInt(btn.getAttribute('data-news-index'), 10);
+      if (confirm(`News Slide #${idx + 1} ke changes reset karne hain?`)) {
+        const currentNews = typeof loadNewsItems === 'function' ? loadNewsItems() : [];
+        if (typeof DEFAULT_NEWS_ITEMS !== 'undefined' && DEFAULT_NEWS_ITEMS[idx]) {
+          currentNews[idx] = JSON.parse(JSON.stringify(DEFAULT_NEWS_ITEMS[idx]));
+        } else {
+          currentNews[idx] = {
+            id: Date.now(),
+            badge: "FLASH PROMO",
+            badgeColor: "warning",
+            title: `STORE PROMOTION #${idx + 1}`,
+            summary: "Details of this promotion or notice.",
+            linkText: "Shop Deals",
+            linkUrl: "shop.html",
+            date: "Today",
+            imageUrl: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800&auto=format&fit=crop&q=80",
+            showInTopTicker: true,
+            tickerText: `STORE PROMOTION #${idx + 1}`
+          };
+        }
+        if (typeof saveNewsItems === 'function') {
+          saveNewsItems(currentNews);
+        }
+        renderAdminNewsSlides();
+        showAdminToast(`🔄 News Slide #${idx + 1} reset ho gayi.`);
+      }
+    });
+  });
+
+  // 7. Add New News Slide buttons
+  const addTopBtn = document.getElementById('addNewNewsSlideBtn');
+  if (addTopBtn) {
+    addTopBtn.onclick = (e) => {
+      e.preventDefault();
+      addNewNewsSlide();
+    };
+  }
+
+  const addBtmBtn = document.getElementById('addNewNewsSlideBottomBtn');
+  if (addBtmBtn) {
+    addBtmBtn.onclick = (e) => {
+      e.preventDefault();
+      addNewNewsSlide();
+    };
+  }
+
+  // 8. Save All News
+  const saveAllAction = (e) => {
+    if (e) e.preventDefault();
+    const cards = document.querySelectorAll('.news-slide-edit-card');
+    const newItems = [];
+    cards.forEach((card, idx) => {
+      newItems.push(extractNewsData(card, idx));
+    });
+
+    if (typeof saveNewsItems === 'function') {
+      saveNewsItems(newItems);
+    }
+    showAdminToast(`🎯 All ${newItems.length} News Slides saved! Storefront live updated.`);
+  };
+
+  const form = document.getElementById('adminNewsForm');
+  if (form) form.addEventListener('submit', saveAllAction);
+
+  const saveTopBtn = document.getElementById('saveNewsBtn');
+  if (saveTopBtn) saveTopBtn.addEventListener('click', saveAllAction);
+
+  const saveBtmBtn = document.getElementById('saveNewsBottomBtn');
+  if (saveBtmBtn) saveBtmBtn.addEventListener('click', saveAllAction);
+
+  // 9. Factory Reset News
+  const resetAllAction = () => {
+    if (confirm('Reset all news slides back to factory defaults?')) {
+      if (typeof resetNewsItems === 'function') {
+        resetNewsItems();
+      }
+      renderAdminNewsSlides();
+      showAdminToast('🔄 All News slides reset to factory defaults.');
+    }
+  };
+
+  const resetTopBtn = document.getElementById('resetNewsBtn');
+  if (resetTopBtn) resetTopBtn.addEventListener('click', resetAllAction);
+
+  const resetBtmBtn = document.getElementById('resetNewsBottomBtn');
+  if (resetBtmBtn) resetBtmBtn.addEventListener('click', resetAllAction);
+}
+
+/* ==========================================================================
+   FOOTER, SOCIAL MEDIA & CUSTOMER SUPPORT SETTINGS MANAGEMENT
+   ========================================================================== */
+
+function initAdminFooterManager() {
+  populateAdminFooterSettings();
+  setupFooterEventListeners();
+}
+
+function populateAdminFooterSettings() {
+  const settings = typeof loadFooterSettings === 'function' ? loadFooterSettings() : null;
+  if (!settings) return;
+
+  // Social Links
+  const social = settings.socialLinks || {};
+  const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+  const setChecked = (id, val) => { const el = document.getElementById(id); if (el) el.checked = Boolean(val); };
+
+  setVal('footerSocialFbUrl', social.facebook?.url);
+  setChecked('footerSocialFbEnabled', social.facebook?.enabled);
+
+  setVal('footerSocialInstaUrl', social.instagram?.url);
+  setChecked('footerSocialInstaEnabled', social.instagram?.enabled);
+
+  setVal('footerSocialTwitterUrl', social.twitter?.url);
+  setChecked('footerSocialTwitterEnabled', social.twitter?.enabled);
+
+  setVal('footerSocialTiktokUrl', social.tiktok?.url);
+  setChecked('footerSocialTiktokEnabled', social.tiktok?.enabled);
+
+  setVal('footerSocialYtUrl', social.youtube?.url);
+  setChecked('footerSocialYtEnabled', social.youtube?.enabled);
+
+  setVal('footerSocialWaUrl', social.whatsapp?.url);
+  setChecked('footerSocialWaEnabled', social.whatsapp?.enabled);
+
+  // Customer Support
+  const support = settings.support || {};
+  setVal('footerSupportPhone', support.phone);
+  setVal('footerSupportEmail', support.email);
+  setVal('footerSupportWhatsapp', support.whatsappNumber);
+  setVal('footerSupportHours', support.hours);
+  setVal('footerSupportAddress', support.address);
+
+  // Legal & Policies
+  const legal = settings.legal || {};
+  setVal('footerLegalPrivacyTitle', legal.privacyTitle || 'Privacy Policy');
+  setVal('footerLegalPrivacyUrl', legal.privacyUrl || 'privacy.html');
+
+  setVal('footerLegalTermsTitle', legal.termsTitle || 'Terms & Conditions');
+  setVal('footerLegalTermsUrl', legal.termsUrl || 'terms.html');
+
+  setVal('footerLegalAboutTitle', legal.aboutTitle || 'About SnapzDealz');
+  setVal('footerLegalAboutUrl', legal.aboutUrl || 'about.html');
+
+  setVal('footerLegalContactTitle', legal.contactTitle || 'Contact & Helpdesk');
+  setVal('footerLegalContactUrl', legal.contactUrl || 'contact.html');
+
+  // Brand Bio, Copyright & Badges
+  setVal('footerBrandBio', settings.brandBio);
+  setVal('footerCopyrightText', settings.copyrightText);
+
+  const payments = settings.payments || {};
+  setChecked('footerBadgeCod', payments.cod !== false);
+  setChecked('footerBadgeEasypaisa', payments.easypaisa !== false);
+  setChecked('footerBadgeJazzcash', payments.jazzcash !== false);
+  setChecked('footerBadgeCards', payments.cards !== false);
+  setChecked('footerBadgeSsl', payments.ssl !== false);
+}
+
+function setupFooterEventListeners() {
+  const saveFooterAction = (e) => {
+    if (e) e.preventDefault();
+
+    const getVal = (id) => document.getElementById(id)?.value.trim() || '';
+    const getChecked = (id) => Boolean(document.getElementById(id)?.checked);
+
+    const updatedSettings = {
+      brandName: "SNAPZDEALZ",
+      brandBio: getVal('footerBrandBio') || "SnapzDealz is your premier destination for verified high-octane deals.",
+      copyrightText: getVal('footerCopyrightText') || "© 2026 SnapzDealz Inc. All rights reserved.",
+
+      socialLinks: {
+        facebook: { url: getVal('footerSocialFbUrl') || 'https://facebook.com', enabled: getChecked('footerSocialFbEnabled') },
+        instagram: { url: getVal('footerSocialInstaUrl') || 'https://instagram.com', enabled: getChecked('footerSocialInstaEnabled') },
+        twitter: { url: getVal('footerSocialTwitterUrl') || 'https://twitter.com', enabled: getChecked('footerSocialTwitterEnabled') },
+        tiktok: { url: getVal('footerSocialTiktokUrl') || 'https://tiktok.com', enabled: getChecked('footerSocialTiktokEnabled') },
+        youtube: { url: getVal('footerSocialYtUrl') || 'https://youtube.com', enabled: getChecked('footerSocialYtEnabled') },
+        whatsapp: { url: getVal('footerSocialWaUrl') || 'https://wa.me/923001234567', enabled: getChecked('footerSocialWaEnabled') }
+      },
+
+      support: {
+        phone: getVal('footerSupportPhone') || '1-800-SNAPZ-DEAL',
+        email: getVal('footerSupportEmail') || 'support@snapzdealz.com',
+        whatsappNumber: getVal('footerSupportWhatsapp') || '+92 300 1234567',
+        hours: getVal('footerSupportHours') || 'Live Support: 24 Hours / 7 Days',
+        address: getVal('footerSupportAddress') || '742 Evergreen Terrace, Suite 400, San Francisco, CA',
+        helpdeskUrl: getVal('footerLegalContactUrl') || 'contact.html'
+      },
+
+      legal: {
+        privacyTitle: getVal('footerLegalPrivacyTitle') || 'Privacy Policy',
+        privacyUrl: getVal('footerLegalPrivacyUrl') || 'privacy.html',
+        termsTitle: getVal('footerLegalTermsTitle') || 'Terms & Conditions',
+        termsUrl: getVal('footerLegalTermsUrl') || 'terms.html',
+        aboutTitle: getVal('footerLegalAboutTitle') || 'About SnapzDealz',
+        aboutUrl: getVal('footerLegalAboutUrl') || 'about.html',
+        contactTitle: getVal('footerLegalContactTitle') || 'Contact & Helpdesk',
+        contactUrl: getVal('footerLegalContactUrl') || 'contact.html'
+      },
+
+      payments: {
+        cod: getChecked('footerBadgeCod'),
+        easypaisa: getChecked('footerBadgeEasypaisa'),
+        jazzcash: getChecked('footerBadgeJazzcash'),
+        cards: getChecked('footerBadgeCards'),
+        ssl: getChecked('footerBadgeSsl')
+      }
+    };
+
+    if (typeof saveFooterSettings === 'function') {
+      saveFooterSettings(updatedSettings);
+    }
+    showAdminToast('🎉 Footer & Support Settings saved successfully! Live store updated.');
+  };
+
+  const footerForm = document.getElementById('adminFooterForm');
+  if (footerForm) footerForm.addEventListener('submit', saveFooterAction);
+
+  const saveTopBtn = document.getElementById('saveFooterBtn');
+  if (saveTopBtn) saveTopBtn.addEventListener('click', saveFooterAction);
+
+  const saveBtmBtn = document.getElementById('saveFooterBottomBtn');
+  if (saveBtmBtn) saveBtmBtn.addEventListener('click', saveFooterAction);
+
+  // Restore Defaults
+  const resetAction = () => {
+    if (confirm('Reset footer settings back to default values?')) {
+      if (typeof resetFooterSettings === 'function') {
+        resetFooterSettings();
+      }
+      populateAdminFooterSettings();
+      showAdminToast('🔄 Footer settings reset to default values.');
+    }
+  };
+
+  const resetTopBtn = document.getElementById('resetFooterBtn');
+  if (resetTopBtn) resetTopBtn.addEventListener('click', resetAction);
+
+  const resetBtmBtn = document.getElementById('resetFooterBottomBtn');
+  if (resetBtmBtn) resetBtmBtn.addEventListener('click', resetAction);
+}
+
+/* ==========================================================================
+   STORE CURRENCY & PRICING MANAGER (PKR, USD, ETC.)
+   ========================================================================== */
+
+function initAdminCurrencyManager() {
+  populateAdminCurrencySettings();
+  setupCurrencyEventListeners();
+  updateAdminCurrencyIndicators();
+}
+
+function updateAdminCurrencyIndicators() {
+  const cfg = (typeof loadCurrencySettings === 'function') ? loadCurrencySettings() : null;
+  if (!cfg) return;
+
+  const activeCode = cfg.activeCurrency || 'PKR';
+  const curr = (cfg.currencies && cfg.currencies[activeCode]) ? cfg.currencies[activeCode] : { code: 'PKR', symbol: 'Rs.', flag: '🇵🇰' };
+
+  const badgeEl = document.getElementById('adminActiveCurrencyBadge');
+  if (badgeEl) badgeEl.textContent = activeCode;
+
+  const quickFlag = document.getElementById('quickCurrencyFlag');
+  if (quickFlag) quickFlag.textContent = curr.flag || (activeCode === 'PKR' ? '🇵🇰' : '🇺🇸');
+
+  const quickCode = document.getElementById('quickCurrencyCode');
+  if (quickCode) quickCode.textContent = `${activeCode} (${curr.symbol || 'Rs.'})`;
+
+  // Update modal input prefixes & labels if present
+  const newPriceAddon = document.querySelector('#newProdPrice')?.parentElement?.querySelector('.input-group-text');
+  if (newPriceAddon) newPriceAddon.textContent = curr.symbol || '$';
+
+  const editPriceAddon = document.querySelector('#editProdPrice')?.parentElement?.querySelector('.input-group-text');
+  if (editPriceAddon) editPriceAddon.textContent = curr.symbol || '$';
+}
+
+function populateAdminCurrencySettings() {
+  const cfg = (typeof loadCurrencySettings === 'function') ? loadCurrencySettings() : null;
+  if (!cfg) return;
+
+  const activeCode = cfg.activeCurrency || 'PKR';
+  const pkrCurr = (cfg.currencies && cfg.currencies.PKR) ? cfg.currencies.PKR : { symbol: 'Rs.', rate: 280, decimals: 0, placement: 'before' };
+  const usdCurr = (cfg.currencies && cfg.currencies.USD) ? cfg.currencies.USD : { symbol: '$', rate: 1, decimals: 2, placement: 'before' };
+  const currentCurr = cfg.currencies[activeCode] || pkrCurr;
+
+  // Active Radio
+  const radioPkr = document.getElementById('radioCurrencyPKR');
+  const radioUsd = document.getElementById('radioCurrencyUSD');
+  if (radioPkr) radioPkr.checked = (activeCode === 'PKR');
+  if (radioUsd) radioUsd.checked = (activeCode === 'USD');
+
+  // Highlight Cards
+  updateCurrencyCardSelection(activeCode);
+
+  // Pricing Mode
+  const modeAuto = document.getElementById('pricingModeAuto');
+  const modeDirect = document.getElementById('pricingModeDirect');
+  if (modeAuto) modeAuto.checked = (cfg.pricingMode !== 'direct');
+  if (modeDirect) modeDirect.checked = (cfg.pricingMode === 'direct');
+
+  // Rate input
+  const rateInput = document.getElementById('currencyExchangeRateInput');
+  if (rateInput) rateInput.value = pkrCurr.rate || 280;
+
+  // Symbol input
+  const symbolInput = document.getElementById('currencySymbolInput');
+  if (symbolInput) symbolInput.value = currentCurr.symbol || (activeCode === 'PKR' ? 'Rs.' : '$');
+
+  // Placement select
+  const placementSelect = document.getElementById('currencyPlacementSelect');
+  if (placementSelect) placementSelect.value = currentCurr.placement || 'before';
+
+  // Decimals select
+  const decimalsSelect = document.getElementById('currencyDecimalsSelect');
+  if (decimalsSelect) decimalsSelect.value = (currentCurr.decimals !== undefined) ? String(currentCurr.decimals) : (activeCode === 'PKR' ? '0' : '2');
+
+  // Store switcher switch
+  const switcherSwitch = document.getElementById('enableStoreSwitcherSwitch');
+  if (switcherSwitch) switcherSwitch.checked = (cfg.enableStoreSwitcher !== false);
+
+  // Update simulator preview
+  updateLivePricingPreview();
+}
+
+function updateCurrencyCardSelection(activeCode) {
+  const cardPkr = document.getElementById('cardCurrencyPKR');
+  const cardUsd = document.getElementById('cardCurrencyUSD');
+  if (cardPkr) {
+    if (activeCode === 'PKR') {
+      cardPkr.classList.add('border-success', 'bg-success-subtle');
+      cardPkr.classList.remove('border-light');
+    } else {
+      cardPkr.classList.remove('border-success', 'bg-success-subtle');
+      cardPkr.classList.add('border-light');
+    }
+  }
+  if (cardUsd) {
+    if (activeCode === 'USD') {
+      cardUsd.classList.add('border-primary', 'bg-primary-subtle');
+      cardUsd.classList.remove('border-light');
+    } else {
+      cardUsd.classList.remove('border-primary', 'bg-primary-subtle');
+      cardUsd.classList.add('border-light');
+    }
+  }
+}
+
+function updateLivePricingPreview() {
+  const selectedCode = document.querySelector('input[name="currencySelection"]:checked')?.value || 'PKR';
+  const mode = document.querySelector('input[name="pricingMode"]:checked')?.value || 'auto';
+  const rate = parseFloat(document.getElementById('currencyExchangeRateInput')?.value) || 280;
+  const symbol = document.getElementById('currencySymbolInput')?.value.trim() || (selectedCode === 'PKR' ? 'Rs.' : '$');
+  const placement = document.getElementById('currencyPlacementSelect')?.value || 'before';
+  const decimals = parseInt(document.getElementById('currencyDecimalsSelect')?.value, 10) || (selectedCode === 'PKR' ? 0 : 2);
+
+  const formatPreview = (val) => {
+    const num = Number(val) || 0;
+    const finalRate = (mode === 'direct') ? 1 : (selectedCode === 'PKR' ? rate : 1);
+    const converted = num * finalRate;
+    const formatted = converted.toLocaleString('en-US', {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals
+    });
+    const space = symbol.length > 1 ? ' ' : '';
+    return placement === 'after' ? `${formatted} ${symbol}` : `${symbol}${space}${formatted}`;
+  };
+
+  // Preview Badges
+  const previewPkrBadge = document.getElementById('previewPkrBadge');
+  if (previewPkrBadge) {
+    const pkrNum = (mode === 'direct' ? 49.99 : 49.99 * rate);
+    previewPkrBadge.textContent = `${symbol} ${Math.round(pkrNum).toLocaleString('en-US')}`;
+  }
+  const previewUsdBadge = document.getElementById('previewUsdBadge');
+  if (previewUsdBadge) previewUsdBadge.textContent = `$49.99`;
+
+  // Simulator Test input
+  const testInput = document.getElementById('previewTestInput');
+  const testResult = document.getElementById('previewTestResult');
+  if (testInput && testResult) {
+    testResult.textContent = formatPreview(testInput.value);
+  }
+
+  // Sample catalog rows
+  document.querySelectorAll('.sample-preview-item').forEach(el => {
+    const base = parseFloat(el.getAttribute('data-base-price')) || 0;
+    el.textContent = formatPreview(base);
+  });
+}
+
+function setupCurrencyEventListeners() {
+  // Card click triggers radio
+  const cardPkr = document.getElementById('cardCurrencyPKR');
+  const cardUsd = document.getElementById('cardCurrencyUSD');
+  const radioPkr = document.getElementById('radioCurrencyPKR');
+  const radioUsd = document.getElementById('radioCurrencyUSD');
+
+  if (cardPkr && radioPkr) {
+    cardPkr.addEventListener('click', () => {
+      radioPkr.checked = true;
+      updateCurrencyCardSelection('PKR');
+      const symbolInput = document.getElementById('currencySymbolInput');
+      const decimalsSelect = document.getElementById('currencyDecimalsSelect');
+      if (symbolInput) symbolInput.value = 'Rs.';
+      if (decimalsSelect) decimalsSelect.value = '0';
+      updateLivePricingPreview();
+    });
+  }
+
+  if (cardUsd && radioUsd) {
+    cardUsd.addEventListener('click', () => {
+      radioUsd.checked = true;
+      updateCurrencyCardSelection('USD');
+      const symbolInput = document.getElementById('currencySymbolInput');
+      const decimalsSelect = document.getElementById('currencyDecimalsSelect');
+      if (symbolInput) symbolInput.value = '$';
+      if (decimalsSelect) decimalsSelect.value = '2';
+      updateLivePricingPreview();
+    });
+  }
+
+  // Radios change
+  if (radioPkr) {
+    radioPkr.addEventListener('change', () => {
+      updateCurrencyCardSelection('PKR');
+      const symbolInput = document.getElementById('currencySymbolInput');
+      const decimalsSelect = document.getElementById('currencyDecimalsSelect');
+      if (symbolInput) symbolInput.value = 'Rs.';
+      if (decimalsSelect) decimalsSelect.value = '0';
+      updateLivePricingPreview();
+    });
+  }
+  if (radioUsd) {
+    radioUsd.addEventListener('change', () => {
+      updateCurrencyCardSelection('USD');
+      const symbolInput = document.getElementById('currencySymbolInput');
+      const decimalsSelect = document.getElementById('currencyDecimalsSelect');
+      if (symbolInput) symbolInput.value = '$';
+      if (decimalsSelect) decimalsSelect.value = '2';
+      updateLivePricingPreview();
+    });
+  }
+
+  // Quick preset rate buttons
+  document.querySelectorAll('.preset-rate-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const rateVal = btn.getAttribute('data-rate');
+      const rateInput = document.getElementById('currencyExchangeRateInput');
+      if (rateInput && rateVal) {
+        rateInput.value = rateVal;
+        updateLivePricingPreview();
+      }
+    });
+  });
+
+  // Mode radio change
+  document.querySelectorAll('input[name="pricingMode"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      const isDirect = radio.value === 'direct';
+      const block = document.getElementById('exchangeRateConfigBlock');
+      if (block) block.style.opacity = isDirect ? '0.5' : '1';
+      updateLivePricingPreview();
+    });
+  });
+
+  // Inputs live preview
+  ['currencyExchangeRateInput', 'currencySymbolInput', 'currencyPlacementSelect', 'currencyDecimalsSelect', 'previewTestInput'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', updateLivePricingPreview);
+      el.addEventListener('change', updateLivePricingPreview);
+    }
+  });
+
+  // Quick toggle in admin nav bar
+  const quickToggleBtn = document.getElementById('quickToggleCurrencyAdminBtn');
+  if (quickToggleBtn) {
+    quickToggleBtn.addEventListener('click', () => {
+      const cfg = (typeof loadCurrencySettings === 'function') ? loadCurrencySettings() : null;
+      if (!cfg) return;
+      const current = cfg.activeCurrency || 'PKR';
+      const next = current === 'PKR' ? 'USD' : 'PKR';
+      if (typeof setStoreActiveCurrency === 'function') {
+        setStoreActiveCurrency(next);
+        updateAdminCurrencyIndicators();
+        populateAdminCurrencySettings();
+        renderAdminProducts();
+        applyFiltersAndRender();
+        showAdminToast(`Store currency switched to ${next === 'PKR' ? 'Pakistani Rupee (Rs.)' : 'US Dollar ($)'}!`);
+      }
+    });
+  }
+
+  // Save Currency Settings action
+  const saveAction = (e) => {
+    if (e) e.preventDefault();
+
+    const selectedCode = document.querySelector('input[name="currencySelection"]:checked')?.value || 'PKR';
+    const mode = document.querySelector('input[name="pricingMode"]:checked')?.value || 'auto';
+    const rate = parseFloat(document.getElementById('currencyExchangeRateInput')?.value) || 280;
+    const symbol = document.getElementById('currencySymbolInput')?.value.trim() || (selectedCode === 'PKR' ? 'Rs.' : '$');
+    const placement = document.getElementById('currencyPlacementSelect')?.value || 'before';
+    const decimals = parseInt(document.getElementById('currencyDecimalsSelect')?.value, 10) || (selectedCode === 'PKR' ? 0 : 2);
+    const enableSwitcher = document.getElementById('enableStoreSwitcherSwitch')?.checked !== false;
+
+    const currentCfg = (typeof loadCurrencySettings === 'function') ? loadCurrencySettings() : DEFAULT_CURRENCY_SETTINGS;
+
+    const newCfg = {
+      ...currentCfg,
+      activeCurrency: selectedCode,
+      pricingMode: mode,
+      enableStoreSwitcher: enableSwitcher,
+      currencies: {
+        ...currentCfg.currencies,
+        [selectedCode]: {
+          ...(currentCfg.currencies[selectedCode] || {}),
+          code: selectedCode,
+          symbol: symbol,
+          rate: (selectedCode === 'PKR' ? rate : 1),
+          decimals: decimals,
+          placement: placement,
+          name: (selectedCode === 'PKR' ? 'Pakistani Rupee (PKR)' : 'US Dollar (USD)'),
+          flag: (selectedCode === 'PKR' ? '🇵🇰' : '🇺🇸')
+        }
+      }
+    };
+
+    if (typeof saveCurrencySettings === 'function') {
+      saveCurrencySettings(newCfg);
+    }
+
+    updateAdminCurrencyIndicators();
+    renderAdminProducts();
+    applyFiltersAndRender();
+
+    showAdminToast(`🎉 Currency settings saved! Store pricing is now active in ${selectedCode === 'PKR' ? 'Pakistani Rupee (Rs.)' : 'US Dollar ($)'}.`);
+  };
+
+  const formEl = document.getElementById('adminCurrencyForm');
+  if (formEl) formEl.addEventListener('submit', saveAction);
+
+  const saveTopBtn = document.getElementById('saveCurrencyBtn');
+  if (saveTopBtn) saveTopBtn.addEventListener('click', saveAction);
+
+  const saveBtmBtn = document.getElementById('saveCurrencyBottomBtn');
+  if (saveBtmBtn) saveBtmBtn.addEventListener('click', saveAction);
+
+  // Reset to default
+  const resetAction = () => {
+    if (confirm('Reset store currency settings back to default (PKR - Rs.)?')) {
+      if (typeof resetCurrencySettings === 'function') {
+        resetCurrencySettings();
+      }
+      populateAdminCurrencySettings();
+      updateAdminCurrencyIndicators();
+      renderAdminProducts();
+      applyFiltersAndRender();
+      showAdminToast('🔄 Currency settings reset to default PKR.');
+    }
+  };
+
+  const resetTopBtn = document.getElementById('resetCurrencyBtn');
+  if (resetTopBtn) resetTopBtn.addEventListener('click', resetAction);
+
+  const resetBtmBtn = document.getElementById('resetCurrencyBottomBtn');
+  if (resetBtmBtn) resetBtmBtn.addEventListener('click', resetAction);
+}
+
 
 
 
