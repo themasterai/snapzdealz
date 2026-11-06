@@ -164,7 +164,9 @@ const DEFAULT_PRODUCTS = [
     colors: ["#1f1f1f", "#C0C0C0", "#F9B800"],
     sizes: ["42mm Case"],
     images: [
-      "Luxury Silver Watch Gift Set .png"
+      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=800&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=800&auto=format&fit=crop&q=80"
     ],
     description: "Sleek matte black stainless steel case paired with scratch-proof sapphire crystal glass. Features Japanese quartz precision movement and 100m water resistance.",
     features: [
@@ -837,28 +839,26 @@ const categoriesData = [
 const STORAGE_CUSTOM_PRODUCTS_KEY = 'snapdealz_custom_products_v2';
 
 /**
- * Loads products from localStorage (custom added + existing), or falls back to DEFAULT_PRODUCTS
+ * Loads products from localStorage.
+ * CRITICAL FIX: NEVER auto-merge DEFAULT_PRODUCTS back!
+ * User edits, custom items, and deletions remain 100% permanent and never revert.
  */
 function loadProductsCatalog() {
   try {
     const raw = localStorage.getItem(STORAGE_CUSTOM_PRODUCTS_KEY);
-    if (raw) {
+    if (raw !== null) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        // Merge any newly introduced default items
-        const existingIds = new Set(parsed.map(p => Number(p.id)));
-        const missing = DEFAULT_PRODUCTS.filter(p => !existingIds.has(Number(p.id)));
-        if (missing.length > 0) {
-          const merged = [...parsed, ...missing];
-          localStorage.setItem(STORAGE_CUSTOM_PRODUCTS_KEY, JSON.stringify(merged));
-          return merged;
-        }
-        return parsed;
+      if (Array.isArray(parsed)) {
+        return parsed; // User's customized catalog preserved as-is!
       }
     }
   } catch (e) {
     console.error("Error loading custom products from storage:", e);
   }
+  // Initialize storage once if never saved before
+  try {
+    localStorage.setItem(STORAGE_CUSTOM_PRODUCTS_KEY, JSON.stringify(DEFAULT_PRODUCTS));
+  } catch (e) {}
   return [...DEFAULT_PRODUCTS];
 }
 
@@ -872,6 +872,7 @@ function saveProductCatalog(newCatalog) {
   try {
     localStorage.setItem(STORAGE_CUSTOM_PRODUCTS_KEY, JSON.stringify(newCatalog));
     products = newCatalog;
+    window.dispatchEvent(new CustomEvent('catalog-updated', { detail: newCatalog }));
     return true;
   } catch (e) {
     console.error("Error saving product catalog:", e);
@@ -1061,27 +1062,33 @@ const DEFAULT_HERO_SLIDES = [
   }
 ];
 
-const STORAGE_HERO_SLIDES_KEY = 'snapdealz_hero_slides_v1';
+const STORAGE_HERO_SLIDES_KEY = 'snapdealz_hero_slides_v2';
 
 function loadHeroSlides() {
   try {
     const raw = localStorage.getItem(STORAGE_HERO_SLIDES_KEY);
-    if (raw) {
+    if (raw !== null) {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
+        return parsed; // User's customized slides preserved permanently!
       }
     }
   } catch (e) {
     console.warn("Could not parse hero slides from localStorage", e);
   }
-  return JSON.parse(JSON.stringify(DEFAULT_HERO_SLIDES));
+  // Initialize once with default template if not found
+  const initial = JSON.parse(JSON.stringify(DEFAULT_HERO_SLIDES));
+  try {
+    localStorage.setItem(STORAGE_HERO_SLIDES_KEY, JSON.stringify(initial));
+  } catch (e) {}
+  return initial;
 }
 
 function saveHeroSlides(slides) {
   try {
     if (!Array.isArray(slides)) return false;
     localStorage.setItem(STORAGE_HERO_SLIDES_KEY, JSON.stringify(slides));
+    window.dispatchEvent(new CustomEvent('hero-slides-updated', { detail: slides }));
     return true;
   } catch (e) {
     console.error("Failed to save hero slides to localStorage", e);
@@ -1095,5 +1102,316 @@ function resetHeroSlides() {
   } catch (e) {}
   return JSON.parse(JSON.stringify(DEFAULT_HERO_SLIDES));
 }
+
+/* ==========================================================================
+   STORE NEWS & ANNOUNCEMENTS SLIDER MANAGEMENT
+   ========================================================================== */
+
+const DEFAULT_NEWS_ITEMS = [
+  {
+    id: 1,
+    badge: "⚡ FLASH PROMO",
+    badgeColor: "warning",
+    title: "Mid-Season Clearance Drop: Extra 20% Off With Code BUNDLE20",
+    summary: "Limited 48-hour flash event on premium sneakers, designer handbags, and glowing skincare. Free express courier over $50.",
+    linkText: "Shop Sale Now",
+    linkUrl: "shop.html",
+    date: "Nov 6, 2026",
+    imageUrl: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800&auto=format&fit=crop&q=80",
+    showInTopTicker: true,
+    tickerText: "EXTRA 20% OFF WITH CODE BUNDLE20 | FREE COURIER OVER $50"
+  },
+  {
+    id: 2,
+    badge: "🚚 SHIPPING UPDATE",
+    badgeColor: "success",
+    title: "Cash On Delivery & 24-Hour Express Dispatch Now Available Nationwide",
+    summary: "All verified orders now dispatch within 24 hours with full parcel inspection before payment at your doorstep.",
+    linkText: "Track Your Order",
+    linkUrl: "#trackOrderModal",
+    date: "Nov 5, 2026",
+    imageUrl: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&auto=format&fit=crop&q=80",
+    showInTopTicker: true,
+    tickerText: "CASH ON DELIVERY & FAST 24H DISPATCH NATIONWIDE"
+  },
+  {
+    id: 3,
+    badge: "⭐ NEW DROP",
+    badgeColor: "primary",
+    title: "Exclusive Winter Luxe Bags & High-End Footwear Collection Live",
+    summary: "Hand-stitched Italian leather totes and athletic sneakers now unlocked at factory-direct wholesale pricing.",
+    linkText: "Browse Collection",
+    linkUrl: "shop.html?category=ladies-bags",
+    date: "Nov 4, 2026",
+    imageUrl: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&auto=format&fit=crop&q=80",
+    showInTopTicker: true,
+    tickerText: "NEW LUXE WINTER COLLECTION DROPPED - UP TO 50% OFF"
+  }
+];
+
+const STORAGE_NEWS_ITEMS_KEY = 'snapdealz_news_items_v1';
+
+function loadNewsItems() {
+  try {
+    const raw = localStorage.getItem(STORAGE_NEWS_ITEMS_KEY);
+    if (raw !== null) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  } catch (e) {
+    console.warn("Could not parse news items from localStorage", e);
+  }
+  const initial = JSON.parse(JSON.stringify(DEFAULT_NEWS_ITEMS));
+  try {
+    localStorage.setItem(STORAGE_NEWS_ITEMS_KEY, JSON.stringify(initial));
+  } catch (e) {}
+  return initial;
+}
+
+function saveNewsItems(items) {
+  try {
+    if (!Array.isArray(items)) return false;
+    localStorage.setItem(STORAGE_NEWS_ITEMS_KEY, JSON.stringify(items));
+    window.dispatchEvent(new CustomEvent('news-items-updated', { detail: items }));
+    return true;
+  } catch (e) {
+    console.error("Failed to save news items to localStorage", e);
+    return false;
+  }
+}
+
+function resetNewsItems() {
+  try {
+    localStorage.removeItem(STORAGE_NEWS_ITEMS_KEY);
+  } catch (e) {}
+  return JSON.parse(JSON.stringify(DEFAULT_NEWS_ITEMS));
+}
+
+/* ==========================================================================
+   FOOTER, SOCIAL MEDIA & CUSTOMER SUPPORT SETTINGS
+   ========================================================================== */
+
+const DEFAULT_FOOTER_SETTINGS = {
+  brandName: "SNAPZDEALZ",
+  brandBio: "SnapzDealz is your premier destination for verified high-octane deals, luxury fashion overstocks, high-tech electronics, and beauty essentials at factory-direct pricing.",
+  copyrightText: "© 2026 SnapzDealz Inc. All rights reserved. Built for speed and maximum savings.",
+  
+  socialLinks: {
+    facebook: { url: "https://facebook.com", enabled: true },
+    instagram: { url: "https://instagram.com", enabled: true },
+    twitter: { url: "https://twitter.com", enabled: true },
+    tiktok: { url: "https://tiktok.com", enabled: true },
+    youtube: { url: "https://youtube.com", enabled: true },
+    whatsapp: { url: "https://wa.me/923001234567", enabled: true }
+  },
+
+  support: {
+    address: "742 Evergreen Terrace, Suite 400, San Francisco, CA",
+    phone: "1-800-SNAPZ-DEAL (Toll Free 24/7)",
+    email: "support@snapzdealz.com",
+    whatsappNumber: "+92 300 1234567",
+    hours: "Live Support: 24 Hours / 7 Days",
+    helpdeskUrl: "contact.html"
+  },
+
+  legal: {
+    privacyUrl: "privacy.html",
+    privacyTitle: "Privacy Policy",
+    termsUrl: "terms.html",
+    termsTitle: "Terms & Conditions",
+    aboutUrl: "about.html",
+    aboutTitle: "About SnapzDealz",
+    contactUrl: "contact.html",
+    contactTitle: "Contact & Helpdesk"
+  },
+
+  payments: {
+    cod: true,
+    easypaisa: true,
+    jazzcash: true,
+    cards: true,
+    ssl: true
+  }
+};
+
+const STORAGE_FOOTER_SETTINGS_KEY = 'snapdealz_footer_settings_v1';
+
+function loadFooterSettings() {
+  try {
+    const raw = localStorage.getItem(STORAGE_FOOTER_SETTINGS_KEY);
+    if (raw !== null) {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') {
+        return {
+          ...DEFAULT_FOOTER_SETTINGS,
+          ...parsed,
+          socialLinks: { ...DEFAULT_FOOTER_SETTINGS.socialLinks, ...(parsed.socialLinks || {}) },
+          support: { ...DEFAULT_FOOTER_SETTINGS.support, ...(parsed.support || {}) },
+          legal: { ...DEFAULT_FOOTER_SETTINGS.legal, ...(parsed.legal || {}) },
+          payments: { ...DEFAULT_FOOTER_SETTINGS.payments, ...(parsed.payments || {}) }
+        };
+      }
+    }
+  } catch (e) {
+    console.warn("Could not parse footer settings from localStorage", e);
+  }
+  const initial = JSON.parse(JSON.stringify(DEFAULT_FOOTER_SETTINGS));
+  try {
+    localStorage.setItem(STORAGE_FOOTER_SETTINGS_KEY, JSON.stringify(initial));
+  } catch (e) {}
+  return initial;
+}
+
+function saveFooterSettings(settings) {
+  try {
+    localStorage.setItem(STORAGE_FOOTER_SETTINGS_KEY, JSON.stringify(settings));
+    window.dispatchEvent(new CustomEvent('footer-settings-updated', { detail: settings }));
+    return true;
+  } catch (e) {
+    console.error("Failed to save footer settings to localStorage", e);
+    return false;
+  }
+}
+
+function resetFooterSettings() {
+  try {
+    localStorage.removeItem(STORAGE_FOOTER_SETTINGS_KEY);
+  } catch (e) {}
+  return JSON.parse(JSON.stringify(DEFAULT_FOOTER_SETTINGS));
+}
+
+/* ==========================================================================
+   STORE CURRENCY & PRICING CONFIGURATION (PKR, USD, etc.)
+   ========================================================================== */
+
+const DEFAULT_CURRENCY_SETTINGS = {
+  activeCurrency: "PKR", // Default to PKR as requested by user, easily switchable to USD
+  pricingMode: "auto", // "auto" uses exchangeRate (e.g. 1 USD = 280 PKR), "direct" uses 1:1
+  enableStoreSwitcher: true, // Show currency switcher in store header & navbar
+  currencies: {
+    PKR: {
+      code: "PKR",
+      symbol: "Rs.",
+      name: "Pakistani Rupee (PKR)",
+      flag: "🇵🇰",
+      rate: 280, // 1 USD = 280 PKR
+      decimals: 0,
+      placement: "before" // "Rs. 2,999"
+    },
+    USD: {
+      code: "USD",
+      symbol: "$",
+      name: "US Dollar (USD)",
+      flag: "🇺🇸",
+      rate: 1,
+      decimals: 2,
+      placement: "before" // "$49.99"
+    }
+  }
+};
+
+const STORAGE_CURRENCY_SETTINGS_KEY = 'snapdealz_currency_settings_v1';
+
+function loadCurrencySettings() {
+  try {
+    const raw = localStorage.getItem(STORAGE_CURRENCY_SETTINGS_KEY);
+    if (raw !== null) {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') {
+        return {
+          ...DEFAULT_CURRENCY_SETTINGS,
+          ...parsed,
+          currencies: {
+            ...DEFAULT_CURRENCY_SETTINGS.currencies,
+            ...(parsed.currencies || {})
+          }
+        };
+      }
+    }
+  } catch (e) {
+    console.warn("Could not parse currency settings from localStorage", e);
+  }
+  const initial = JSON.parse(JSON.stringify(DEFAULT_CURRENCY_SETTINGS));
+  try {
+    localStorage.setItem(STORAGE_CURRENCY_SETTINGS_KEY, JSON.stringify(initial));
+  } catch (e) {}
+  return initial;
+}
+
+function saveCurrencySettings(settings) {
+  try {
+    localStorage.setItem(STORAGE_CURRENCY_SETTINGS_KEY, JSON.stringify(settings));
+    window.dispatchEvent(new CustomEvent('currency-settings-updated', { detail: settings }));
+    return true;
+  } catch (e) {
+    console.error("Failed to save currency settings to localStorage", e);
+    return false;
+  }
+}
+
+function resetCurrencySettings() {
+  try {
+    localStorage.removeItem(STORAGE_CURRENCY_SETTINGS_KEY);
+  } catch (e) {}
+  const def = JSON.parse(JSON.stringify(DEFAULT_CURRENCY_SETTINGS));
+  window.dispatchEvent(new CustomEvent('currency-settings-updated', { detail: def }));
+  return def;
+}
+
+function getActiveCurrency() {
+  const cfg = loadCurrencySettings();
+  const code = cfg.activeCurrency || 'PKR';
+  return (cfg.currencies && cfg.currencies[code]) ? cfg.currencies[code] : cfg.currencies.PKR;
+}
+
+function setStoreActiveCurrency(code) {
+  const cfg = loadCurrencySettings();
+  if (cfg.currencies && cfg.currencies[code]) {
+    cfg.activeCurrency = code;
+    saveCurrencySettings(cfg);
+    return true;
+  }
+  return false;
+}
+
+function formatCurrency(amount, customSettings) {
+  const num = Number(amount) || 0;
+  const cfg = customSettings || (typeof loadCurrencySettings === 'function' ? loadCurrencySettings() : DEFAULT_CURRENCY_SETTINGS);
+  const activeCode = cfg.activeCurrency || 'PKR';
+  const curr = (cfg.currencies && cfg.currencies[activeCode]) ? cfg.currencies[activeCode] : {
+    code: 'PKR',
+    symbol: 'Rs.',
+    rate: 280,
+    decimals: 0,
+    placement: 'before'
+  };
+
+  const isDirect = cfg.pricingMode === 'direct';
+  const rate = isDirect ? 1 : (curr.rate !== undefined ? curr.rate : 1);
+  const converted = num * rate;
+  const decimals = curr.decimals !== undefined ? curr.decimals : (activeCode === 'PKR' ? 0 : 2);
+
+  const formattedNum = converted.toLocaleString('en-US', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals
+  });
+
+  const symbol = curr.symbol || (activeCode === 'PKR' ? 'Rs.' : '$');
+  const placement = curr.placement || 'before';
+
+  if (placement === 'after') {
+    return `${formattedNum} ${symbol}`;
+  } else {
+    const space = symbol.length > 1 ? ' ' : '';
+    return `${symbol}${space}${formattedNum}`;
+  }
+}
+
+function formatPrice(amount) {
+  return formatCurrency(amount);
+}
+
 
 
