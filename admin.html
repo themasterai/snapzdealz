@@ -342,26 +342,41 @@
         <!-- Section Tabs & Add Product Action -->
         <div class="admin-tabs-card mb-4 bg-white p-2 p-md-3 rounded-4 shadow-sm border">
           <div class="row g-2 align-items-center">
-            <!-- 50% / 50% Tab Switcher on mobile, inline on desktop -->
-            <div class="col-12 col-md-8">
-              <div class="d-flex gap-2 w-100">
-                <button class="btn flex-fill py-2 px-2 px-md-3 rounded-pill fw-bold small text-nowrap admin-tab-btn active" id="tabOrdersBtn" type="button">
-                  <i class="bi bi-file-earmark-spreadsheet-fill text-success me-1"></i> Orders Manifest
+            <div class="col-12 col-xl-9">
+              <div class="d-flex gap-2 w-100 flex-wrap flex-md-nowrap overflow-x-auto pb-1 pb-md-0">
+                <button class="btn flex-fill py-2 px-2.5 rounded-pill fw-bold small text-nowrap admin-tab-btn active" id="tabOrdersBtn" type="button">
+                  <i class="bi bi-file-earmark-spreadsheet-fill text-success me-1"></i> Orders
                 </button>
-                <button class="btn flex-fill py-2 px-2 px-md-3 rounded-pill fw-bold small text-nowrap admin-tab-btn" id="tabProductsBtn" type="button">
+                <button class="btn flex-fill py-2 px-2.5 rounded-pill fw-bold small text-nowrap admin-tab-btn" id="tabProductsBtn" type="button">
                   <i class="bi bi-tags-fill text-warning me-1"></i> Products (<span id="adminLiveProductCount">14</span>)
                 </button>
-                <button class="btn flex-fill py-2 px-2 px-md-3 rounded-pill fw-bold small text-nowrap admin-tab-btn" id="tabHeroBtn" type="button">
+                <button class="btn flex-fill py-2 px-2.5 rounded-pill fw-bold small text-nowrap admin-tab-btn" id="tabHeroBtn" type="button">
                   <i class="bi bi-images text-warning me-1"></i> Hero Banners
+                </button>
+                <button class="btn flex-fill py-2 px-2.5 rounded-pill fw-bold small text-nowrap admin-tab-btn" id="tabNewsBtn" type="button">
+                  <i class="bi bi-newspaper text-info me-1"></i> News Slider
+                </button>
+                <button class="btn flex-fill py-2 px-2.5 rounded-pill fw-bold small text-nowrap admin-tab-btn" id="tabFooterBtn" type="button">
+                  <i class="bi bi-layout-text-window-reverse text-primary me-1"></i> Footer & Support
+                </button>
+                <button class="btn flex-fill py-2 px-2.5 rounded-pill fw-bold small text-nowrap admin-tab-btn" id="tabCurrencyBtn" type="button">
+                  <i class="bi bi-cash-coin text-success me-1"></i> Currency (<span id="adminActiveCurrencyBadge" class="fw-bold">PKR</span>)
                 </button>
               </div>
             </div>
 
-            <!-- Add Product Button -->
-            <div class="col-12 col-md-4">
-              <button type="button" class="btn btn-deal w-100 py-2 rounded-pill fw-bold shadow-sm small text-nowrap" data-bs-toggle="modal" data-bs-target="#addNewProductModal">
-                <i class="bi bi-plus-circle-fill me-1"></i> Add New Product
-              </button>
+            <!-- Actions: Quick Currency Switcher & Add Product -->
+            <div class="col-12 col-xl-3">
+              <div class="d-flex gap-2 align-items-center">
+                <button type="button" class="btn btn-outline-dark rounded-pill py-2 px-2.5 small fw-bold text-nowrap d-inline-flex align-items-center gap-1 shadow-sm" id="quickToggleCurrencyAdminBtn" title="Quick Switch Currency (PKR / USD)">
+                  <span id="quickCurrencyFlag">🇵🇰</span>
+                  <span id="quickCurrencyCode">PKR (Rs.)</span>
+                  <i class="bi bi-arrow-repeat text-warning ms-1"></i>
+                </button>
+                <button type="button" class="btn btn-deal flex-grow-1 py-2 rounded-pill fw-bold shadow-sm small text-nowrap" data-bs-toggle="modal" data-bs-target="#addNewProductModal">
+                  <i class="bi bi-plus-circle-fill me-1"></i> Add Product
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -701,13 +716,16 @@
               <h2 class="deal-heading fs-3 mb-0 text-dark">
                 <i class="bi bi-images text-warning me-2"></i>Homepage Hero Carousel Banners
               </h2>
-              <span class="text-muted small">Storefront ke 3 hero slides ko yahan se customize karein. Dropdown se direct product pick karein ya apna custom text/image dalein.</span>
+              <span class="text-muted small">Storefront ke hero slider ko yahan se customize karein, jitne chahein naye slides add karein, ya unhein edit aur delete karein.</span>
             </div>
 
             <div class="d-flex align-items-center gap-2 flex-wrap">
               <a href="index.html" target="_blank" class="btn btn-sm btn-outline-dark rounded-pill px-3 py-1.5 fw-bold text-nowrap">
                 <i class="bi bi-eye-fill me-1"></i> View Live Store
               </a>
+              <button type="button" class="btn btn-sm btn-success rounded-pill px-3.5 py-1.5 fw-bold text-nowrap shadow-sm" id="addNewHeroSlideBtn">
+                <i class="bi bi-plus-circle-fill me-1"></i> Add New Slide
+              </button>
               <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1.5 fw-bold text-nowrap" id="resetHeroBannersBtn">
                 <i class="bi bi-arrow-counterclockwise me-1"></i> Factory Reset
               </button>
@@ -723,7 +741,7 @@
               <i class="bi bi-magic"></i>
             </div>
             <div class="small">
-              <strong>1-Click Product Auto-Fill:</strong> Har slide ke upar diye gaye <em>"Choose Product from Catalog"</em> dropdown se koi bhi product select karein. Title, Description, Image URL, Price, aur Buy Button ka link khud-b-khud set ho jayega!
+              <strong>Dynamic Hero Carousel:</strong> Har slide ke liye <em>"1-Click Auto-Fill from Store Product"</em> dropdown se direct store ka product select karein, ya apna custom title/image/details dalein. Aap <strong>"Add New Slide"</strong> button se 4th, 5th ya jitne chahein naye slides bana sakte hain aur har slide ko alag alag save ya delete kar sakte hain!
             </div>
           </div>
 
@@ -741,9 +759,12 @@
             <div class="card border-0 shadow-sm rounded-4 p-3 mt-4 bg-white d-flex flex-row justify-content-between align-items-center flex-wrap gap-3">
               <div class="d-flex align-items-center gap-2">
                 <i class="bi bi-info-circle-fill text-warning fs-5"></i>
-                <span class="small text-muted">Jab aap <strong>"Save All Banners"</strong> pe click karenge, to website ke homepage par naye slides live ho jayenge!</span>
+                <span class="small text-muted">Jab aap <strong>"Save All Banners"</strong> ya individual <strong>"Update Slide"</strong> pe click karenge, to homepage live update ho jayega!</span>
               </div>
-              <div class="d-flex gap-2">
+              <div class="d-flex gap-2 flex-wrap">
+                <button type="button" class="btn btn-success rounded-pill px-3.5 small fw-bold" id="addNewHeroSlideBottomBtn">
+                  <i class="bi bi-plus-circle-fill me-1"></i> Add New Slide
+                </button>
                 <button type="button" class="btn btn-outline-secondary rounded-pill px-3 small fw-semibold" id="resetHeroBannersBottomBtn">
                   Restore Defaults
                 </button>
@@ -755,6 +776,617 @@
           </form>
 
         </div><!-- End #tabHeroPane -->
+
+        <!-- TAB 4: NEWS & ANNOUNCEMENTS SLIDER -->
+        <div class="tab-pane fade" id="tabNewsPane" role="tabpanel" aria-labelledby="tabNewsBtn">
+          <!-- Breadcrumb & Title Bar -->
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+            <div>
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1 small">
+                  <li class="breadcrumb-item"><a href="index.html" class="text-muted text-decoration-none">SnapzDealz</a></li>
+                  <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">News Slider Manager</li>
+                </ol>
+              </nav>
+              <h2 class="deal-heading fs-3 mb-0 text-dark">
+                <i class="bi bi-newspaper text-info me-2"></i>Homepage News & Announcements Slider
+              </h2>
+              <span class="text-muted small">Homepage par chalne wale News Slider aur Top Header Announcement Ticker ko yahan se manage karein. Jitni chahein news slides add karein.</span>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <a href="index.html" target="_blank" class="btn btn-sm btn-outline-dark rounded-pill px-3 py-1.5 fw-bold text-nowrap">
+                <i class="bi bi-eye-fill me-1"></i> View Live Store
+              </a>
+              <button type="button" class="btn btn-sm btn-success rounded-pill px-3.5 py-1.5 fw-bold text-nowrap shadow-sm" id="addNewNewsSlideBtn">
+                <i class="bi bi-plus-circle-fill me-1"></i> Add New News Slide
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1.5 fw-bold text-nowrap" id="resetNewsBtn">
+                <i class="bi bi-arrow-counterclockwise me-1"></i> Factory Reset
+              </button>
+              <button type="button" class="btn btn-sm btn-deal rounded-pill px-4 py-1.5 fw-bold shadow-sm text-nowrap" id="saveNewsBtn">
+                <i class="bi bi-check2-circle me-1"></i> Save All News
+              </button>
+            </div>
+          </div>
+
+          <!-- Helpful instruction banner -->
+          <div class="alert alert-info border-0 bg-info-subtle text-dark p-3 rounded-4 mb-4 d-flex align-items-center gap-3">
+            <div class="fs-3 text-info">
+              <i class="bi bi-broadcast"></i>
+            </div>
+            <div class="small">
+              <strong>Multi-Slide News Carousel:</strong> Yahan se aap store ke naye drops, flash promos, delivery updates, ya notices add kar sakte hain. Ye homepage par automated slider ban kar chalengi aur Top Header Bar mein bhi cycle hongi!
+            </div>
+          </div>
+
+          <!-- News Slides Editor Form -->
+          <form id="adminNewsForm">
+            <div class="row g-4" id="newsEditorContainer">
+              <!-- Dynamically populated by admin.js -->
+              <div class="col-12 text-center py-5">
+                <div class="spinner-border text-info" role="status"></div>
+                <div class="text-muted small mt-2">Loading news slides...</div>
+              </div>
+            </div>
+
+            <!-- Bottom Save Bar -->
+            <div class="card border-0 shadow-sm rounded-4 p-3 mt-4 bg-white d-flex flex-row justify-content-between align-items-center flex-wrap gap-3">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-info-circle-fill text-info fs-5"></i>
+                <span class="small text-muted">Aap individual <strong>"Update News"</strong> button se bhi save kar sakte hain ya yahan se ek sath sab news update kar sakte hain!</span>
+              </div>
+              <div class="d-flex gap-2 flex-wrap">
+                <button type="button" class="btn btn-success rounded-pill px-3.5 small fw-bold" id="addNewNewsSlideBottomBtn">
+                  <i class="bi bi-plus-circle-fill me-1"></i> Add New News Slide
+                </button>
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-3 small fw-semibold" id="resetNewsBottomBtn">
+                  Restore Defaults
+                </button>
+                <button type="submit" class="btn btn-deal rounded-pill px-4 small fw-bold" id="saveNewsBottomBtn">
+                  <i class="bi bi-check2-circle me-1"></i> Save All News
+                </button>
+              </div>
+            </div>
+          </form>
+        </div><!-- End #tabNewsPane -->
+
+        <!-- TAB 5: FOOTER, SOCIAL MEDIA & CUSTOMER SUPPORT -->
+        <div class="tab-pane fade" id="tabFooterPane" role="tabpanel" aria-labelledby="tabFooterBtn">
+          <!-- Breadcrumb & Title Bar -->
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+            <div>
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-1 small">
+                  <li class="breadcrumb-item"><a href="index.html" class="text-muted text-decoration-none">SnapzDealz</a></li>
+                  <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">Footer & Support Settings</li>
+                </ol>
+              </nav>
+              <h2 class="deal-heading fs-3 mb-0 text-dark">
+                <i class="bi bi-layout-text-window-reverse text-primary me-2"></i>Footer, Social Links & Customer Support
+              </h2>
+              <span class="text-muted small">Store ke footer mein Social Media links, Customer Support contact info, aur Legal & Policies ko bina code chhue yahan se customize karein.</span>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+              <a href="index.html" target="_blank" class="btn btn-sm btn-outline-dark rounded-pill px-3 py-1.5 fw-bold text-nowrap">
+                <i class="bi bi-eye-fill me-1"></i> View Live Store
+              </a>
+              <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1.5 fw-bold text-nowrap" id="resetFooterBtn">
+                <i class="bi bi-arrow-counterclockwise me-1"></i> Restore Defaults
+              </button>
+              <button type="button" class="btn btn-sm btn-deal rounded-pill px-4 py-1.5 fw-bold shadow-sm text-nowrap" id="saveFooterBtn">
+                <i class="bi bi-check2-circle me-1"></i> Save Footer Settings
+              </button>
+            </div>
+          </div>
+
+          <!-- Footer Settings Form -->
+          <form id="adminFooterForm">
+            <div class="row g-4">
+              <!-- Card 1: Social Media Links -->
+              <div class="col-12 col-lg-6">
+                <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
+                  <div class="card-header bg-dark text-white p-3 d-flex justify-content-between align-items-center">
+                    <span class="fw-bold"><i class="bi bi-share-fill text-warning me-2"></i>Social Media Profiles</span>
+                    <span class="badge bg-warning text-dark small rounded-pill">Footer Icons</span>
+                  </div>
+                  <div class="card-body p-3 p-md-4">
+                    <p class="text-muted small mb-3">Apne social media links yahan set karein. Jo link aap enable rakhenge, uska icon footer mein live clickable hoga.</p>
+                    
+                    <!-- Facebook -->
+                    <div class="mb-3">
+                      <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label class="form-label small fw-bold text-dark mb-0"><i class="bi bi-facebook text-primary me-1"></i> Facebook URL</label>
+                        <div class="form-check form-switch m-0">
+                          <input class="form-check-input" type="checkbox" id="footerSocialFbEnabled" checked>
+                          <label class="form-check-label small text-muted" for="footerSocialFbEnabled">Show</label>
+                        </div>
+                      </div>
+                      <input type="url" class="form-control form-control-sm" id="footerSocialFbUrl" placeholder="https://facebook.com/yourpage">
+                    </div>
+
+                    <!-- Instagram -->
+                    <div class="mb-3">
+                      <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label class="form-label small fw-bold text-dark mb-0"><i class="bi bi-instagram text-danger me-1"></i> Instagram URL</label>
+                        <div class="form-check form-switch m-0">
+                          <input class="form-check-input" type="checkbox" id="footerSocialInstaEnabled" checked>
+                          <label class="form-check-label small text-muted" for="footerSocialInstaEnabled">Show</label>
+                        </div>
+                      </div>
+                      <input type="url" class="form-control form-control-sm" id="footerSocialInstaUrl" placeholder="https://instagram.com/yourprofile">
+                    </div>
+
+                    <!-- Twitter / X -->
+                    <div class="mb-3">
+                      <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label class="form-label small fw-bold text-dark mb-0"><i class="bi bi-twitter-x me-1"></i> Twitter / X URL</label>
+                        <div class="form-check form-switch m-0">
+                          <input class="form-check-input" type="checkbox" id="footerSocialTwitterEnabled" checked>
+                          <label class="form-check-label small text-muted" for="footerSocialTwitterEnabled">Show</label>
+                        </div>
+                      </div>
+                      <input type="url" class="form-control form-control-sm" id="footerSocialTwitterUrl" placeholder="https://twitter.com/yourhandle">
+                    </div>
+
+                    <!-- TikTok -->
+                    <div class="mb-3">
+                      <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label class="form-label small fw-bold text-dark mb-0"><i class="bi bi-tiktok me-1"></i> TikTok URL</label>
+                        <div class="form-check form-switch m-0">
+                          <input class="form-check-input" type="checkbox" id="footerSocialTiktokEnabled" checked>
+                          <label class="form-check-label small text-muted" for="footerSocialTiktokEnabled">Show</label>
+                        </div>
+                      </div>
+                      <input type="url" class="form-control form-control-sm" id="footerSocialTiktokUrl" placeholder="https://tiktok.com/@youraccount">
+                    </div>
+
+                    <!-- YouTube -->
+                    <div class="mb-3">
+                      <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label class="form-label small fw-bold text-dark mb-0"><i class="bi bi-youtube text-danger me-1"></i> YouTube Channel URL</label>
+                        <div class="form-check form-switch m-0">
+                          <input class="form-check-input" type="checkbox" id="footerSocialYtEnabled" checked>
+                          <label class="form-check-label small text-muted" for="footerSocialYtEnabled">Show</label>
+                        </div>
+                      </div>
+                      <input type="url" class="form-control form-control-sm" id="footerSocialYtUrl" placeholder="https://youtube.com/@yourchannel">
+                    </div>
+
+                    <!-- WhatsApp -->
+                    <div class="mb-2">
+                      <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label class="form-label small fw-bold text-dark mb-0"><i class="bi bi-whatsapp text-success me-1"></i> WhatsApp Chat Link / Phone</label>
+                        <div class="form-check form-switch m-0">
+                          <input class="form-check-input" type="checkbox" id="footerSocialWaEnabled" checked>
+                          <label class="form-check-label small text-muted" for="footerSocialWaEnabled">Show</label>
+                        </div>
+                      </div>
+                      <input type="text" class="form-control form-control-sm" id="footerSocialWaUrl" placeholder="https://wa.me/923001234567 ya phone number">
+                      <span class="text-muted" style="font-size: 0.72rem;">Customer footer icon par click karte hi direct WhatsApp chat open kar sakega.</span>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 2: Customer Support & Contacts -->
+              <div class="col-12 col-lg-6">
+                <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
+                  <div class="card-header bg-dark text-white p-3 d-flex justify-content-between align-items-center">
+                    <span class="fw-bold"><i class="bi bi-headset text-warning me-2"></i>Customer Support & Helpdesk</span>
+                    <span class="badge bg-warning text-dark small rounded-pill">Support Column</span>
+                  </div>
+                  <div class="card-body p-3 p-md-4">
+                    <p class="text-muted small mb-3">Customer Support column mein show hone wali contact details ko yahan se customize karein.</p>
+
+                    <!-- Phone -->
+                    <div class="mb-3">
+                      <label class="form-label small fw-bold text-dark mb-1"><i class="bi bi-telephone-fill text-warning me-1"></i> Support Helpline / Phone</label>
+                      <input type="text" class="form-control form-control-sm" id="footerSupportPhone" placeholder="1-800-SNAPZ-DEAL (Toll Free 24/7)">
+                    </div>
+
+                    <!-- Email -->
+                    <div class="mb-3">
+                      <label class="form-label small fw-bold text-dark mb-1"><i class="bi bi-envelope-fill text-warning me-1"></i> Support Email Address</label>
+                      <input type="email" class="form-control form-control-sm" id="footerSupportEmail" placeholder="support@snapzdealz.com">
+                    </div>
+
+                    <!-- WhatsApp Number -->
+                    <div class="mb-3">
+                      <label class="form-label small fw-bold text-dark mb-1"><i class="bi bi-whatsapp text-success me-1"></i> Official WhatsApp Number</label>
+                      <input type="text" class="form-control form-control-sm" id="footerSupportWhatsapp" placeholder="+92 300 1234567">
+                    </div>
+
+                    <!-- Working Hours -->
+                    <div class="mb-3">
+                      <label class="form-label small fw-bold text-dark mb-1"><i class="bi bi-clock-fill text-warning me-1"></i> Live Support Working Hours</label>
+                      <input type="text" class="form-control form-control-sm" id="footerSupportHours" placeholder="Live Support: 24 Hours / 7 Days">
+                    </div>
+
+                    <!-- Physical Address -->
+                    <div class="mb-2">
+                      <label class="form-label small fw-bold text-dark mb-1"><i class="bi bi-geo-alt-fill text-warning me-1"></i> Physical Store Address / Location</label>
+                      <textarea class="form-control form-control-sm" id="footerSupportAddress" rows="2" placeholder="742 Evergreen Terrace, Suite 400, San Francisco, CA"></textarea>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 3: Legal & Policies Links -->
+              <div class="col-12 col-lg-6">
+                <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
+                  <div class="card-header bg-dark text-white p-3 d-flex justify-content-between align-items-center">
+                    <span class="fw-bold"><i class="bi bi-shield-check text-warning me-2"></i>Legal & Policies Links</span>
+                    <span class="badge bg-warning text-dark small rounded-pill">Policies Column</span>
+                  </div>
+                  <div class="card-body p-3 p-md-4">
+                    <p class="text-muted small mb-3">Footer ke Legal & Policies section ke text aur target URLs yahan se edit karein:</p>
+
+                    <!-- Privacy Policy -->
+                    <div class="row g-2 mb-3">
+                      <div class="col-6">
+                        <label class="form-label small fw-bold text-dark mb-1">Privacy Title</label>
+                        <input type="text" class="form-control form-control-sm" id="footerLegalPrivacyTitle" value="Privacy Policy">
+                      </div>
+                      <div class="col-6">
+                        <label class="form-label small fw-bold text-dark mb-1">Privacy URL</label>
+                        <input type="text" class="form-control form-control-sm" id="footerLegalPrivacyUrl" value="privacy.html">
+                      </div>
+                    </div>
+
+                    <!-- Terms & Conditions -->
+                    <div class="row g-2 mb-3">
+                      <div class="col-6">
+                        <label class="form-label small fw-bold text-dark mb-1">Terms Title</label>
+                        <input type="text" class="form-control form-control-sm" id="footerLegalTermsTitle" value="Terms & Conditions">
+                      </div>
+                      <div class="col-6">
+                        <label class="form-label small fw-bold text-dark mb-1">Terms URL</label>
+                        <input type="text" class="form-control form-control-sm" id="footerLegalTermsUrl" value="terms.html">
+                      </div>
+                    </div>
+
+                    <!-- About Us -->
+                    <div class="row g-2 mb-3">
+                      <div class="col-6">
+                        <label class="form-label small fw-bold text-dark mb-1">About Title</label>
+                        <input type="text" class="form-control form-control-sm" id="footerLegalAboutTitle" value="About SnapzDealz">
+                      </div>
+                      <div class="col-6">
+                        <label class="form-label small fw-bold text-dark mb-1">About URL</label>
+                        <input type="text" class="form-control form-control-sm" id="footerLegalAboutUrl" value="about.html">
+                      </div>
+                    </div>
+
+                    <!-- Contact & Helpdesk -->
+                    <div class="row g-2 mb-2">
+                      <div class="col-6">
+                        <label class="form-label small fw-bold text-dark mb-1">Contact Title</label>
+                        <input type="text" class="form-control form-control-sm" id="footerLegalContactTitle" value="Contact & Helpdesk">
+                      </div>
+                      <div class="col-6">
+                        <label class="form-label small fw-bold text-dark mb-1">Contact URL</label>
+                        <input type="text" class="form-control form-control-sm" id="footerLegalContactUrl" value="contact.html">
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 4: Brand Bio, Copyright & Payment Badges -->
+              <div class="col-12 col-lg-6">
+                <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
+                  <div class="card-header bg-dark text-white p-3 d-flex justify-content-between align-items-center">
+                    <span class="fw-bold"><i class="bi bi-info-circle-fill text-warning me-2"></i>Brand Bio, Copyright & Badges</span>
+                    <span class="badge bg-warning text-dark small rounded-pill">Brand & Payments</span>
+                  </div>
+                  <div class="card-body p-3 p-md-4">
+                    <!-- Brand Bio -->
+                    <div class="mb-3">
+                      <label class="form-label small fw-bold text-dark mb-1">Footer Brand Bio / Description</label>
+                      <textarea class="form-control form-control-sm" id="footerBrandBio" rows="3" placeholder="SnapzDealz is your premier destination..."></textarea>
+                    </div>
+
+                    <!-- Copyright Statement -->
+                    <div class="mb-3">
+                      <label class="form-label small fw-bold text-dark mb-1">Footer Bottom Copyright Notice</label>
+                      <input type="text" class="form-control form-control-sm" id="footerCopyrightText" placeholder="© 2026 SnapzDealz Inc. All rights reserved.">
+                    </div>
+
+                    <!-- Payment Badges Enabled -->
+                    <label class="form-label small fw-bold text-dark mb-2 d-block">Visible Payment & Security Badges</label>
+                    <div class="d-flex flex-wrap gap-3 p-2 bg-light rounded-3 border">
+                      <div class="form-check form-switch m-0">
+                        <input class="form-check-input" type="checkbox" id="footerBadgeCod" checked>
+                        <label class="form-check-label small" for="footerBadgeCod">Cash on Delivery</label>
+                      </div>
+                      <div class="form-check form-switch m-0">
+                        <input class="form-check-input" type="checkbox" id="footerBadgeEasypaisa" checked>
+                        <label class="form-check-label small" for="footerBadgeEasypaisa">Easypaisa</label>
+                      </div>
+                      <div class="form-check form-switch m-0">
+                        <input class="form-check-input" type="checkbox" id="footerBadgeJazzcash" checked>
+                        <label class="form-check-label small" for="footerBadgeJazzcash">JazzCash</label>
+                      </div>
+                      <div class="form-check form-switch m-0">
+                        <input class="form-check-input" type="checkbox" id="footerBadgeCards" checked>
+                        <label class="form-check-label small" for="footerBadgeCards">Debit / Credit</label>
+                      </div>
+                      <div class="form-check form-switch m-0">
+                        <input class="form-check-input" type="checkbox" id="footerBadgeSsl" checked>
+                        <label class="form-check-label small" for="footerBadgeSsl">256-Bit SSL</label>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Bottom Save Bar -->
+            <div class="card border-0 shadow-sm rounded-4 p-3 mt-4 bg-white d-flex flex-row justify-content-between align-items-center flex-wrap gap-3">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                <span class="small text-muted">Footer settings save karte hi website ke tamam pages (Home, Shop, About, Contact, Cart, etc.) par real-time update ho jayenge!</span>
+              </div>
+              <div class="d-flex gap-2 flex-wrap">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-3 small fw-semibold" id="resetFooterBottomBtn">
+                  Restore Defaults
+                </button>
+                <button type="submit" class="btn btn-deal rounded-pill px-4 small fw-bold" id="saveFooterBottomBtn">
+                  <i class="bi bi-check2-circle me-1"></i> Save Footer Settings
+                </button>
+              </div>
+            </div>
+          </form>
+        </div><!-- End #tabFooterPane -->
+
+        <!-- TAB 6: CURRENCY & PRICING MANAGEMENT -->
+        <div class="tab-pane fade" id="tabCurrencyPane" role="tabpanel" aria-labelledby="tabCurrencyBtn">
+          <!-- Breadcrumb & Title Bar -->
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+            <div>
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb small mb-1">
+                  <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted">SNAPZDEALZ PORTAL</a></li>
+                  <li class="breadcrumb-item active fw-bold text-dark">CURRENCY & PRICING</li>
+                </ol>
+              </nav>
+              <h2 class="deal-heading fs-3 mb-1">Store Currency & Pricing Manager</h2>
+              <p class="text-muted small mb-0">Store ki pricing ko PKR (Pakistani Rupee - Rs.) ya USD ($) mein switch karein. Tamam products, cart, checkout, aur orders real-time update honge.</p>
+            </div>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-outline-secondary rounded-pill px-3 small fw-semibold" id="resetCurrencyBtn">
+                <i class="bi bi-arrow-counterclockwise me-1"></i> Reset to Default (PKR)
+              </button>
+              <button type="button" class="btn btn-deal rounded-pill px-4 small fw-bold" id="saveCurrencyBtn">
+                <i class="bi bi-check2-circle me-1"></i> Save Currency Settings
+              </button>
+            </div>
+          </div>
+
+          <form id="adminCurrencyForm">
+            <!-- Active Currency Selector Cards -->
+            <div class="row g-3 mb-4">
+              <!-- PKR Card -->
+              <div class="col-md-6">
+                <div class="card h-100 border-2 rounded-4 shadow-sm p-4 currency-select-card" id="cardCurrencyPKR" style="cursor: pointer; transition: all 0.2s ease;">
+                  <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="d-flex align-items-center gap-3">
+                      <div class="rounded-circle d-flex align-items-center justify-content-center bg-success-subtle" style="width: 52px; height: 52px; font-size: 1.8rem;">
+                        🇵🇰
+                      </div>
+                      <div>
+                        <h4 class="fw-bold text-dark mb-0">Pakistani Rupee</h4>
+                        <span class="badge bg-success-subtle text-success fw-bold">PKR (Rs.)</span>
+                      </div>
+                    </div>
+                    <input class="form-check-input fs-4 cursor-pointer" type="radio" name="currencySelection" id="radioCurrencyPKR" value="PKR" checked>
+                  </div>
+                  <p class="text-secondary small mb-3">Pakistan ke local customers ke liye best experience. Prices <strong>Rs. 2,999</strong> ki shakal mein bina decimal ke saaf nazar aayengi.</p>
+                  <div class="p-3 bg-light rounded-3 d-flex justify-content-between align-items-center small">
+                    <span class="text-muted">Display Format:</span>
+                    <strong class="font-monospace text-dark fs-6" id="previewPkrBadge">Rs. 13,997</strong>
+                  </div>
+                </div>
+              </div>
+
+              <!-- USD Card -->
+              <div class="col-md-6">
+                <div class="card h-100 border-2 rounded-4 shadow-sm p-4 currency-select-card" id="cardCurrencyUSD" style="cursor: pointer; transition: all 0.2s ease;">
+                  <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="d-flex align-items-center gap-3">
+                      <div class="rounded-circle d-flex align-items-center justify-content-center bg-primary-subtle" style="width: 52px; height: 52px; font-size: 1.8rem;">
+                        🇺🇸
+                      </div>
+                      <div>
+                        <h4 class="fw-bold text-dark mb-0">United States Dollar</h4>
+                        <span class="badge bg-primary-subtle text-primary fw-bold">USD ($)</span>
+                      </div>
+                    </div>
+                    <input class="form-check-input fs-4 cursor-pointer" type="radio" name="currencySelection" id="radioCurrencyUSD" value="USD">
+                  </div>
+                  <p class="text-secondary small mb-3">International standard pricing format. Cents aur decimals ke sath <strong>$49.99</strong> ki shakal mein show hoti hai.</p>
+                  <div class="p-3 bg-light rounded-3 d-flex justify-content-between align-items-center small">
+                    <span class="text-muted">Display Format:</span>
+                    <strong class="font-monospace text-dark fs-6" id="previewUsdBadge">$49.99</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pricing Mode & Exchange Rate Configuration -->
+            <div class="row g-4 mb-4">
+              <!-- Left Column: Pricing Mode & Exchange Rate -->
+              <div class="col-lg-7">
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                  <h5 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+                    <i class="bi bi-gear-wide-connected text-warning"></i> Pricing Conversion Mode
+                  </h5>
+
+                  <!-- Mode Selection -->
+                  <div class="mb-4">
+                    <label class="form-label small fw-bold text-muted text-uppercase">Choose How Prices Are Calculated:</label>
+                    <div class="d-flex flex-column gap-2">
+                      <label class="form-check p-3 border rounded-3 bg-light-subtle d-flex align-items-start gap-2" style="cursor: pointer;">
+                        <input class="form-check-input mt-1" type="radio" name="pricingMode" id="pricingModeAuto" value="auto" checked>
+                        <div>
+                          <strong class="text-dark d-block">Automatic Exchange Rate Conversion (Recommended)</strong>
+                          <span class="small text-muted">Aapke existing product catalog ke prices (e.g. $49.99) automatically exchange rate se multiply ho kar PKR ban jayenge (e.g. 49.99 × 280 = Rs. 13,997). Aapko har product dobara edit karne ki zaroorat nahi.</span>
+                        </div>
+                      </label>
+                      <label class="form-check p-3 border rounded-3 bg-light-subtle d-flex align-items-start gap-2" style="cursor: pointer;">
+                        <input class="form-check-input mt-1" type="radio" name="pricingMode" id="pricingModeDirect" value="direct">
+                        <div>
+                          <strong class="text-dark d-block">Direct 1:1 Pricing Mode (No Conversion)</strong>
+                          <span class="small text-muted">Aap jo number product price mein likhenge wo directly active currency ke sath show hoga (e.g. 2500 likha to seedha Rs. 2,500 show hoga).</span>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+
+                  <!-- Exchange Rate Input (Shown for Auto mode) -->
+                  <div id="exchangeRateConfigBlock" class="mb-4 p-3 bg-light rounded-3 border">
+                    <label class="form-label small fw-bold text-dark">
+                      <i class="bi bi-currency-exchange text-success me-1"></i> PKR Exchange Rate (1 USD = ? PKR)
+                    </label>
+                    <div class="input-group mb-2">
+                      <span class="input-group-text fw-bold">1 USD =</span>
+                      <input type="number" step="1" min="1" max="1000" class="form-control font-monospace fs-5 fw-bold" id="currencyExchangeRateInput" value="280">
+                      <span class="input-group-text fw-bold">PKR</span>
+                    </div>
+                    <div class="d-flex flex-wrap gap-2 align-items-center">
+                      <span class="small text-muted me-1">Quick Presets:</span>
+                      <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-0.5 px-2.5 preset-rate-btn" data-rate="280">280 (Standard)</button>
+                      <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-0.5 px-2.5 preset-rate-btn" data-rate="285">285</button>
+                      <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-0.5 px-2.5 preset-rate-btn" data-rate="290">290</button>
+                      <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-0.5 px-2.5 preset-rate-btn" data-rate="300">300</button>
+                      <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-0.5 px-2.5 preset-rate-btn" data-rate="1">1 (1:1 Ratio)</button>
+                    </div>
+                  </div>
+
+                  <!-- Format Customization -->
+                  <div class="row g-3">
+                    <div class="col-md-4">
+                      <label class="form-label small fw-bold text-dark">Currency Symbol</label>
+                      <input type="text" class="form-control font-monospace fw-bold" id="currencySymbolInput" value="Rs." placeholder="Rs. or $">
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label small fw-bold text-dark">Symbol Position</label>
+                      <select class="form-select" id="currencyPlacementSelect">
+                        <option value="before" selected>Before (Rs. 2,500)</option>
+                        <option value="after">After (2,500 PKR)</option>
+                      </select>
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label small fw-bold text-dark">Decimals</label>
+                      <select class="form-select" id="currencyDecimalsSelect">
+                        <option value="0" selected>0 (No cents: Rs. 2,500)</option>
+                        <option value="2">2 (With cents: Rs. 2,500.00)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- Storefront Header Switcher Toggle -->
+                  <div class="form-check form-switch mt-4 p-3 border rounded-3 bg-light-subtle d-flex justify-content-between align-items-center">
+                    <div>
+                      <label class="form-check-label fw-bold text-dark d-block" for="enableStoreSwitcherSwitch" style="cursor: pointer;">
+                        Show Currency Switcher on Website Header
+                      </label>
+                      <span class="small text-muted">Website visitors ko top announcement bar ya navbar par PKR / USD switch karne ki sahoolat dein.</span>
+                    </div>
+                    <input class="form-check-input fs-4 ms-2" type="checkbox" role="switch" id="enableStoreSwitcherSwitch" checked>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right Column: Live Price Simulator & Real-time Preview -->
+              <div class="col-lg-5">
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                  <h5 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+                    <i class="bi bi-calculator text-primary"></i> Live Pricing Preview
+                  </h5>
+                  <p class="text-muted small mb-3">Neechay real-time calculator check karein k aapki selected settings ke sath store ke prices kaisay show honge:</p>
+
+                  <!-- Live Test Calculator -->
+                  <div class="p-3 rounded-4 mb-3" style="background: linear-gradient(135deg, #1f1f1f, #2a2a2a); color: white;">
+                    <div class="small text-warning fw-bold text-uppercase mb-1">
+                      <i class="bi bi-lightning-charge-fill"></i> Interactive Price Tester
+                    </div>
+                    <div class="row g-2 align-items-center mb-2">
+                      <div class="col-6">
+                        <label class="small text-white-50">Base Price (USD):</label>
+                        <div class="input-group input-group-sm">
+                          <span class="input-group-text bg-dark text-white border-secondary">$</span>
+                          <input type="number" step="0.01" class="form-control form-control-sm font-monospace bg-dark text-white border-secondary" id="previewTestInput" value="49.99">
+                        </div>
+                      </div>
+                      <div class="col-6 text-end">
+                        <span class="small text-white-50 d-block">Resulting Display:</span>
+                        <div class="fs-4 fw-bold font-monospace text-warning" id="previewTestResult">Rs. 13,997</div>
+                      </div>
+                    </div>
+                    <span class="small text-white-50" style="font-size: 0.72rem;">* Changes reflect instantly as you type!</span>
+                  </div>
+
+                  <!-- Catalog Sample Preview Table -->
+                  <h6 class="fw-bold small text-muted text-uppercase mb-2">Sample Catalog Products</h6>
+                  <div class="list-group list-group-flush rounded-3 border">
+                    <div class="list-group-item d-flex justify-content-between align-items-center py-2.5">
+                      <div>
+                        <div class="fw-semibold text-dark small">AeroFit Pro Wireless Earbuds</div>
+                        <span class="text-muted small font-monospace">$29.99</span>
+                      </div>
+                      <div class="fw-bold font-monospace text-dark sample-preview-item" data-base-price="29.99">Rs. 8,397</div>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center py-2.5">
+                      <div>
+                        <div class="fw-semibold text-dark small">Ultralight Carbon Running Shoes</div>
+                        <span class="text-muted small font-monospace">$64.99</span>
+                      </div>
+                      <div class="fw-bold font-monospace text-dark sample-preview-item" data-base-price="64.99">Rs. 18,197</div>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center py-2.5">
+                      <div>
+                        <div class="fw-semibold text-dark small">Nomad Explorer Canvas Travel Duffel</div>
+                        <span class="text-muted small font-monospace">$59.00</span>
+                      </div>
+                      <div class="fw-bold font-monospace text-dark sample-preview-item" data-base-price="59.00">Rs. 16,520</div>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center py-2.5">
+                      <div>
+                        <div class="fw-semibold text-dark small">Vortex 4K Ultra Action Camera</div>
+                        <span class="text-muted small font-monospace">$99.99</span>
+                      </div>
+                      <div class="fw-bold font-monospace text-dark sample-preview-item" data-base-price="99.99">Rs. 27,997</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bottom Save Bar -->
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white d-flex flex-row justify-content-between align-items-center flex-wrap gap-3">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-shield-check text-success fs-5"></i>
+                <span class="small text-muted">Currency settings save karte hi Homepage, Shop, Cart, Wishlist, aur Checkout par tamam prices update ho jayengi!</span>
+              </div>
+              <div class="d-flex gap-2 flex-wrap">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-3 small fw-semibold" id="resetCurrencyBottomBtn">
+                  Restore Defaults (PKR)
+                </button>
+                <button type="submit" class="btn btn-deal rounded-pill px-4 small fw-bold" id="saveCurrencyBottomBtn">
+                  <i class="bi bi-check2-circle me-1"></i> Save Currency Settings
+                </button>
+              </div>
+            </div>
+          </form>
+        </div><!-- End #tabCurrencyPane -->
       </div><!-- End #adminPortalTabContent -->
 
       </div><!-- End #adminMainPortal -->
