@@ -47,6 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initGlobalWishlistModal();
   initTrackOrderModal();
   initGmailOtpAuth();
+  initDynamicNewsTicker();
+  initDynamicFooter();
+  initStoreCurrencySwitcher();
 
   // Page Specific Inits based on URL or DOM element presence
   const currentPath = window.location.pathname;
@@ -828,8 +831,8 @@ function renderWishlistModal() {
                   <a href="product.html?id=${prod.id}" class="text-dark text-decoration-none">${prod.name}</a>
                 </h6>
                 <div class="d-flex align-items-baseline gap-2 flex-wrap">
-                  <span class="fw-bold text-dark font-monospace fs-6">$${prod.price.toFixed(2)}</span>
-                  <span class="text-muted text-decoration-line-through small">$${prod.oldPrice.toFixed(2)}</span>
+                  <span class="fw-bold text-dark font-monospace fs-6">${formatCurrency(prod.price)}</span>
+                  <span class="text-muted text-decoration-line-through small">${formatCurrency(prod.oldPrice)}</span>
                   <span class="badge bg-danger text-white fw-bold" style="font-size: 0.65rem;">-${discountPercent}% OFF</span>
                   <span class="badge bg-success-subtle text-success small ms-auto d-none d-sm-inline" style="font-size: 0.7rem;"><i class="bi bi-check-circle-fill"></i> In Stock</span>
                 </div>
@@ -1167,9 +1170,9 @@ function createProductCardHTML(prod) {
           <span class="rating-count">(${prod.reviewCount})</span>
         </div>
         <div class="card-price-row">
-          <span class="current-price">$${prod.price.toFixed(2)}</span>
-          <span class="old-price">$${prod.oldPrice.toFixed(2)}</span>
-          <span class="badge bg-warning-subtle text-dark ms-auto" style="font-size: 0.7rem; font-weight: 700;">SAVE $${(prod.oldPrice - prod.price).toFixed(2)}</span>
+          <span class="current-price">${formatCurrency(prod.price)}</span>
+          <span class="old-price">${formatCurrency(prod.oldPrice)}</span>
+          <span class="badge bg-warning-subtle text-dark ms-auto" style="font-size: 0.7rem; font-weight: 700;">SAVE ${formatCurrency(prod.oldPrice - prod.price)}</span>
         </div>
       </div>
     </div>
@@ -1310,9 +1313,480 @@ function renderHeroCarousel() {
   }
 }
 
+// Live real-time sync for hero slides across tabs and admin updates
+window.addEventListener('hero-slides-updated', () => {
+  if (document.getElementById('heroCarousel')) {
+    renderHeroCarousel();
+  }
+});
+
+// Live real-time sync for news items across tabs and admin updates
+window.addEventListener('news-items-updated', () => {
+  initDynamicNewsTicker();
+  if (document.getElementById('storeNewsSection')) {
+    renderNewsSliderSection();
+  }
+});
+
+// Live real-time sync for footer settings across tabs and admin updates
+window.addEventListener('footer-settings-updated', () => {
+  initDynamicFooter();
+});
+
+// Live real-time sync for currency settings across tabs and admin updates
+window.addEventListener('currency-settings-updated', () => {
+  updateStorefrontCurrencyUi();
+  refreshAllPagePrices();
+});
+
+window.addEventListener('storage', (e) => {
+  if (e.key === 'snapdealz_hero_slides_v2' || e.key === 'snapdealz_hero_slides_v1') {
+    if (document.getElementById('heroCarousel')) {
+      renderHeroCarousel();
+    }
+  }
+  if (e.key === 'snapdealz_news_items_v1') {
+    initDynamicNewsTicker();
+    if (document.getElementById('storeNewsSection')) {
+      renderNewsSliderSection();
+    }
+  }
+  if (e.key === 'snapdealz_footer_settings_v1') {
+    initDynamicFooter();
+  }
+  if (e.key === 'snapdealz_currency_settings_v1') {
+    updateStorefrontCurrencyUi();
+    refreshAllPagePrices();
+  }
+  if (e.key === 'snapdealz_custom_products_v2') {
+    if (typeof loadProductsCatalog === 'function') {
+      products = loadProductsCatalog();
+    }
+  }
+});
+
+/** Storefront Currency Switcher (PKR / USD) */
+function initStoreCurrencySwitcher() {
+  const cfg = (typeof loadCurrencySettings === 'function') ? loadCurrencySettings() : null;
+  if (!cfg || cfg.enableStoreSwitcher === false) return;
+
+  const activeCode = cfg.activeCurrency || 'PKR';
+  const curr = (cfg.currencies && cfg.currencies[activeCode]) ? cfg.currencies[activeCode] : { code: 'PKR', symbol: 'Rs.', flag: '🇵🇰' };
+
+  // 1. Inject into sticky navbar beside user actions
+  const navActionWrap = document.querySelector('.snap-navbar .d-flex.align-items-center.gap-2, .snap-navbar .d-flex.align-items-center.gap-3');
+  if (navActionWrap && !document.getElementById('navCurrencySwitcherBtn')) {
+    const wrap = document.createElement('div');
+    wrap.className = 'dropdown d-inline-block me-1';
+    wrap.id = 'navCurrencySwitcherWrap';
+    wrap.innerHTML = `
+      <button class="btn btn-sm btn-outline-dark rounded-pill py-1 px-2.5 fw-bold d-inline-flex align-items-center gap-1 shadow-2xs" type="button" id="navCurrencySwitcherBtn" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 0.75rem;" title="Change Currency">
+        <span id="navCurrFlag">${curr.flag || (activeCode === 'PKR' ? '🇵🇰' : '🇺🇸')}</span>
+        <span id="navCurrCode">${activeCode}</span>
+        <i class="bi bi-chevron-down" style="font-size: 0.65rem;"></i>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 p-1 mt-1" style="font-size: 0.8rem; min-width: 150px;">
+        <li>
+          <a class="dropdown-item rounded-2 py-1.5 d-flex align-items-center gap-2 ${activeCode === 'PKR' ? 'active fw-bold' : ''}" href="#" data-switch-currency="PKR">
+            <span>🇵🇰</span> <span>PKR (Rs.)</span>
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item rounded-2 py-1.5 d-flex align-items-center gap-2 ${activeCode === 'USD' ? 'active fw-bold' : ''}" href="#" data-switch-currency="USD">
+            <span>🇺🇸</span> <span>USD ($)</span>
+          </a>
+        </li>
+      </ul>
+    `;
+    navActionWrap.prepend(wrap);
+
+    // Bind dropdown item clicks
+    wrap.querySelectorAll('[data-switch-currency]').forEach(a => {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetCurr = a.getAttribute('data-switch-currency');
+        if (typeof setStoreActiveCurrency === 'function') {
+          setStoreActiveCurrency(targetCurr);
+          showToast(`Store currency switched to ${targetCurr === 'PKR' ? 'Pakistani Rupee (Rs.)' : 'US Dollar ($)'}`);
+        }
+      });
+    });
+  }
+
+  // 2. Also inject a quick toggle into top announcement ticker if present
+  const tickerContainer = document.querySelector('.top-ticker .container');
+  if (tickerContainer && !document.getElementById('tickerCurrencyToggleBtn')) {
+    const tickerBtn = document.createElement('button');
+    tickerBtn.id = 'tickerCurrencyToggleBtn';
+    tickerBtn.type = 'button';
+    tickerBtn.className = 'btn btn-dark text-warning border border-secondary rounded-pill py-0.5 px-2 ms-2 fw-bold d-inline-flex align-items-center gap-1';
+    tickerBtn.style.fontSize = '0.7rem';
+    tickerBtn.title = 'Switch Currency (PKR / USD)';
+    tickerBtn.innerHTML = `<span>${curr.flag || '🇵🇰'}</span> <span>${activeCode}</span> <i class="bi bi-arrow-repeat text-white"></i>`;
+    tickerBtn.addEventListener('click', () => {
+      const current = (typeof loadCurrencySettings === 'function') ? loadCurrencySettings().activeCurrency : 'PKR';
+      const next = current === 'PKR' ? 'USD' : 'PKR';
+      if (typeof setStoreActiveCurrency === 'function') {
+        setStoreActiveCurrency(next);
+        showToast(`Store currency switched to ${next === 'PKR' ? 'Pakistani Rupee (Rs.)' : 'US Dollar ($)'}`);
+      }
+    });
+    tickerContainer.appendChild(tickerBtn);
+  }
+
+  updateStorefrontCurrencyUi();
+}
+
+function updateStorefrontCurrencyUi() {
+  const cfg = (typeof loadCurrencySettings === 'function') ? loadCurrencySettings() : null;
+  if (!cfg) return;
+  const activeCode = cfg.activeCurrency || 'PKR';
+  const curr = (cfg.currencies && cfg.currencies[activeCode]) ? cfg.currencies[activeCode] : { code: 'PKR', symbol: 'Rs.', flag: '🇵🇰' };
+
+  const flagEl = document.getElementById('navCurrFlag');
+  const codeEl = document.getElementById('navCurrCode');
+  if (flagEl) flagEl.textContent = curr.flag || (activeCode === 'PKR' ? '🇵🇰' : '🇺🇸');
+  if (codeEl) codeEl.textContent = activeCode;
+
+  const tickerBtn = document.getElementById('tickerCurrencyToggleBtn');
+  if (tickerBtn) {
+    tickerBtn.innerHTML = `<span>${curr.flag || '🇵🇰'}</span> <span>${activeCode}</span> <i class="bi bi-arrow-repeat text-white"></i>`;
+  }
+
+  // Update active state in dropdown
+  document.querySelectorAll('[data-switch-currency]').forEach(a => {
+    const isTarget = a.getAttribute('data-switch-currency') === activeCode;
+    a.classList.toggle('active', isTarget);
+    a.classList.toggle('fw-bold', isTarget);
+  });
+}
+
+/** Refresh all product cards and price displays on the current page */
+function refreshAllPagePrices() {
+  // 1. Homepage Trending Products
+  const trendingGrid = document.getElementById('trendingProductsGrid');
+  if (trendingGrid && typeof products !== 'undefined') {
+    const trendingList = products.slice(0, 8);
+    trendingGrid.innerHTML = trendingList.map(prod => `
+      <div class="col-6 col-md-4 col-lg-3 mb-4">
+        ${createProductCardHTML(prod)}
+      </div>
+    `).join('');
+    bindProductCardEvents(trendingGrid);
+  }
+
+  // 2. Shop Page Products Grid
+  const shopGrid = document.getElementById('shopProductsGrid');
+  if (shopGrid && typeof filterAndRenderProducts === 'function') {
+    filterAndRenderProducts();
+  }
+
+  // 3. Product Detail Page
+  if (document.getElementById('productDetailContent') && typeof initProductDetailPage === 'function') {
+    initProductDetailPage();
+  }
+
+  // 4. Cart Page
+  if (document.getElementById('cartItemsList') && typeof renderCart === 'function') {
+    renderCart();
+  }
+
+  // 5. Wishlist Page
+  if (document.getElementById('wishlistPageGrid') && typeof initWishlistPage === 'function') {
+    initWishlistPage();
+  }
+}
+
+
+/** Top announcement news ticker populated from admin news items */
+function initDynamicNewsTicker() {
+  let container = document.getElementById('topTickerCarouselInner');
+  if (!container) {
+    const topTickerContainer = document.querySelector('.top-ticker .container');
+    if (topTickerContainer) {
+      topTickerContainer.innerHTML = `
+        <div id="topTickerCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="4500">
+          <div class="carousel-inner" id="topTickerCarouselInner"></div>
+        </div>
+      `;
+      container = document.getElementById('topTickerCarouselInner');
+    }
+  }
+  if (!container) return;
+
+  const items = (typeof loadNewsItems === 'function') ? loadNewsItems() : [];
+  const tickerItems = items.filter(item => item.showInTopTicker !== false);
+  if (!tickerItems.length) return;
+
+  const sanitize = (str) => {
+    if (str === null || str === undefined) return '';
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+  };
+
+  container.innerHTML = tickerItems.map((item, idx) => {
+    const isModal = item.linkUrl && item.linkUrl.startsWith('#');
+    const linkAttr = isModal ? `data-bs-toggle="modal" data-bs-target="${sanitize(item.linkUrl)}" href="#"` : `href="${sanitize(item.linkUrl || '#')}"`;
+    const badgeColor = sanitize(item.badgeColor || 'warning');
+    const text = sanitize(item.tickerText || item.title || '');
+    const badge = sanitize(item.badge || 'UPDATE');
+    const linkText = sanitize(item.linkText || 'Learn More');
+
+    return `
+      <div class="carousel-item ${idx === 0 ? 'active' : ''}">
+        <div class="d-flex flex-wrap justify-content-center align-items-center gap-2">
+          <span class="badge bg-${badgeColor} text-dark fw-bold">${badge}</span>
+          <span class="text-white">${text}</span>
+          ${item.linkUrl ? `<a ${linkAttr} class="text-warning text-decoration-none fw-bold ms-md-2 small d-inline-flex align-items-center"><i class="bi bi-arrow-right-circle-fill me-1"></i>${linkText}</a>` : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const carouselEl = document.getElementById('topTickerCarousel');
+  if (carouselEl && window.bootstrap && bootstrap.Carousel) {
+    try {
+      const existing = bootstrap.Carousel.getInstance(carouselEl);
+      if (existing) existing.dispose();
+      new bootstrap.Carousel(carouselEl, {
+        interval: 4500,
+        ride: 'carousel',
+        pause: 'hover'
+      });
+    } catch (e) {
+      console.warn("Ticker carousel init notice:", e);
+    }
+  }
+}
+
+/** Store news & flash drop slider section on homepage */
+function renderNewsSliderSection() {
+  const section = document.getElementById('storeNewsSection');
+  if (!section) return;
+
+  const indicators = document.getElementById('newsCarouselIndicators');
+  const inner = document.getElementById('newsCarouselInner');
+  if (!inner) return;
+
+  const items = (typeof loadNewsItems === 'function') ? loadNewsItems() : [];
+  if (!items || !items.length) {
+    section.style.display = 'none';
+    return;
+  }
+  section.style.display = '';
+
+  const sanitize = (str) => {
+    if (str === null || str === undefined) return '';
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+  };
+
+  if (indicators) {
+    indicators.innerHTML = items.map((_, idx) => `
+      <button type="button" data-bs-target="#storeNewsCarousel" data-bs-slide-to="${idx}" class="${idx === 0 ? 'active' : ''}" aria-current="${idx === 0 ? 'true' : 'false'}" aria-label="News ${idx + 1}"></button>
+    `).join('');
+  }
+
+  inner.innerHTML = items.map((item, idx) => {
+    const badgeColor = sanitize(item.badgeColor || 'warning');
+    const badge = sanitize(item.badge || 'ANNOUNCEMENT');
+    const date = sanitize(item.date || '');
+    const title = sanitize(item.title || '');
+    const summary = sanitize(item.summary || '');
+    const linkText = sanitize(item.linkText || 'Read More');
+    const linkUrl = sanitize(item.linkUrl || '#');
+    const isModal = linkUrl.startsWith('#');
+    const linkAttr = isModal ? `data-bs-toggle="modal" data-bs-target="${linkUrl}" href="#"` : `href="${linkUrl}"`;
+    const image = sanitize(item.imageUrl || 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=800&auto=format&fit=crop&q=80');
+
+    return `
+      <div class="carousel-item ${idx === 0 ? 'active' : ''}">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+          <div class="row g-0 align-items-center">
+            <div class="col-lg-5">
+              <div class="position-relative" style="height: 280px; overflow: hidden;">
+                <img src="${image}" alt="${title}" class="w-100 h-100 object-fit-cover" loading="lazy">
+                <div class="position-absolute top-0 start-0 m-3">
+                  <span class="badge bg-${badgeColor} text-dark fw-bold px-3 py-2 shadow-sm">${badge}</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-7 p-4 p-md-5">
+              <div class="d-flex align-items-center gap-2 text-muted small mb-2">
+                <i class="bi bi-calendar3 text-warning"></i>
+                <span>${date}</span>
+                <span class="mx-1">•</span>
+                <i class="bi bi-clock-history"></i>
+                <span>Official Notice</span>
+              </div>
+              <h3 class="fw-bold fs-4 text-dark mb-3">${title}</h3>
+              <p class="text-secondary mb-4 leading-relaxed">${summary}</p>
+              <div class="d-flex flex-wrap align-items-center gap-3">
+                <a ${linkAttr} class="btn btn-warning fw-bold px-4 py-2 rounded-pill shadow-sm text-dark d-inline-flex align-items-center gap-2">
+                  <span>${linkText}</span>
+                  <i class="bi bi-arrow-right"></i>
+                </a>
+                <span class="badge bg-light text-muted border px-3 py-2 rounded-pill small">
+                  <i class="bi bi-check2-circle text-success me-1"></i> Verified Store Update
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const carouselEl = document.getElementById('storeNewsCarousel');
+  if (carouselEl && window.bootstrap && bootstrap.Carousel) {
+    try {
+      const existing = bootstrap.Carousel.getInstance(carouselEl);
+      if (existing) existing.dispose();
+      new bootstrap.Carousel(carouselEl, {
+        interval: 6000,
+        ride: 'carousel',
+        pause: 'hover'
+      });
+    } catch (e) {
+      console.warn("Store news carousel init notice:", e);
+    }
+  }
+}
+
+/** Dynamic Footer Hydration across all pages */
+function initDynamicFooter() {
+  const footer = document.querySelector('.premium-footer');
+  if (!footer) return;
+
+  const settings = (typeof loadFooterSettings === 'function') ? loadFooterSettings() : null;
+  if (!settings) return;
+
+  const sanitize = (str) => {
+    if (str === null || str === undefined) return '';
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+  };
+
+  // 1. Brand Bio
+  const descEl = footer.querySelector('.footer-desc');
+  if (descEl && settings.brandBio) {
+    descEl.textContent = settings.brandBio;
+  }
+
+  // 2. Social Links
+  const socialRow = footer.querySelector('.footer-social-row');
+  if (socialRow && settings.socialLinks) {
+    const sl = settings.socialLinks;
+    const icons = [
+      { key: 'facebook', icon: 'bi-facebook', label: 'Facebook' },
+      { key: 'instagram', icon: 'bi-instagram', label: 'Instagram' },
+      { key: 'twitter', icon: 'bi-twitter-x', label: 'Twitter' },
+      { key: 'tiktok', icon: 'bi-tiktok', label: 'TikTok' },
+      { key: 'youtube', icon: 'bi-youtube', label: 'YouTube' },
+      { key: 'whatsapp', icon: 'bi-whatsapp', label: 'WhatsApp' }
+    ];
+
+    socialRow.innerHTML = icons
+      .filter(item => sl[item.key] && sl[item.key].enabled && sl[item.key].url)
+      .map(item => `
+        <a href="${sanitize(sl[item.key].url)}" class="footer-social-icon" target="_blank" rel="noopener noreferrer" aria-label="${item.label}">
+          <i class="bi ${item.icon}"></i>
+        </a>
+      `).join('');
+  }
+
+  // 3. Customer Support Links/Info
+  const contactCol = footer.querySelector('.footer-col-contact .footer-links');
+  if (contactCol && settings.support) {
+    const sup = settings.support;
+    let items = [];
+    if (sup.address) {
+      items.push(`
+        <li class="footer-contact-item">
+          <i class="bi bi-geo-alt-fill text-warning"></i>
+          <span>${sanitize(sup.address)}</span>
+        </li>
+      `);
+    }
+    if (sup.phone) {
+      items.push(`
+        <li class="footer-contact-item">
+          <i class="bi bi-telephone-fill text-warning"></i>
+          <span><a href="tel:${sanitize(sup.phone.replace(/[^0-9+]/g, ''))}" class="text-secondary text-decoration-none">${sanitize(sup.phone)}</a></span>
+        </li>
+      `);
+    }
+    if (sup.whatsappNumber) {
+      const cleanWa = sup.whatsappNumber.replace(/[^0-9]/g, '');
+      items.push(`
+        <li class="footer-contact-item">
+          <i class="bi bi-whatsapp text-success"></i>
+          <span><a href="https://wa.me/${cleanWa}" target="_blank" class="text-secondary text-decoration-none">WhatsApp: ${sanitize(sup.whatsappNumber)}</a></span>
+        </li>
+      `);
+    }
+    if (sup.email) {
+      items.push(`
+        <li class="footer-contact-item">
+          <i class="bi bi-envelope-fill text-warning"></i>
+          <span><a href="mailto:${sanitize(sup.email)}" class="text-secondary text-decoration-none">${sanitize(sup.email)}</a></span>
+        </li>
+      `);
+    }
+    if (sup.hours) {
+      items.push(`
+        <li class="footer-contact-item">
+          <i class="bi bi-clock-fill text-warning"></i>
+          <span>${sanitize(sup.hours)}</span>
+        </li>
+      `);
+    }
+    if (sup.helpdeskUrl) {
+      items.push(`
+        <li class="footer-contact-item">
+          <i class="bi bi-headset text-warning"></i>
+          <span><a href="${sanitize(sup.helpdeskUrl)}" class="text-warning text-decoration-none fw-bold">Live Support Desk</a></span>
+        </li>
+      `);
+    }
+    contactCol.innerHTML = items.join('');
+  }
+
+  // 4. Legal & Policies Links
+  const legalCol = footer.querySelector('.footer-col-categories .footer-links');
+  if (legalCol && settings.legal) {
+    const leg = settings.legal;
+    legalCol.innerHTML = `
+      <li><a href="${sanitize(leg.privacyUrl || 'privacy.html')}"><i class="bi bi-chevron-right text-warning small"></i> ${sanitize(leg.privacyTitle || 'Privacy Policy')}</a></li>
+      <li><a href="${sanitize(leg.termsUrl || 'terms.html')}"><i class="bi bi-chevron-right text-warning small"></i> ${sanitize(leg.termsTitle || 'Terms & Conditions')}</a></li>
+      <li><a href="${sanitize(leg.aboutUrl || 'about.html')}"><i class="bi bi-chevron-right text-warning small"></i> ${sanitize(leg.aboutTitle || 'About SnapzDealz')}</a></li>
+      <li><a href="${sanitize(leg.contactUrl || 'contact.html')}"><i class="bi bi-chevron-right text-warning small"></i> ${sanitize(leg.contactTitle || 'Contact & Helpdesk')}</a></li>
+    `;
+  }
+
+  // 5. Copyright
+  const copyrightEl = footer.querySelector('.footer-bottom .small');
+  if (copyrightEl && settings.copyrightText) {
+    copyrightEl.innerHTML = sanitize(settings.copyrightText);
+  }
+
+  // 6. Payment Badges
+  const badgesWrap = footer.querySelector('.footer-payment-badges-wrap');
+  if (badgesWrap && settings.payments) {
+    const p = settings.payments;
+    let bHtml = '';
+    if (p.cod) bHtml += `<span class="footer-payment-badge"><i class="bi bi-cash-stack text-warning"></i> CASH ON DELIVERY</span> `;
+    if (p.easypaisa) bHtml += `<span class="footer-payment-badge"><i class="bi bi-phone-fill text-success"></i> EASYPAISA</span> `;
+    if (p.jazzcash) bHtml += `<span class="footer-payment-badge"><i class="bi bi-wallet2 text-danger"></i> JAZZCASH</span> `;
+    if (p.cards) bHtml += `<span class="footer-payment-badge"><i class="bi bi-credit-card-2-front"></i> DEBIT / CREDIT</span> `;
+    if (p.ssl) bHtml += `<span class="footer-payment-badge text-warning"><i class="bi bi-shield-check"></i> 256-BIT SSL</span> `;
+    badgesWrap.innerHTML = bHtml;
+  }
+}
+
 function initHomePage() {
   // Render Dynamic Hero Carousel (from admin settings or default)
   renderHeroCarousel();
+
+  // Render Dynamic News Carousel
+  renderNewsSliderSection();
 
   // Shop By Categories row
   const categoryScroll = document.getElementById('categoryScrollContainer');
@@ -1678,12 +2152,12 @@ function initProductDetailPage() {
         <!-- Price box -->
         <div class="p-3 rounded-4 mb-4" style="background-color: #fff8e1; border: 1px solid #ffe082;">
           <div class="d-flex align-items-baseline gap-3">
-            <span class="fs-1 fw-bold font-monospace" style="color: var(--dark-charcoal);">$${prod.price.toFixed(2)}</span>
-            <span class="text-muted text-decoration-line-through fs-5">$${prod.oldPrice.toFixed(2)}</span>
-            <span class="badge bg-danger text-white rounded-pill px-3 py-2 ms-auto fw-bold">SAVE $${savings}</span>
+            <span class="fs-1 fw-bold font-monospace" style="color: var(--dark-charcoal);">${formatCurrency(prod.price)}</span>
+            <span class="text-muted text-decoration-line-through fs-5">${formatCurrency(prod.oldPrice)}</span>
+            <span class="badge bg-danger text-white rounded-pill px-3 py-2 ms-auto fw-bold">SAVE ${formatCurrency(prod.oldPrice - prod.price)}</span>
           </div>
           <div class="small text-muted mt-1">
-            <i class="bi bi-lightning-charge-fill text-warning"></i> Deal price valid for limited quantities. Free 2-day delivery on orders over $50.
+            <i class="bi bi-lightning-charge-fill text-warning"></i> Deal price valid for limited quantities. Free 2-day delivery on verified orders.
           </div>
         </div>
 
@@ -2302,10 +2776,10 @@ function initCartPage() {
         renderEmptyCartRecommendations();
       }
       if (cartItemsContainer) cartItemsContainer.innerHTML = '';
-      if (cartSubtotalEl) cartSubtotalEl.textContent = '$0.00';
-      if (cartDiscountEl) cartDiscountEl.textContent = '-$0.00';
+      if (cartSubtotalEl) cartSubtotalEl.textContent = formatCurrency(0);
+      if (cartDiscountEl) cartDiscountEl.textContent = '-' + formatCurrency(0);
       if (cartShippingEl) cartShippingEl.textContent = 'FREE';
-      if (cartTotalEl) cartTotalEl.textContent = '$0.00';
+      if (cartTotalEl) cartTotalEl.textContent = formatCurrency(0);
       if (promoStatusEl) promoStatusEl.innerHTML = '';
       return;
     }
@@ -2327,7 +2801,7 @@ function initCartPage() {
             ${item.color ? `<span>Color: <span class="d-inline-block rounded-circle align-middle" style="width: 12px; height: 12px; background: ${item.color};"></span></span>` : ''}
             ${item.size ? `<span>Size: <strong>${item.size}</strong></span>` : ''}
           </div>
-          <div class="fw-bold mt-1 text-dark">$${item.price.toFixed(2)} each</div>
+          <div class="fw-bold mt-1 text-dark">${formatCurrency(item.price)} each</div>
         </div>
 
         <div class="qty-stepper">
@@ -2337,7 +2811,7 @@ function initCartPage() {
         </div>
 
         <div class="text-end fw-bold fs-5 font-monospace" style="min-width: 90px;">
-          $${(item.price * item.quantity).toFixed(2)}
+          ${formatCurrency(item.price * item.quantity)}
         </div>
 
         <button type="button" class="btn btn-sm btn-outline-danger border-0 rounded-circle cart-remove-item" data-index="${idx}" data-id="${item.id}" data-color="${item.color || ''}" data-size="${item.size || ''}" title="Remove item">
@@ -2415,8 +2889,8 @@ function initCartPage() {
                 <a href="product.html?id=${prod.id}" class="text-truncate d-block">${prod.name}</a>
               </h4>
               <div class="card-price-row mt-auto pt-2">
-                <span class="current-price">$${prod.price.toFixed(2)}</span>
-                <span class="old-price">$${prod.oldPrice.toFixed(2)}</span>
+                <span class="current-price">${formatCurrency(prod.price)}</span>
+                <span class="old-price">${formatCurrency(prod.oldPrice)}</span>
               </div>
             </div>
           </div>
@@ -2451,7 +2925,7 @@ function initCartPage() {
         shipping = 0;
       }
       if (promoStatusEl) {
-        promoStatusEl.innerHTML = `<span class="text-success"><i class="bi bi-tag-fill"></i> Coupon <strong>${activeCouponCode}</strong> applied (-$${discount.toFixed(2)})</span>`;
+        promoStatusEl.innerHTML = `<span class="text-success"><i class="bi bi-tag-fill"></i> Coupon <strong>${activeCouponCode}</strong> applied (-${formatCurrency(discount)})</span>`;
       }
     } else if (promoStatusEl) {
       promoStatusEl.innerHTML = '';
@@ -2459,10 +2933,10 @@ function initCartPage() {
 
     const total = Math.max(0, subtotal - discount + shipping);
 
-    if (cartSubtotalEl) cartSubtotalEl.textContent = `$${subtotal.toFixed(2)}`;
-    if (cartDiscountEl) cartDiscountEl.textContent = `-$${discount.toFixed(2)}`;
-    if (cartShippingEl) cartShippingEl.textContent = shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`;
-    if (cartTotalEl) cartTotalEl.textContent = `$${total.toFixed(2)}`;
+    if (cartSubtotalEl) cartSubtotalEl.textContent = formatCurrency(subtotal);
+    if (cartDiscountEl) cartDiscountEl.textContent = `-${formatCurrency(discount)}`;
+    if (cartShippingEl) cartShippingEl.textContent = shipping === 0 ? 'FREE' : formatCurrency(shipping);
+    if (cartTotalEl) cartTotalEl.textContent = formatCurrency(total);
   }
 
   // Coupon handling
@@ -4337,7 +4811,7 @@ function initGlobalSearchModal() {
           <div class="fw-bold small">${p.name}</div>
           <span class="text-muted" style="font-size: 0.75rem;">${p.category}</span>
         </div>
-        <div class="fw-bold text-dark font-monospace">$${p.price.toFixed(2)}</div>
+        <div class="fw-bold text-dark font-monospace">${formatCurrency(p.price)}</div>
       </a>
     `).join('');
   });
