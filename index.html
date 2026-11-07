@@ -31,14 +31,23 @@
       <span class="small text-muted">Unlocking exclusive drops...</span>
     </div>
 
-    <!-- Top Announcement Ticker -->
-    <div class="top-ticker text-center">
-      <div class="container d-flex flex-wrap justify-content-center align-items-center gap-2">
-        <span class="badge bg-warning text-dark fw-bold">⚡ FLASH SALE</span>
-        <span>EXTRA 20% OFF WITH CODE <strong>BUNDLE20</strong> | FREE SHIPPING OVER $50</span>
-        <a href="#" class="text-warning text-decoration-none fw-bold ms-md-3 small d-inline-flex align-items-center" data-bs-toggle="modal" data-bs-target="#trackOrderModal">
-          <i class="bi bi-geo-alt-fill me-1"></i>Track Order
-        </a>
+    <!-- Top Announcement News Ticker (Slider) -->
+    <div class="top-ticker text-center" id="topNewsTicker">
+      <div class="container position-relative">
+        <div id="topTickerCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="4500">
+          <div class="carousel-inner" id="topTickerCarouselInner">
+            <!-- Dynamically populated by script.js from admin news items -->
+            <div class="carousel-item active">
+              <div class="d-flex flex-wrap justify-content-center align-items-center gap-2">
+                <span class="badge bg-warning text-dark fw-bold">⚡ FLASH SALE</span>
+                <span>EXTRA 20% OFF WITH CODE <strong>BUNDLE20</strong> | FREE SHIPPING OVER $50</span>
+                <a href="#" class="text-warning text-decoration-none fw-bold ms-md-3 small d-inline-flex align-items-center" data-bs-toggle="modal" data-bs-target="#trackOrderModal">
+                  <i class="bi bi-geo-alt-fill me-1"></i>Track Order
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -124,98 +133,11 @@
       <div class="container">
         <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
           <div class="carousel-indicators mb-0" style="bottom: -20px;">
-            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
-            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+            <!-- Dynamically populated by script.js from admin customizations / storage -->
           </div>
 
           <div class="carousel-inner">
-            <!-- Slide 1: Men's Shoes -->
-            <div class="carousel-item active">
-              <div class="row align-items-center hero-slide">
-                <div class="col-lg-6 mb-4 mb-lg-0 reveal-fade-up">
-                  <span class="hero-tag"><i class="bi bi-fire text-warning"></i> DEAL OF THE DAY</span>
-                  <h1 class="hero-title">STEP INTO POWER & SPEED</h1>
-                  <p class="hero-desc">Apex Pulse Air Running Shoes with responsive cloud cushioning. Upgrade your athletic sprint with massive 50% discount savings.</p>
-                  <div class="d-flex flex-wrap align-items-center gap-3">
-                    <a href="product.html?id=1" class="btn btn-deal btn-lg">
-                      <i class="bi bi-bag-check-fill"></i> Shop Now • $64.99
-                    </a>
-                    <a href="shop.html?category=mens-shoes" class="btn btn-deal-outline btn-lg">
-                      Explore Shoes
-                    </a>
-                  </div>
-                </div>
-                <div class="col-lg-6 text-center">
-                  <div class="hero-img-box">
-                    <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&auto=format&fit=crop&q=80" alt="Apex Pulse Air Running Shoes" class="hero-floating-img img-fluid" data-parallax="-0.07">
-                    <div class="hero-deal-sticker" data-parallax="0.05">
-                      <span style="font-size: 0.7rem;">SAVE</span>
-                      <span style="font-size: 1.35rem;">50%</span>
-                      <span style="font-size: 0.65rem;">TODAY</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Slide 2: Ladies Bags -->
-            <div class="carousel-item">
-              <div class="row align-items-center hero-slide">
-                <div class="col-lg-6 mb-4 mb-lg-0 reveal-fade-up">
-                  <span class="hero-tag"><i class="bi bi-gem text-warning"></i> LUXURY AT OUTLET PRICES</span>
-                  <h1 class="hero-title">ITALIAN LEATHER STATEMENT TOTES</h1>
-                  <p class="hero-desc">Luxe Verona Italian Leather Tote crafted with scratch-resistant vegan pebbled leather and 14K gold-finish hardware.</p>
-                  <div class="d-flex flex-wrap align-items-center gap-3">
-                    <a href="product.html?id=2" class="btn btn-deal btn-lg">
-                      <i class="bi bi-bag-check-fill"></i> Claim Deal • $79.99
-                    </a>
-                    <a href="shop.html?category=ladies-bags" class="btn btn-deal-outline btn-lg">
-                      Browse All Bags
-                    </a>
-                  </div>
-                </div>
-                <div class="col-lg-6 text-center">
-                  <div class="hero-img-box">
-                    <img src="https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800&auto=format&fit=crop&q=80" alt="Luxe Verona Tote" class="hero-floating-img img-fluid" data-parallax="-0.07">
-                    <div class="hero-deal-sticker bg-dark" data-parallax="0.05">
-                      <span style="font-size: 0.65rem; color: #F9B800;">ONLY</span>
-                      <span style="font-size: 1.25rem; color: #fff;">$79</span>
-                      <span style="font-size: 0.65rem; color: #F9B800;">LIMITED</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Slide 3: Health & Beauty -->
-            <div class="carousel-item">
-              <div class="row align-items-center hero-slide">
-                <div class="col-lg-6 mb-4 mb-lg-0 reveal-fade-up">
-                  <span class="hero-tag"><i class="bi bi-stars text-warning"></i> DERMATOLOGIST FORMULA</span>
-                  <h1 class="hero-title">PURE BOTANICAL GLOW SERUM</h1>
-                  <p class="hero-desc">Lumière Radiance Botanical Glow Serum with 15% Stabilized Vitamin C & Triple Hyaluronic Acid for 72-hour deep moisture.</p>
-                  <div class="d-flex flex-wrap align-items-center gap-3">
-                    <a href="product.html?id=3" class="btn btn-deal btn-lg">
-                      <i class="bi bi-bag-check-fill"></i> Get Glow • $34.50
-                    </a>
-                    <a href="shop.html?category=health-beauty" class="btn btn-deal-outline btn-lg">
-                      View Skincare
-                    </a>
-                  </div>
-                </div>
-                <div class="col-lg-6 text-center">
-                  <div class="hero-img-box">
-                    <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=800&auto=format&fit=crop&q=80" alt="Lumière Radiance Serum" class="hero-floating-img img-fluid" data-parallax="-0.07">
-                    <div class="hero-deal-sticker" data-parallax="0.05">
-                      <span style="font-size: 0.7rem;">TOP</span>
-                      <span style="font-size: 1.2rem;">RATED</span>
-                      <span style="font-size: 0.65rem;">4.9★</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <!-- Dynamically populated by script.js from admin customizations / storage -->
           </div>
 
           <button class="carousel-control-prev d-none d-md-flex" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev" aria-label="Previous">
@@ -378,6 +300,36 @@
       </div>
     </section>
 
+    <!-- Store News, Drops & Announcements Slider Section -->
+    <section class="py-5 reveal-section bg-light-subtle border-top border-bottom" id="storeNewsSection">
+      <div class="container">
+        <div class="d-flex flex-wrap justify-content-between align-items-end mb-4">
+          <div>
+            <span class="text-uppercase fw-bold text-warning small tracking-wider">
+              <i class="bi bi-broadcast me-1"></i> STORE ANNOUNCEMENTS & DROPS
+            </span>
+            <h2 class="deal-heading fs-2 mb-0">Latest Store News & Flash Alerts</h2>
+            <p class="text-muted small mb-0 mt-1">Exclusive sale announcements, new season releases, and courier logistics updates.</p>
+          </div>
+          <div class="d-flex align-items-center gap-2 mt-3 mt-md-0">
+            <button class="btn btn-outline-dark rounded-circle d-inline-flex align-items-center justify-content-center p-0" type="button" data-bs-target="#storeNewsCarousel" data-bs-slide="prev" style="width: 38px; height: 38px;" aria-label="Previous News">
+              <i class="bi bi-chevron-left"></i>
+            </button>
+            <button class="btn btn-outline-dark rounded-circle d-inline-flex align-items-center justify-content-center p-0" type="button" data-bs-target="#storeNewsCarousel" data-bs-slide="next" style="width: 38px; height: 38px;" aria-label="Next News">
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <div id="storeNewsCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="6000">
+          <div class="carousel-indicators mb-0" id="newsCarouselIndicators" style="bottom: -28px;"></div>
+          <div class="carousel-inner" id="newsCarouselInner">
+            <!-- Dynamically populated by script.js from loadNewsItems() -->
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Newsletter Section -->
     <section class="container my-5 reveal-section" id="newsletter">
       <div class="newsletter-wrapper reveal-scale-up">
@@ -410,7 +362,7 @@
           <div class="footer-col-brand">
             <a class="navbar-brand text-white mb-3 d-inline-flex" href="index.html">
               <i class="bi bi-lightning-charge-fill text-warning"></i>
-              <span class="text-white">SNAPZ</span><span class="logo-badge">DEALZ</span>
+              <span class="text-white">SNAP</span><span class="logo-badge">DEALZ</span>
             </a>
             <p class="footer-desc mb-3">SnapzDealz is your premier destination for verified high-octane deals, luxury fashion overstocks, high-tech electronics, and beauty essentials at factory-direct pricing.</p>
             <div class="footer-social-row">
