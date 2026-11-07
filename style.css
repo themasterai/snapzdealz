@@ -2114,3 +2114,34 @@ html {
   background-color: #f9fafb;
 }
 
+/* ==========================================================================
+   STORE NEWS & FLASH DROPS CAROUSEL
+   ========================================================================== */
+#storeNewsCarousel .carousel-indicators [data-bs-target] {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #d1d5db;
+  border: none;
+  opacity: 0.6;
+  margin: 0 5px;
+  transition: all 0.3s ease;
+}
+
+#storeNewsCarousel .carousel-indicators .active {
+  width: 32px;
+  border-radius: 10px;
+  background-color: #F9B800;
+  opacity: 1;
+}
+
+#storeNewsCarousel .card {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+}
+
+#storeNewsCarousel .card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.08) !important;
+}
+
+
